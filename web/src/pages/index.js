@@ -120,7 +120,7 @@ document.querySelector('#app').innerHTML = `
                   </svg>
                 </div>
                 <div>
-                  <h3 class="text-xl font-semibold text-slate-900 dark:text-white">ACEAS</h3>
+                  <h3 class="text-xl font-semibold text-slate-900 dark:text-white">SAEC</h3>
                   <p class="text-sm text-slate-500 dark:text-slate-400">Agency Corporate E-Authentication Service</p>
                 </div>
               </div>
@@ -154,7 +154,7 @@ document.querySelector('#app').innerHTML = `
                hx-swap="outerHTML" 
                hx-push-url="true"
                class="inline-flex items-center justify-center w-full px-4 py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg btn-smooth text-sm group-hover:bg-orange-700">
-              Access ACEAS Service
+              Access SAEC Service
               <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
               </svg>
@@ -174,7 +174,7 @@ document.querySelector('#app').innerHTML = `
                   </svg>
                 </div>
                 <div>
-                  <h3 class="text-xl font-semibold text-slate-900 dark:text-white">CPDS</h3>
+                  <h3 class="text-xl font-semibold text-slate-900 dark:text-white">SDPC</h3>
                   <p class="text-sm text-slate-500 dark:text-slate-400">Central Personnel Data System</p>
                 </div>
               </div>
@@ -208,7 +208,7 @@ document.querySelector('#app').innerHTML = `
                hx-swap="outerHTML" 
                hx-push-url="true"
                class="inline-flex items-center justify-center w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg btn-smooth text-sm group-hover:bg-blue-700">
-              Access CPDS Service
+              Access SDPC Service
               <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
               </svg>

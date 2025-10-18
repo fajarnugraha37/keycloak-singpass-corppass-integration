@@ -1,4 +1,4 @@
-import"./modulepreload-polyfill-B5Qt9EMX-mgwhip96.js";/* empty css                        */import"./htmx.esm-hCWdS4WT-mgwhip97.js";document.addEventListener("DOMContentLoaded",function(){document.body.classList.add("htmx-settling"),window.htmx&&(htmx.config.defaultSwapStyle="outerHTML",htmx.config.defaultSwapDelay=100,htmx.config.defaultSettleDelay=200)});document.querySelector("#app").innerHTML=`
+import"./modulepreload-polyfill-B5Qt9EMX-mgwj7p1n.js";/* empty css                        */import"./htmx.esm-hCWdS4WT-mgwj7p1o.js";document.addEventListener("DOMContentLoaded",function(){document.body.classList.add("htmx-settling"),window.htmx&&(htmx.config.defaultSwapStyle="outerHTML",htmx.config.defaultSwapDelay=100,htmx.config.defaultSettleDelay=200)});document.querySelector("#app").innerHTML=`
   <div class="min-h-screen bg-white dark:bg-slate-900 fade-in-up">
     <!-- Government Header -->
     <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
@@ -102,7 +102,7 @@ import"./modulepreload-polyfill-B5Qt9EMX-mgwhip96.js";/* empty css              
                   </svg>
                 </div>
                 <div>
-                  <h3 class="text-xl font-semibold text-slate-900 dark:text-white">ACEAS</h3>
+                  <h3 class="text-xl font-semibold text-slate-900 dark:text-white">SAEC</h3>
                   <p class="text-sm text-slate-500 dark:text-slate-400">Agency Corporate E-Authentication Service</p>
                 </div>
               </div>
@@ -136,7 +136,7 @@ import"./modulepreload-polyfill-B5Qt9EMX-mgwhip96.js";/* empty css              
                hx-swap="outerHTML" 
                hx-push-url="true"
                class="inline-flex items-center justify-center w-full px-4 py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg btn-smooth text-sm group-hover:bg-orange-700">
-              Access ACEAS Service
+              Access SAEC Service
               <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
               </svg>
@@ -156,7 +156,7 @@ import"./modulepreload-polyfill-B5Qt9EMX-mgwhip96.js";/* empty css              
                   </svg>
                 </div>
                 <div>
-                  <h3 class="text-xl font-semibold text-slate-900 dark:text-white">CPDS</h3>
+                  <h3 class="text-xl font-semibold text-slate-900 dark:text-white">SDPC</h3>
                   <p class="text-sm text-slate-500 dark:text-slate-400">Central Personnel Data System</p>
                 </div>
               </div>
@@ -190,7 +190,7 @@ import"./modulepreload-polyfill-B5Qt9EMX-mgwhip96.js";/* empty css              
                hx-swap="outerHTML" 
                hx-push-url="true"
                class="inline-flex items-center justify-center w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg btn-smooth text-sm group-hover:bg-blue-700">
-              Access CPDS Service
+              Access SDPC Service
               <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path>
               </svg>
@@ -282,4 +282,4 @@ import"./modulepreload-polyfill-B5Qt9EMX-mgwhip96.js";/* empty css              
     </footer>
   </div>
 `;const l=document.getElementById("theme-toggle"),s=document.documentElement,o=localStorage.getItem("theme")||"light";s.classList.toggle("dark",o==="dark");l.addEventListener("click",()=>{const t=s.classList.contains("dark");s.classList.toggle("dark",!t),localStorage.setItem("theme",t?"light":"dark")});document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll(".group").forEach(e=>{e.addEventListener("mouseenter",()=>{e.style.transform="translateY(-2px)",e.style.transition="all 0.2s ease-in-out"}),e.addEventListener("mouseleave",()=>{e.style.transform="translateY(0)"})}),document.querySelectorAll("a").forEach(e=>{e.addEventListener("focus",()=>{e.style.outline="2px solid #3b82f6",e.style.outlineOffset="2px"}),e.addEventListener("blur",()=>{e.style.outline="none"})}),document.querySelectorAll('a[href^="/"]').forEach(e=>{e.addEventListener("click",a=>{a.preventDefault();const r=e.getAttribute("href");document.body.style.opacity="0",document.body.style.transform="translateY(-10px)",setTimeout(()=>{window.location.href=r},150)})})});document.addEventListener("DOMContentLoaded",()=>{document.body.style.opacity="0",document.body.style.transform="translateY(10px)",setTimeout(()=>{document.body.style.transition="opacity 300ms ease-out, transform 300ms ease-out",document.body.style.opacity="1",document.body.style.transform="translateY(0)"},50)});
-//# sourceMappingURL=index-DINlTmt3-mgwhip8f.js.map
+//# sourceMappingURL=index-TdFKARus-mgwj7p13.js.map
