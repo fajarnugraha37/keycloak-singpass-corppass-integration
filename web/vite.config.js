@@ -54,6 +54,7 @@ export default defineConfig({
                 './index.html', 
                 './404.html', 
                 './50x.html', 
+                ...globSync('mockpass/**/*.html'), 
                 ...globSync('cpds/**/*.html'), 
                 ...globSync('aceas/**/*.html')
             ].map(file => {
