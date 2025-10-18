@@ -8,6 +8,38 @@ A learning playground for single sign-on (SSO) patterns built with Docker, featu
 [![Nginx](https://img.shields.io/badge/Nginx-Latest-brightgreen?logo=nginx)](https://nginx.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-blue?logo=postgresql)](https://www.postgresql.org/)
 
+## 📸 Screenshots
+
+### 🏠 Main Portal Dashboard
+The Singapore government-styled eServices portal provides access to both ACEAS and CPDS applications with professional branding and modern UI.
+
+![Main Portal](./docs/images/main-portal.png)
+
+### 🔐 ACEAS Application 
+Direct Keycloak authentication with Authorization Code + PKCE flow, featuring real-time authentication status and token management.
+
+![ACEAS Application](./docs/images/aceas-app.png)
+
+### 📊 CPDS Application
+Federated authentication through IDS provider that brokers tokens with Keycloak backend, demonstrating token isolation patterns.
+
+![CPDS Application](./docs/images/cpds-app.png)
+
+### 🔑 Keycloak Admin Console
+Comprehensive identity management with agency realm configuration, user management, and authentication flow monitoring.
+
+![Keycloak Admin](./docs/images/keycloak-admin.png)
+
+### 🎭 MockPass Authentication
+Singapore SingPass simulation providing realistic government authentication experience for testing and development.
+
+![MockPass Authentication](./docs/images/mockpass-auth.png)
+
+### 🚨 Error Pages
+Professional error handling with government-styled 404 and 50x pages featuring animations and auto-refresh functionality.
+
+![Error Pages](./docs/images/error-pages.png)
+
 ## 📖 Table of Contents
 
 - [🏗️ Architecture](#️-architecture)
