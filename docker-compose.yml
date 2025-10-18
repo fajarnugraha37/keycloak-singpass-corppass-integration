@@ -1,135 +1,325 @@
 services:
   mockpass:
-    build: ./mockpass
-    image: kc_mockpass
+    build: 
+      context: ./mockpass
+      dockerfile: Dockerfile
+    image: kc_mockpass:${VERSION:-latest}
     container_name: mockpass
+    restart: unless-stopped
     ports:
       - "3001:3001"
     environment:
       MOCKPASS_PORT: 3001
       MOCKPASS_STATELESS: false
       SHOW_LOGIN_PAGE: true
-      MOCKPASS_NRIC: S8979373D
-      SINGPASS_CLIENT_PROFILE: direct_pii_allowed # direct, pii_allowed, bridge
+      MOCKPASS_NRIC: ${MOCKPASS_NRIC:-S8979373D}
+      SINGPASS_CLIENT_PROFILE: ${SINGPASS_CLIENT_PROFILE:-direct_pii_allowed} # direct, pii_allowed, bridge
       SP_RP_JWKS_ENDPOINT: ${HOST:-http://localhost}/auth/realms/agency-realm/protocol/openid-connect/certs
       CP_RP_JWKS_ENDPOINT: ${HOST:-http://localhost}/auth/realms/agency-realm/protocol/openid-connect/certs
       MOCKPASS_SERVER_HOST: ${MOCKPASS_SERVER_HOST:-http://mockpass.localhost}
-      SERVICE_PROVIDER_MYINFO_SECRET: your-client-secret
-      ENCRYPT_MYINFO: true
+      SERVICE_PROVIDER_MYINFO_SECRET: ${MYINFO_SECRET:-your-client-secret}
+      ENCRYPT_MYINFO: ${ENCRYPT_MYINFO:-true}
+      NODE_ENV: ${NODE_ENV:-development}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=10", "--spider", "http://localhost:3001/singpass/v2/.well-known/openid-configuration"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+    networks:
+      - app_network
 
   db:
-    image: postgres:16
+    image: postgres:16-alpine
     container_name: kc_db_agency
+    restart: unless-stopped
     environment:
-      POSTGRES_DB: keycloak
-      POSTGRES_USER: keycloak
-      POSTGRES_PASSWORD: keycloak
+      POSTGRES_DB: ${KC_DB_NAME:-keycloak}
+      POSTGRES_USER: ${KC_DB_USER:-keycloak}
+      POSTGRES_PASSWORD: ${KC_DB_PASSWORD:-keycloak}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+      PGDATA: /var/lib/postgresql/data/pgdata
     ports:
-      - "5432:5432"
+      - "${KC_DB_PORT:-5432}:5432"
     volumes:
-      - kc_pgdata_agency:/var/lib/postgresql/data
+      - ./postgres/data:/var/lib/postgresql/data/pgdata
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U keycloak -d keycloak"]
-      interval: 5s
-      timeout: 3s
-      retries: 30
+      test: ["CMD-SHELL", "pg_isready -U ${KC_DB_USER:-keycloak} -d ${KC_DB_NAME:-keycloak}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+    networks:
+      - app_network
+      - db_network
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:size=100M,noexec,nosuid,nodev
 
   keycloak:
-    build: ./keycloak-custom
-    image: kc_keycloak
+    build: 
+      context: ./keycloak-custom
+      dockerfile: Dockerfile
+    image: kc_keycloak:${VERSION:-latest}
     container_name: kc_agency
+    restart: unless-stopped
     command:
-      - start-dev
+      - start
       - --import-realm
+      - --optimized
+      - --hostname-strict=false
       - --log=console
-      - --log-level=info,jakarta.ws:debug,org.keycloak:debug,org.keycloak.events:debug,org.keycloak.services:debug,org.keycloak.authentication:debug,org.keycloak.protocol:debug,org.keycloak.broker:debug,com.example:debug
+      - --log-level=${KC_LOG_LEVEL:-info}
     environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
+      # Admin credentials
+      KEYCLOAK_ADMIN: ${KC_ADMIN_USER:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD:-admin}
+      
+      # Database configuration
       KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://db:5432/keycloak
-      KC_DB_USERNAME: keycloak
-      KC_DB_PASSWORD: keycloak 
-      KC_HOSTNAME_URL: ${DNS:-localhost}
+      KC_DB_URL: jdbc:postgresql://db:5432/${KC_DB_NAME:-keycloak}
+      KC_DB_USERNAME: ${KC_DB_USER:-keycloak}
+      KC_DB_PASSWORD: ${KC_DB_PASSWORD:-keycloak}
+      KC_DB_POOL_INITIAL_SIZE: ${KC_DB_POOL_INITIAL:-5}
+      KC_DB_POOL_MIN_SIZE: ${KC_DB_POOL_MIN:-5}
+      KC_DB_POOL_MAX_SIZE: ${KC_DB_POOL_MAX:-20}
+      
+      # Hostname and proxy configuration
+      KC_HOSTNAME_URL: ${KC_HOSTNAME_URL:-http://eservice.localhost}
+      KC_HOSTNAME_ADMIN_URL: ${KC_HOSTNAME_ADMIN_URL:-http://eservice.localhost}
       KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
       KC_HTTP_RELATIVE_PATH: /auth
+      KC_PROXY: edge
+      
+      # Performance optimizations
+      KC_CACHE: ispn
+      KC_CACHE_STACK: tcp
+      KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
+      
+      # JVM optimization
+      JAVA_OPTS_APPEND: >-
+        -XX:+UseG1GC
+        -XX:+UseStringDeduplication
+        -XX:MaxMetaspaceSize=512m
+        -Xms512m
+        -Xmx1024m
+        -XX:+HeapDumpOnOutOfMemoryError
+        -XX:HeapDumpPath=/tmp/heapdump.hprof
+        
+      # Logging
       KC_LOG_CONSOLE_FORMAT: "%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p (%t) [%X{cid}] %X{state} [%c] %s%e%n"
     depends_on:
       db:
         condition: service_healthy
     ports:
-      - "8081:8080"
+      - "${KC_PORT:-8081}:8080"
     volumes:
-      - ./keycloak-import:/opt/keycloak/data/import
+      - ./keycloak-import:/opt/keycloak/data/import:ro
+      - ./keycloak-custom/themes:/opt/keycloak/themes:ro
+      - ./keycloak-custom/data:/opt/keycloak/data
+      - ./logs/keycloak:/tmp
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/8080 && exit 0 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 1.5G
+          cpus: '1.5'
+        reservations:
+          memory: 1G
+          cpus: '1.0'
+    networks:
+      - app_network
+      - db_network
+    security_opt:
+      - no-new-privileges:true
 
   ids:
-    build: ./services/ids
+    build: 
+      context: ./services/ids
+      dockerfile: Dockerfile
     container_name: ids_op
-    image: kc_ids
+    image: kc_ids:${VERSION:-latest}
+    restart: unless-stopped
     environment:
-      HOST: ${HOST:-http://localhost}
-      ISSUER_BASE: ${HOST:-http://localhost}/ids
-      KEYCLOAK_ISSUER: ${HOST:-http://localhost}/auth/realms/agency-realm
-      KEYCLOAK_AUTH: ${HOST:-http://localhost}/auth/realms/agency-realm/protocol/openid-connect/auth
-      KEYCLOAK_TOKEN: ${HOST:-http://localhost}/auth/realms/agency-realm/protocol/openid-connect/token
-      KEYCLOAK_USERINFO: ${HOST:-http://localhost}/auth/realms/agency-realm/protocol/openid-connect/userinfo
-      KEYCLOAK_CLIENT_ID: cpds-spa
-      KEYCLOAK_CLIENT_SECRET: cpds-oidc-secret
-      SESSION_KEYS: k1,k2
-      AUDIENCE: cpds-api
-      LOG_LEVEL: info
+      # Service configuration
+      HOST: ${HOST:-http://eservice.localhost}
+      ISSUER_BASE: ${HOST:-http://eservice.localhost}/ids
+      PORT: ${IDS_PORT:-7000}
+      
+      # Keycloak integration
+      KEYCLOAK_ISSUER: ${HOST:-http://eservice.localhost}/auth/realms/agency-realm
+      KEYCLOAK_AUTH: ${HOST:-http://eservice.localhost}/auth/realms/agency-realm/protocol/openid-connect/auth
+      KEYCLOAK_TOKEN: ${HOST:-http://eservice.localhost}/auth/realms/agency-realm/protocol/openid-connect/token
+      KEYCLOAK_USERINFO: ${HOST:-http://eservice.localhost}/auth/realms/agency-realm/protocol/openid-connect/userinfo
+      KEYCLOAK_CLIENT_ID: ${CPDS_CLIENT_ID:-cpds-spa}
+      KEYCLOAK_CLIENT_SECRET: ${CPDS_CLIENT_SECRET:-cpds-oidc-secret}
+      
+      # Application settings
+      SESSION_KEYS: ${SESSION_KEYS:-k1,k2}
+      AUDIENCE: ${CPDS_AUDIENCE:-cpds-api}
+      LOG_LEVEL: ${IDS_LOG_LEVEL:-info}
+      NODE_ENV: ${NODE_ENV:-development}
     depends_on:
       keycloak:
-        condition: service_started
-    volumes:
-      - ids_data:/data
+        condition: service_healthy
     expose:
       - "7000"
+    # healthcheck:
+    #   test: ["CMD", "wget", "--no-verbose", "--tries=10", "--spider", "http://localhost:7000/health", "||", "exit", "1"]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+    #   start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+    networks:
+      - app_network
+    security_opt:
+      - no-new-privileges:true
 
   aceas-api:
-    build: ./services/aceas-api
-    image: kc_aceas_api
+    build: 
+      context: ./services/aceas-api
+      dockerfile: Dockerfile
+    image: kc_aceas_api:${VERSION:-latest}
     container_name: aceas_api
+    restart: unless-stopped
     environment:
-      PORT: 3000
-      ISSUER: ${HOST:-http://localhost}/auth/realms/agency-realm
-      AUDIENCE: aceas-api
-      JWKS_URL: ${HOST:-http://localhost}/auth/realms/agency-realm/protocol/openid-connect/certs
+      # Service configuration
+      PORT: ${ACEAS_API_PORT:-3000}
+      NODE_ENV: ${NODE_ENV:-development}
+      
+      # OIDC configuration
+      ISSUER: ${HOST:-http://eservice.localhost}/auth/realms/agency-realm
+      AUDIENCE: ${ACEAS_AUDIENCE:-aceas-api}
+      JWKS_URL: ${HOST:-http://eservice.localhost}/auth/realms/agency-realm/protocol/openid-connect/certs
+      
+      # Performance settings
+      UV_THREADPOOL_SIZE: 4
+      NODE_OPTIONS: "--max-old-space-size=512"
     depends_on:
       keycloak:
-        condition: service_started
+        condition: service_healthy
     expose:
       - "3000"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=10", "--spider", "http://localhost:3000/health", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+    networks:
+      - app_network
+    security_opt:
+      - no-new-privileges:true
 
   cpds-api:
-    build: ./services/cpds-api
-    image: kc_cpds_api
+    build: 
+      context: ./services/cpds-api
+      dockerfile: Dockerfile
+    image: kc_cpds_api:${VERSION:-latest}
     container_name: cpds_api
+    restart: unless-stopped
     environment:
-      PORT: 3001
-      ISSUER: ${HOST:-http://localhost}/ids
-      AUDIENCE: cpds-api
-      JWKS_URL: ${HOST:-http://localhost}/ids/.well-known/jwks.json
+      # Service configuration
+      PORT: ${CPDS_API_PORT:-3001}
+      NODE_ENV: ${NODE_ENV:-development}
+      
+      # OIDC configuration
+      ISSUER: ${HOST:-http://eservice.localhost}/ids
+      AUDIENCE: ${CPDS_AUDIENCE:-cpds-api}
+      JWKS_URL: ${HOST:-http://eservice.localhost}/ids/.well-known/jwks.json
+      
+      # Performance settings
+      UV_THREADPOOL_SIZE: 4
+      NODE_OPTIONS: "--max-old-space-size=512"
     depends_on:
-      ids:
-        condition: service_started
+      - ids
     expose:
       - "3001"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=10", "--spider", "http://localhost:3001/health", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+    networks:
+      - app_network
+    security_opt:
+      - no-new-privileges:true
 
   web:
     image: nginx:1.27-alpine
     container_name: web
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    restart: unless-stopped
+    command: >
+      /bin/sh -c "
+      echo 'Starting nginx with auto-reload...';
+      while :; do
+        sleep 6h &
+        wait $$!;
+        echo 'Reloading nginx configuration...';
+        nginx -s reload;
+      done &
+      exec nginx -g 'daemon off;'
+      "
     depends_on:
-      - aceas-api
-      - cpds-api
-      - ids
-      - mockpass
-      - keycloak
+      mockpass:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
     ports:
-      - "80:80"
-      - "443:443"
+      - "${WEB_HTTP_PORT:-80}:80"
+      - "${WEB_HTTPS_PORT:-443}:443"
     volumes:
+      # Nginx configuration (read-only)
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./nginx/common.conf:/etc/nginx/common.conf:ro
       - ./nginx/proxy.conf:/etc/nginx/proxy.conf:ro
@@ -138,14 +328,55 @@ services:
       - ./nginx/cors.conf:/etc/nginx/cors.conf:ro
       - ./nginx/cache.conf:/etc/nginx/cache.conf:ro
       - ./nginx/ssl.conf:/etc/nginx/ssl.conf:ro
+      
+      # Static content (read-only)
       - ./webroot:/usr/share/nginx/html:ro
+      
+      # SSL certificates (if available)
+      - ./ssl:/etc/nginx/ssl:ro
+      
+      # Logs (for debugging)
+      - ./logs/nginx:/var/log/nginx
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=10", "--spider", "http://localhost", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+        reservations:
+          memory: 128M
+          cpus: '0.25'
     networks:
-      default:
+      app_network:
         aliases:
           - eservice.localhost
           - mockpass.localhost
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:size=50M,noexec,nosuid,nodev
+      - /var/cache/nginx:size=100M,noexec,nosuid,nodev
 
-volumes:
-  kc_pgdata_agency:
-  kc_pgdata_idp:
-  ids_data:
+networks:
+  # Main application network
+  app_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+    driver_opts:
+      com.docker.network.bridge.name: br-app-sso
+      com.docker.network.driver.mtu: 1500
+  
+  # Database network (isolated)
+  db_network:
+    driver: bridge
+    internal: true
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16

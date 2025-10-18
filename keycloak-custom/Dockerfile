@@ -33,6 +33,8 @@ COPY --from=builder /workspace/spi/build/libs/*.jar /opt/keycloak/providers/
 
 # Build the Quarkus image with optimizations
 RUN /opt/keycloak/bin/kc.sh build \
+    --db=postgres \
+    --http-relative-path=/auth \
     --health-enabled=true \
     --metrics-enabled=true \
     --verbose 

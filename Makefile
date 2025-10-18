@@ -16,7 +16,10 @@ SHELL := /bin/bash
 # Project configuration
 PROJECT_NAME := app-sso
 COMPOSE_FILE := docker-compose.yml
+COMPOSE_OVERRIDE_FILE := docker-compose.override.yml
+COMPOSE_PROD_FILE := docker-compose.prod.yml
 COMPOSE_PROJECT_NAME := $(PROJECT_NAME)
+ENV_FILE := .env
 
 # Environment detection
 UNAME_S := $(shell uname -s 2>/dev/null || echo "Windows")
@@ -34,6 +37,7 @@ endif
 TS := $(shell $(DATE_CMD))
 LOGS_DIR := ./logs
 LOG_FILE := $(LOGS_DIR)/compose.$(TS).log
+LOG_BUILD_FILE := $(LOGS_DIR)/compose.build.$(TS).log
 $(shell $(MKDIR_CMD) $(LOGS_DIR))
 
 # Docker configuration
@@ -145,12 +149,32 @@ health: ## 📊 Check health status of services
 # Main Service Management
 # =============================================================================
 
-up: check-deps ## 🚀 Start all services with logging
-	@echo "$(BOLD)$(GREEN)Starting all services...$(RESET)"
+up: check-deps ## 🚀 Start all services in detached mode (background)
+	@echo "$(BOLD)$(GREEN)Starting all services in background...$(RESET)"
+	@$(DOCKER_COMPOSE_CMD) --progress plain up -d
+	@echo "$(GREEN)✓ All services started in background$(RESET)"
+	@echo "$(BLUE)Logs are being written to: $(LOG_FILE)$(RESET)"
+	@echo "$(BLUE)Use 'make logs' to view logs or 'make status' to check status$(RESET)"
 ifeq ($(OS_TYPE),windows)
-	@$(DOCKER_COMPOSE_CMD) up -d && $(DOCKER_COMPOSE_CMD) logs -f 2>&1 | powershell -Command "Tee-Object -FilePath '$(LOG_FILE)' -Append"
+	@powershell -Command "Start-Process -NoNewWindow -FilePath 'docker' -ArgumentList 'compose -p $(COMPOSE_PROJECT_NAME) -f $(COMPOSE_FILE) logs -f' -RedirectStandardOutput '$(LOG_FILE)' -RedirectStandardError '$(LOG_FILE)'"
 else
-	@$(DOCKER_COMPOSE_CMD) up 2>&1 | tee -a "$(LOG_FILE)"; exit $${PIPESTATUS[0]}
+	@nohup $(DOCKER_COMPOSE_CMD) logs -f >> "$(LOG_FILE)" 2>&1 &
+endif
+
+up-fg: check-deps ## 🚀 Start all services in foreground with logging
+	@echo "$(BOLD)$(GREEN)Starting all services in foreground...$(RESET)"
+ifeq ($(OS_TYPE),windows)
+	@$(DOCKER_COMPOSE_CMD) --progress plain up 2>&1 | powershell -Command "Tee-Object -FilePath '$(LOG_FILE)' -Append"
+else
+	@$(DOCKER_COMPOSE_CMD) --progress plain up 2>&1 | tee -a "$(LOG_FILE)"; exit $${PIPESTATUS[0]}
+endif
+
+up-logs: check-deps ## 🚀 Start all services and follow logs
+	@echo "$(BOLD)$(GREEN)Starting all services and following logs...$(RESET)"
+ifeq ($(OS_TYPE),windows)
+	@$(DOCKER_COMPOSE_CMD) --progress plain up -d && $(DOCKER_COMPOSE_CMD) logs -f 2>&1 | powershell -Command "Tee-Object -FilePath '$(LOG_FILE)' -Append"
+else
+	@$(DOCKER_COMPOSE_CMD) --progress plain up -d 2>&1 | tee -a "$(LOG_FILE)"; $(DOCKER_COMPOSE_CMD) logs -f
 endif
 
 down: ## 🛑 Stop all services
@@ -209,6 +233,9 @@ $(foreach service,$(SERVICES),$(eval re-$(service): ## 🔧 Rebuild and restart 
 # Generate log targets for each service
 $(foreach service,$(SERVICES),$(eval log-$(service): ## 📝 Show logs for $(service); @echo "$(BOLD)$(BLUE)Showing logs for $(service)...$(RESET)"; $(DOCKER_COMPOSE_CMD) logs -f $(service)))
 
+# Generate tail log targets for each service
+$(foreach service,$(SERVICES),$(eval tail-$(service): ## 📝 Show last 50 lines of logs for $(service); @echo "$(BOLD)$(BLUE)Showing last 50 lines for $(service)...$(RESET)"; $(DOCKER_COMPOSE_CMD) logs --tail=50 $(service)))
+
 # Generate shell access targets for each service
 $(foreach service,$(SERVICES),$(eval shell-$(service): ## 🚪 Open shell in $(service) container; @echo "$(BOLD)$(BLUE)Opening shell in $(service)...$(RESET)"; docker exec -it $$($(DOCKER_COMPOSE_CMD) ps -q $(service)) /bin/bash || docker exec -it $$($(DOCKER_COMPOSE_CMD) ps -q $(service)) /bin/sh))
 
@@ -223,6 +250,33 @@ logs: ## 📝 Show logs from all services
 logs-tail: ## 📝 Show last 100 lines of logs from all services
 	@echo "$(BOLD)$(BLUE)Showing recent logs...$(RESET)"
 	@$(DOCKER_COMPOSE_CMD) logs --tail=100
+
+logs-file: ## 📝 Show logs from background log file
+	@echo "$(BOLD)$(BLUE)Showing logs from file: $(LOG_FILE)$(RESET)"
+	@if [ -f "$(LOG_FILE)" ]; then \
+		tail -f "$(LOG_FILE)"; \
+	else \
+		echo "$(YELLOW)⚠️  Log file not found. Start services with 'make up' first.$(RESET)"; \
+	fi
+
+logs-start: ## 📝 Start background logging process
+	@echo "$(BOLD)$(BLUE)Starting background logging to: $(LOG_FILE)$(RESET)"
+ifeq ($(OS_TYPE),windows)
+	@powershell -Command "Start-Process -NoNewWindow -FilePath 'docker' -ArgumentList 'compose -p $(COMPOSE_PROJECT_NAME) -f $(COMPOSE_FILE) logs -f' -RedirectStandardOutput '$(LOG_FILE)' -RedirectStandardError '$(LOG_FILE)'"
+else
+	@nohup $(DOCKER_COMPOSE_CMD) logs -f >> "$(LOG_FILE)" 2>&1 &
+endif
+	@echo "$(GREEN)✓ Background logging started$(RESET)"
+	@echo "$(BLUE)Use 'make logs-file' to view logs or 'make logs-stop' to stop logging$(RESET)"
+
+logs-stop: ## 📝 Stop background logging process
+	@echo "$(BOLD)$(BLUE)Stopping background logging...$(RESET)"
+ifeq ($(OS_TYPE),windows)
+	@powershell -Command "Get-Process | Where-Object {$$_.ProcessName -eq 'docker' -and $$_.CommandLine -like '*logs -f*'} | Stop-Process -Force" || echo "$(YELLOW)No background logging process found$(RESET)"
+else
+	@pkill -f "docker.*logs.*-f" || echo "$(YELLOW)No background logging process found$(RESET)"
+endif
+	@echo "$(GREEN)✓ Background logging stopped$(RESET)"
 
 monitor: ## 📊 Monitor resource usage of containers
 	@echo "$(BOLD)$(BLUE)Monitoring container resources...$(RESET)"
@@ -407,3 +461,243 @@ log-web: ## 📝 Legacy: Show web logs
 log-mockpass: log-mockpass ## 📝 Legacy: Show mockpass logs
 log-kc: log-keycloak ## 📝 Legacy: Show Keycloak logs
 log-db: log-db ## 📝 Legacy: Show database logs
+
+# =============================================================================
+# Environment Management Commands
+# =============================================================================
+
+env-setup: ## 🔧 Setup environment file from template
+	@echo "$(BOLD)$(BLUE)Setting up environment configuration...$(RESET)"
+	@if [ ! -f "$(ENV_FILE)" ]; then \
+		cp .env.example $(ENV_FILE); \
+		echo "$(GREEN)✓ Created $(ENV_FILE) from template$(RESET)"; \
+		echo "$(YELLOW)⚠ Please review and customize $(ENV_FILE) before starting services$(RESET)"; \
+	else \
+		echo "$(YELLOW)⚠ $(ENV_FILE) already exists$(RESET)"; \
+	fi
+
+env-validate: ## 🔍 Validate environment configuration
+	@echo "$(BOLD)$(BLUE)Validating environment configuration...$(RESET)"
+	@if [ -f "$(ENV_FILE)" ]; then \
+		echo "$(GREEN)✓ $(ENV_FILE) exists$(RESET)"; \
+		echo "$(BLUE)Environment variables:$(RESET)"; \
+		grep -v '^#' $(ENV_FILE) | grep -v '^$$' | head -10; \
+	else \
+		echo "$(RED)✗ $(ENV_FILE) not found$(RESET)"; \
+		echo "$(YELLOW)Run 'make env-setup' to create it$(RESET)"; \
+		exit 1; \
+	fi
+
+# =============================================================================
+# Development Environment Commands
+# =============================================================================
+
+dev-up: env-validate dirs-create ## 🚀 Start development environment with override
+	@echo "$(BOLD)$(BLUE)Starting development environment...$(RESET)"
+	@$(DOCKER_COMPOSE_CMD) -f $(COMPOSE_FILE) -f $(COMPOSE_OVERRIDE_FILE) --progress plain up -d
+	@$(MAKE) wait-healthy
+	@echo "$(GREEN)✓ Development environment started$(RESET)"
+	@$(MAKE) show-dev-info
+
+dev-down: ## 🛑 Stop development environment
+	@echo "$(BOLD)$(BLUE)Stopping development environment...$(RESET)"
+	@$(DOCKER_COMPOSE_CMD) -f $(COMPOSE_FILE) -f $(COMPOSE_OVERRIDE_FILE) down
+	@echo "$(GREEN)✓ Development environment stopped$(RESET)"
+
+dev-restart: dev-down dev-up ## 🔄 Restart development environment
+
+dev-logs: ## 📝 Show all development logs
+	@echo "$(BOLD)$(BLUE)Showing development logs...$(RESET)"
+	@$(DOCKER_COMPOSE_CMD) -f $(COMPOSE_FILE) -f $(COMPOSE_OVERRIDE_FILE) logs -f
+
+dev-debug-keycloak: ## 🐛 Start Keycloak with debug enabled
+	@echo "$(BOLD)$(BLUE)Starting Keycloak with debug enabled...$(RESET)"
+	@$(DOCKER_COMPOSE_CMD) -f $(COMPOSE_FILE) -f $(COMPOSE_OVERRIDE_FILE) up -d keycloak
+	@echo "$(GREEN)✓ Keycloak started with debug on port 8787$(RESET)"
+
+# =============================================================================
+# Production Environment Commands
+# =============================================================================
+
+prod-up: env-validate dirs-create ## 🚀 Start production environment
+	@echo "$(BOLD)$(BLUE)Starting production environment...$(RESET)"
+	@$(DOCKER_COMPOSE_CMD) -f $(COMPOSE_FILE) -f $(COMPOSE_PROD_FILE) --progress plain up -d
+	@$(MAKE) wait-healthy
+	@echo "$(GREEN)✓ Production environment started$(RESET)"
+	@$(MAKE) show-prod-info
+
+prod-down: ## 🛑 Stop production environment
+	@echo "$(BOLD)$(BLUE)Stopping production environment...$(RESET)"
+	@$(DOCKER_COMPOSE_CMD) -f $(COMPOSE_FILE) -f $(COMPOSE_PROD_FILE) down
+	@echo "$(GREEN)✓ Production environment stopped$(RESET)"
+
+prod-logs: ## 📝 Show production logs
+	@echo "$(BOLD)$(BLUE)Showing production logs...$(RESET)"
+	@$(DOCKER_COMPOSE_CMD) -f $(COMPOSE_FILE) -f $(COMPOSE_PROD_FILE) logs -f
+
+prod-deploy: prod-down prod-up ## 🚀 Deploy to production (down then up)
+
+# =============================================================================
+# Directory and Volume Management
+# =============================================================================
+
+dirs-create: ## 📁 Create required directories
+	@echo "$(BOLD)$(BLUE)Creating required directories...$(RESET)"
+	@$(MKDIR_CMD) data/postgres data/keycloak data/ids logs/nginx logs/keycloak ssl/certs ssl/private db/init
+	@echo "$(GREEN)✓ Directories created$(RESET)"
+
+dirs-clean: ## 🧹 Clean data directories (destructive!)
+	@echo "$(BOLD)$(RED)This will delete all application data!$(RESET)"
+	@echo "$(YELLOW)Are you sure? This action cannot be undone.$(RESET)"
+	@read -p "Type 'yes' to continue: " confirm && [ "$$confirm" = "yes" ] || exit 1
+	@echo "$(BOLD)$(BLUE)Cleaning data directories...$(RESET)"
+	@rm -rf data logs
+	@echo "$(GREEN)✓ Data directories cleaned$(RESET)"
+
+volumes-clean: ## 🧹 Remove Docker volumes (destructive!)
+	@echo "$(BOLD)$(RED)This will delete all Docker volumes!$(RESET)"
+	@echo "$(YELLOW)Are you sure? This action cannot be undone.$(RESET)"
+	@read -p "Type 'yes' to continue: " confirm && [ "$$confirm" = "yes" ] || exit 1
+	@echo "$(BOLD)$(BLUE)Removing Docker volumes...$(RESET)"
+	@docker volume prune -f
+	@echo "$(GREEN)✓ Docker volumes removed$(RESET)"
+
+# =============================================================================
+# Health and Monitoring Commands
+# =============================================================================
+
+wait-healthy: ## ⏳ Wait for all services to be healthy
+	@echo "$(BOLD)$(BLUE)Waiting for services to be healthy...$(RESET)"
+	@timeout=300; \
+	while [ $$timeout -gt 0 ]; do \
+		if $(DOCKER_COMPOSE_CMD) ps | grep -E "(unhealthy|starting)" > /dev/null; then \
+			echo "$(YELLOW)⏳ Waiting for services... ($$timeout seconds remaining)$(RESET)"; \
+			sleep 5; \
+			timeout=$$((timeout - 5)); \
+		else \
+			echo "$(GREEN)✓ All services are healthy$(RESET)"; \
+			exit 0; \
+		fi; \
+	done; \
+	echo "$(RED)✗ Services failed to become healthy within timeout$(RESET)"; \
+	$(MAKE) health; \
+	exit 1
+
+show-dev-info: ## ℹ️ Show development environment information
+	@echo "$(BOLD)$(GREEN)=== Development Environment Info ===$(RESET)"
+	@echo "$(BLUE)Web Interface:$(RESET) http://eservice.localhost"
+	@echo "$(BLUE)Keycloak Admin:$(RESET) http://eservice.localhost/auth/admin (admin/admin)"
+	@echo "$(BLUE)Keycloak Debug:$(RESET) Port 8787 (for IDE debugging)"
+	@echo "$(BLUE)MockPass:$(RESET) http://mockpass.localhost"
+	@echo "$(BLUE)PostgreSQL:$(RESET) localhost:5432 (keycloak/keycloak)"
+	@echo "$(BLUE)Hot Reload:$(RESET) Enabled for all Node.js services"
+
+show-prod-info: ## ℹ️ Show production environment information
+	@echo "$(BOLD)$(GREEN)=== Production Environment Info ===$(RESET)"
+	@echo "$(BLUE)Web Interface:$(RESET) https://eservice.localhost"
+	@echo "$(BLUE)Keycloak Admin:$(RESET) https://eservice.localhost/auth/admin"
+	@echo "$(BLUE)SSL/TLS:$(RESET) Enabled and enforced"
+	@echo "$(BLUE)Security:$(RESET) Hardened configuration active"
+	@echo "$(BLUE)Monitoring:$(RESET) Health checks and metrics enabled"
+
+# =============================================================================
+# Backup and Restore Commands
+# =============================================================================
+
+backup-db: ## 💾 Backup database
+	@echo "$(BOLD)$(BLUE)Creating database backup...$(RESET)"
+	@timestamp=$$($(DATE_CMD)); \
+	$(DOCKER_COMPOSE_CMD) exec -T db pg_dump -U keycloak keycloak > "backup/db_$${timestamp}.sql"
+	@echo "$(GREEN)✓ Database backup created$(RESET)"
+
+backup-keycloak: ## 💾 Backup Keycloak configuration
+	@echo "$(BOLD)$(BLUE)Creating Keycloak backup...$(RESET)"
+	@timestamp=$$($(DATE_CMD)); \
+	$(MKDIR_CMD) backup; \
+	cp -r data/keycloak "backup/keycloak_$${timestamp}"
+	@echo "$(GREEN)✓ Keycloak backup created$(RESET)"
+
+backup-all: backup-db backup-keycloak ## 💾 Backup everything
+	@echo "$(GREEN)✓ Complete backup finished$(RESET)"
+
+restore-db: ## 📥 Restore database from backup
+	@echo "$(BOLD)$(BLUE)Available database backups:$(RESET)"
+	@ls -la backup/db_*.sql 2>/dev/null || echo "No database backups found"
+	@read -p "Enter backup filename: " backup_file; \
+	if [ -f "backup/$$backup_file" ]; then \
+		echo "$(BOLD)$(BLUE)Restoring database from $$backup_file...$(RESET)"; \
+		$(DOCKER_COMPOSE_CMD) exec -T db psql -U keycloak -d keycloak < "backup/$$backup_file"; \
+		echo "$(GREEN)✓ Database restored$(RESET)"; \
+	else \
+		echo "$(RED)✗ Backup file not found$(RESET)"; \
+		exit 1; \
+	fi
+
+# =============================================================================
+# Security and SSL Commands
+# =============================================================================
+
+ssl-generate: ## 🔐 Generate self-signed SSL certificates for both domains
+	@echo "$(BOLD)$(BLUE)Generating self-signed SSL certificates...$(RESET)"
+	@$(MKDIR_CMD) ssl/certs ssl/private
+	@echo "$(CYAN)Generating certificate for eservice.localhost...$(RESET)"
+	@openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+		-keyout ssl/private/eservice.key \
+		-out ssl/certs/eservice.crt \
+		-config ssl/eservice.conf \
+		-extensions v3_req
+	@echo "$(CYAN)Generating certificate for mockpass.localhost...$(RESET)"
+	@openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+		-keyout ssl/private/mockpass.key \
+		-out ssl/certs/mockpass.crt \
+		-config ssl/mockpass.conf \
+		-extensions v3_req
+	@echo "$(GREEN)✓ SSL certificates generated for both domains$(RESET)"
+	@echo "$(YELLOW)⚠ These are self-signed certificates for development only$(RESET)"
+	@echo "$(BLUE)Files created:$(RESET)"
+	@echo "  ssl/private/eservice.key + ssl/certs/eservice.crt"
+	@echo "  ssl/private/mockpass.key + ssl/certs/mockpass.crt"
+
+ssl-info: ## 🔍 Show SSL certificate information for both domains
+	@echo "$(BOLD)$(BLUE)SSL Certificate Information:$(RESET)"
+	@echo "$(CYAN)=== eservice.localhost Certificate ===$(RESET)"
+	@if [ -f "ssl/certs/eservice.crt" ]; then \
+		openssl x509 -in ssl/certs/eservice.crt -text -noout | grep -E "(Subject:|DNS:|Not Before|Not After)"; \
+	else \
+		echo "$(RED)✗ eservice.localhost certificate not found$(RESET)"; \
+	fi
+	@echo ""
+	@echo "$(CYAN)=== mockpass.localhost Certificate ===$(RESET)"
+	@if [ -f "ssl/certs/mockpass.crt" ]; then \
+		openssl x509 -in ssl/certs/mockpass.crt -text -noout | grep -E "(Subject:|DNS:|Not Before|Not After)"; \
+	else \
+		echo "$(RED)✗ mockpass.localhost certificate not found$(RESET)"; \
+	fi
+	@if [ ! -f "ssl/certs/eservice.crt" ] && [ ! -f "ssl/certs/mockpass.crt" ]; then \
+		echo "$(YELLOW)Run 'make ssl-generate' to create certificates$(RESET)"; \
+	fi
+
+# =============================================================================
+# Performance and Optimization Commands
+# =============================================================================
+
+optimize-db: ## ⚡ Optimize database performance
+	@echo "$(BOLD)$(BLUE)Optimizing database performance...$(RESET)"
+	@$(DOCKER_COMPOSE_CMD) exec db psql -U keycloak -d keycloak -c "VACUUM ANALYZE;"
+	@$(DOCKER_COMPOSE_CMD) exec db psql -U keycloak -d keycloak -c "REINDEX DATABASE keycloak;"
+	@echo "$(GREEN)✓ Database optimized$(RESET)"
+
+analyze-performance: ## 📊 Analyze system performance
+	@echo "$(BOLD)$(BLUE)System Performance Analysis:$(RESET)"
+	@echo "$(BLUE)=== Container Resource Usage ===$(RESET)"
+	@docker stats --no-stream --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.MemPerc}}" $$($(DOCKER_COMPOSE_CMD) ps -q)
+	@echo ""
+	@echo "$(BLUE)=== Database Statistics ===$(RESET)"
+	@$(DOCKER_COMPOSE_CMD) exec db psql -U keycloak -d keycloak -c "SELECT schemaname,tablename,n_tup_ins,n_tup_upd,n_tup_del FROM pg_stat_user_tables ORDER BY n_tup_ins DESC LIMIT 5;"
+	@echo ""
+	@echo "$(BLUE)=== Nginx Access Summary ===$(RESET)"
+	@if [ -f "logs/nginx/access.log" ]; then \
+		tail -100 logs/nginx/access.log | awk '{print $$7}' | sort | uniq -c | sort -nr | head -10; \
+	else \
+		echo "No nginx access logs found"; \
+	fi

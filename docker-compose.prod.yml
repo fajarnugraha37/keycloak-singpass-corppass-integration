@@ -1,0 +1,154 @@
+# =================================================================
+# Docker Compose Production Configuration
+# =================================================================
+# Use this file for production deployments with: 
+# docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+services:
+  # Production optimizations for Keycloak
+  keycloak:
+    command:
+      - start
+      - --optimized
+      - --import-realm
+      - --hostname-strict=true
+      - --log=console
+      - --log-level=warn
+    environment:
+      # Production security settings
+      KC_HOSTNAME_STRICT: "true"
+      KC_HOSTNAME_STRICT_HTTPS: "true"
+      KC_HTTP_ENABLED: "false"
+      KC_PROXY: edge
+      
+      # Production JVM settings
+      JAVA_OPTS_APPEND: >-
+        -XX:+UseG1GC
+        -XX:+UseStringDeduplication
+        -XX:MaxMetaspaceSize=512m
+        -Xms1024m
+        -Xmx2048m
+        -XX:+DisableExplicitGC
+        -XX:+UseCompressedOops
+        -XX:+OptimizeStringConcat
+        -server
+        
+      # Production logging
+      KC_LOG_LEVEL: warn
+    deploy:
+      resources:
+        limits:
+          memory: 2.5G
+          cpus: '2.0'
+        reservations:
+          memory: 2G
+          cpus: '1.5'
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+        max_attempts: 3
+        window: 120s
+
+  # Production database settings
+  db:
+    command: >
+      postgres
+      -c shared_preload_libraries=pg_stat_statements
+      -c max_connections=100
+      -c shared_buffers=256MB
+      -c effective_cache_size=1GB
+      -c maintenance_work_mem=64MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
+      -c work_mem=4MB
+      -c min_wal_size=1GB
+      -c max_wal_size=4GB
+    environment:
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
+    deploy:
+      resources:
+        limits:
+          memory: 1.5G
+          cpus: '1.5'
+        reservations:
+          memory: 1G
+          cpus: '1.0'
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 60s
+
+  # Production API settings
+  aceas-api:
+    environment:
+      NODE_ENV: production
+      NODE_OPTIONS: "--max-old-space-size=256"
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        
+  cpds-api:
+    environment:
+      NODE_ENV: production
+      NODE_OPTIONS: "--max-old-space-size=256"
+    deploy:
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 60s
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+
+  ids:
+    environment:
+      NODE_ENV: production
+      LOG_LEVEL: warn
+      NODE_OPTIONS: "--max-old-space-size=256"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 60s
+
+  mockpass:
+    environment:
+      NODE_ENV: production
+      LOG_LEVEL: warn
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 60s
+
+  # Production nginx settings
+  web:
+    volumes:
+      # Include production-specific config
+      - ./nginx/conf.d/prod.conf:/etc/nginx/conf.d/prod.conf:ro
+      # SSL certificates
+      - ./ssl/certs:/etc/nginx/ssl/certs:ro
+      - ./ssl/private:/etc/nginx/ssl/private:ro
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 30s

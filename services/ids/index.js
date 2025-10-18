@@ -11,8 +11,12 @@ import { authGuard, jwks, generateToken, buildClaim } from './jwt.js';
 
 
 const oidcConfig = await oidc();
+console.log('OIDC Config:', oidcConfig);
 
 const router = express.Router();
+
+// Health check endpoint
+router.get('/health', (req, res) => res.json({ ok: true }));
 
 // ====== API PROTECTED ======
 router.get(config.mePath, authGuard, (req, res) => res.json({ ...req.user }));
@@ -191,6 +195,7 @@ app.use((err, req, res, next) => {
 });
 
 const port = Number(process.env.PORT || 7000);
+console.log('Starting server on port', port);
 app.listen(port, () => {
   console.log(`App on ${config.host}:${port}`);
 });

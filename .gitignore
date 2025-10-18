@@ -5,3 +5,5 @@ mse/
 mse-dev/
 mse-test/
 logs/
+.env
+data/
