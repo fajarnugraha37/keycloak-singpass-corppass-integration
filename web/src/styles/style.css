@@ -7,20 +7,33 @@
     --font-family-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     --font-family-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
     
-    /* Colors - Light Mode */
-    --color-bg-primary: #ffffff;
-    --color-bg-secondary: #f8fafc;
-    --color-bg-tertiary: #f1f5f9;
-    --color-text-primary: #0f172a;
-    --color-text-secondary: #475569;
-    --color-text-tertiary: #64748b;
-    --color-border: #e2e8f0;
-    --color-border-light: #f1f5f9;
+    /* Singapore Government Color System - Light Mode */
+    --sg-navy: #1e3a8a;
+    --sg-navy-light: #3b82f6;
+    --sg-navy-dark: #1e40af;
+    --sg-red: #dc2626;
+    --sg-red-light: #f87171;
+    --sg-white: #ffffff;
+    --sg-gray-50: #f9fafb;
+    --sg-gray-100: #f3f4f6;
+    --sg-gray-200: #e5e7eb;
+    --sg-gray-600: #4b5563;
+    --sg-gray-800: #1f2937;
     
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    --gradient-accent: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    /* Unified Color Variables */
+    --color-bg-primary: var(--sg-white);
+    --color-bg-secondary: var(--sg-gray-50);
+    --color-bg-tertiary: var(--sg-gray-100);
+    --color-text-primary: var(--sg-gray-800);
+    --color-text-secondary: var(--sg-gray-600);
+    --color-text-tertiary: var(--sg-gray-600);
+    --color-border: var(--sg-gray-200);
+    --color-border-light: var(--sg-gray-100);
+    
+    /* Singapore Government Gradients */
+    --gradient-primary: linear-gradient(135deg, var(--sg-navy) 0%, var(--sg-navy-dark) 100%);
+    --gradient-secondary: linear-gradient(135deg, var(--sg-red) 0%, #b91c1c 100%);
+    --gradient-accent: linear-gradient(135deg, var(--sg-navy-light) 0%, var(--sg-navy) 100%);
     
     /* Shadows */
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -40,18 +53,32 @@
     -moz-osx-font-smoothing: grayscale;
   }
   
-  /* Dark mode colors */
+  /* Dark mode colors - Singapore Government Theme */
   .dark {
-    --color-bg-primary: #0f172a;
-    --color-bg-secondary: #1e293b;
-    --color-bg-tertiary: #334155;
-    --color-text-primary: #f8fafc;
-    --color-text-secondary: #cbd5e1;
-    --color-text-tertiary: #94a3b8;
-    --color-border: #334155;
-    --color-border-light: #475569;
+    --color-bg-primary: #1f2937;
+    --color-bg-secondary: #111827;
+    --color-bg-tertiary: #374151;
+    --color-text-primary: #f9fafb;
+    --color-text-secondary: #d1d5db;
+    --color-text-tertiary: #9ca3af;
+    --color-border: #374151;
+    --color-border-light: #4b5563;
     
     color-scheme: dark;
+  }
+
+  .dark .service-card {
+    background: var(--color-bg-primary);
+    border-color: var(--color-border);
+  }
+
+  .dark .service-card:hover {
+    background: var(--color-bg-tertiary);
+    border-color: var(--sg-navy-light);
+  }
+
+  .dark .page-title {
+    color: var(--color-text-primary);
   }
 
   html {
@@ -170,15 +197,16 @@
       cursor: not-allowed;
     }
     
-    /* Primary button variant */
+    /* Primary button variant - Singapore Government Style */
     &.btn-primary {
-      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      background: var(--gradient-primary);
       color: white;
       box-shadow: var(--shadow-md);
       
       &:hover:not(:disabled) {
         transform: translateY(-2px);
         box-shadow: var(--shadow-lg);
+        background: var(--gradient-accent);
       }
       
       &:active {
@@ -399,5 +427,728 @@
       opacity: 1;
       transform: translateY(0);
     }
+  }
+
+  /* Singapore Government Specific Components */
+  
+  /* Service Cards */
+  .service-card {
+    background: var(--color-bg-primary);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-md);
+  }
+  
+  .service-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--sg-navy-light);
+  }
+
+  /* Service Buttons */
+  .service-btn {
+    background: var(--gradient-primary);
+    color: white;
+    border: 1px solid var(--sg-navy-dark);
+    border-radius: 6px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+  }
+
+  .service-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    background: var(--gradient-accent);
+    color: white;
+    text-decoration: none;
+  }
+
+  .service-btn.orange {
+    background: var(--gradient-secondary);
+    border-color: #b91c1c;
+  }
+
+  .service-btn.orange:hover {
+    background: linear-gradient(135deg, var(--sg-red-light) 0%, var(--sg-red) 100%);
+  }
+
+  /* Page Title */
+  .page-title {
+    color: var(--color-text-primary);
+    position: relative;
+    display: inline-block;
+  }
+
+  .page-title::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--sg-navy);
+    border-radius: 2px;
+    animation: titleUnderline 1s ease-out 0.3s forwards;
+    transform: scaleX(0);
+  }
+
+  @keyframes titleUnderline {
+    to { transform: scaleX(1); }
+  }
+
+  /* Enhanced 3D Resource Cards with Scroll Effects */
+  .resource-card {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .resource-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(30, 58, 138, 0.1), transparent);
+    transition: left 0.5s ease-out;
+  }
+
+  .resource-card:hover {
+    transform: translateY(-8px) rotateX(10deg) rotateY(-5deg) scale(1.05);
+    background-color: var(--color-bg-tertiary);
+    box-shadow: 0 20px 40px rgba(30, 58, 138, 0.15), 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .resource-card:hover::before {
+    left: 100%;
+  }
+
+  .resource-card:active {
+    transform: translateY(-4px) rotateX(5deg) scale(1.02);
+    transition: all 0.1s ease-out;
+  }
+
+  /* 3D Resource Icon Effects */
+  .resource-icon {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+    position: relative;
+  }
+
+  .resource-card:hover .resource-icon {
+    transform: rotateY(15deg) rotateX(-10deg) scale(1.1);
+    animation: iconPulse 0.6s ease-out;
+  }
+
+  @keyframes iconPulse {
+    0%, 100% { transform: rotateY(15deg) rotateX(-10deg) scale(1.1); }
+    50% { transform: rotateY(15deg) rotateX(-10deg) scale(1.2); }
+  }
+
+  /* Professional Body Styling */
+  body {
+    background: var(--color-bg-secondary);
+    font-family: var(--font-family-sans);
+  }
+
+  /* Modern Header with Glassmorphism */
+  header {
+    backdrop-filter: blur(20px);
+    background: rgba(30, 58, 138, 0.95);
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: headerShimmer 8s linear infinite;
+    z-index: 1;
+  }
+
+  .header-content {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Fix main container overlay issue */
+  .min-h-screen {
+    position: relative !important;
+    z-index: 1 !important;
+  }
+
+  /* Prevent any elements from overlaying the header */
+  body > div:first-child {
+    position: relative !important;
+    z-index: 1 !important;
+  }
+
+  /* Ensure header stays above all content */
+  header.sticky {
+    z-index: 9999 !important;
+    position: sticky !important;
+    top: 0 !important;
+  }
+
+  /* Header Styling for Proper Contrast and Z-Index */
+  header {
+    background: linear-gradient(135deg, var(--sg-gray-800), #111827) !important;
+    color: white !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 9999 !important;
+  }
+
+  header * {
+    color: white !important;
+  }
+
+  header .bg-slate-900 {
+    background: linear-gradient(135deg, var(--sg-gray-800), #111827) !important;
+    color: white !important;
+  }
+
+  header .text-white {
+    color: white !important;
+  }
+
+  header .text-white\/80 {
+    color: rgba(255, 255, 255, 0.8) !important;
+  }
+
+  header .text-white\/90 {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  header .text-white\/60 {
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+
+  header a, 
+  header span,
+  header p,
+  header h1,
+  header h2,
+  header h3 {
+    color: white !important;
+  }
+
+  /* Enhanced Navigation with Better Contrast - Main Header Navigation Only */
+  header nav a {
+    position: relative !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    padding: 0.75rem 1.5rem !important;
+    border-radius: 8px !important;
+    overflow: visible !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+    text-decoration: none !important;
+    font-weight: 500 !important;
+    background: transparent !important;
+    border: 1px solid transparent !important;
+    cursor: pointer !important;
+    display: inline-block !important;
+    pointer-events: auto !important;
+    z-index: 10000 !important;
+    min-height: 44px !important;
+    line-height: 1.2 !important;
+  }
+
+  /* Force visibility and proper positioning for navigation */
+  header nav {
+    display: flex !important;
+    align-items: center !important;
+    gap: 1.5rem !important;
+    position: relative !important;
+    z-index: 10000 !important;
+    pointer-events: auto !important;
+  }
+
+  header .hidden {
+    display: none !important;
+  }
+
+  header .md\:flex {
+    display: flex !important;
+  }
+
+  /* Ensure navigation container has proper dimensions */
+  header .max-w-7xl {
+    position: relative !important;
+    z-index: 60 !important;
+  }
+
+  /* Override Tailwind classes for navigation links */
+  header nav a.text-white\/80 {
+    color: rgba(255, 255, 255, 0.8) !important;
+  }
+
+  header nav a.hover\:text-white:hover {
+    color: white !important;
+  }
+
+  header nav a.transition-colors {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+
+  /* Ensure navigation is always visible on desktop */
+  @media (min-width: 768px) {
+    header nav {
+      display: flex !important;
+    }
+    
+    header .md\:flex {
+      display: flex !important;
+    }
+  }
+
+  header nav a::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--sg-red), var(--sg-red-light));
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(-50%);
+    border-radius: 2px;
+  }
+
+  header nav a::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    opacity: 0;
+    transition: all 0.3s ease-out;
+    border-radius: 8px;
+    z-index: -1;
+  }
+
+  header nav a:hover::before {
+    width: 80%;
+  }
+
+  header nav a:hover::after {
+    opacity: 1 !important;
+  }
+
+  header nav a:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    transform: translateY(-3px) scale(1.05) !important;
+    color: white !important;
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  header nav a:active {
+    transform: translateY(-1px) scale(1.02) !important;
+  }
+
+  /* Fix for specific Tailwind classes in navigation */
+  header nav a.text-sm {
+    font-size: 0.875rem !important;
+  }
+
+  header nav a.font-medium {
+    font-weight: 500 !important;
+  }
+
+  /* Override any conflicting styles */
+  header nav a[href] {
+    color: rgba(255, 255, 255, 0.9) !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+  }
+
+  header nav a[href]:hover {
+    color: white !important;
+  }
+
+  /* Mobile navigation adjustments */
+  @media (max-width: 768px) {
+    header nav a {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+    
+    header nav a:hover {
+      transform: translateY(-2px) scale(1.02);
+    }
+  }
+
+  /* Breadcrumb Navigation - Keep Simple */
+  .breadcrumb nav a {
+    color: var(--sg-navy) !important;
+    padding: 0.25rem 0;
+    transition: color 0.2s ease;
+    font-weight: normal;
+  }
+
+  .breadcrumb nav a:hover {
+    color: var(--sg-navy-dark) !important;
+    text-decoration: underline;
+  }
+
+  /* Logo Animation */
+  .logo-container {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .logo-container:hover {
+    transform: scale(1.05) rotate(2deg);
+  }
+
+  /* Top Bar Enhancement */
+  .bg-red-600 {
+    background: linear-gradient(90deg, var(--sg-red), #b91c1c);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bg-red-600::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, 
+      rgba(255, 255, 255, 0.1) 0%, 
+      transparent 50%, 
+      rgba(255, 255, 255, 0.1) 100%);
+    animation: topBarFlow 6s ease-in-out infinite;
+  }
+}
+
+@layer utilities {
+  /* Singapore Government Utility Classes */
+  
+  /* Override Tailwind colors with government theme */
+  .bg-primary { background-color: var(--sg-navy) !important; }
+  .bg-secondary { background-color: var(--sg-red) !important; }
+  .bg-accent { background-color: var(--sg-navy-light) !important; }
+  
+  .text-primary { color: var(--sg-navy) !important; }
+  .text-secondary { color: var(--sg-red) !important; }
+  
+  .border-primary { border-color: var(--sg-navy) !important; }
+  .border-secondary { border-color: var(--sg-red) !important; }
+  
+  /* Government Button Overrides */
+  .bg-blue-600 { background-color: var(--sg-navy) !important; }
+  .bg-blue-700 { background-color: var(--sg-navy-dark) !important; }
+  .hover\:bg-blue-700:hover { background-color: var(--sg-navy-light) !important; }
+  
+  .bg-orange-600 { background-color: var(--sg-red) !important; }
+  .bg-orange-700 { background-color: #b91c1c !important; }
+  .hover\:bg-orange-700:hover { background-color: var(--sg-red-light) !important; }
+  
+  /* Government Card Header Overrides */
+  .from-orange-500 { --tw-gradient-from: var(--sg-red) !important; }
+  .to-orange-600 { --tw-gradient-to: var(--sg-red) !important; }
+  .from-blue-500 { --tw-gradient-from: var(--sg-navy) !important; }
+  .to-blue-600 { --tw-gradient-to: var(--sg-navy) !important; }
+  
+  /* Professional hover effects */
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Government shadows */
+  .shadow-gov {
+    box-shadow: 0 4px 6px -1px rgba(30, 58, 138, 0.1), 0 2px 4px -1px rgba(30, 58, 138, 0.06);
+  }
+
+  /* Modern Footer with 3D Effects */
+  footer {
+    position: relative;
+    background: linear-gradient(135deg, var(--sg-gray-800), #111827);
+    overflow: hidden;
+  }
+
+  footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, 
+      transparent, 
+      var(--sg-navy), 
+      var(--sg-navy-light), 
+      var(--sg-red), 
+      transparent);
+    animation: footerGlow 8s linear infinite;
+  }
+
+  .footer-content {
+    position: relative;
+    z-index: 2;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.8s ease-out 0.5s forwards;
+  }
+
+  .footer-links a {
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 0.5rem 0;
+    display: inline-block;
+  }
+
+  .footer-links a::before {
+    content: '→';
+    position: absolute;
+    left: -20px;
+    opacity: 0;
+    transition: all 0.3s ease-out;
+    color: var(--sg-navy-light);
+  }
+
+  .footer-links a:hover {
+    padding-left: 20px;
+    color: var(--sg-navy-light);
+    transform: translateX(5px);
+  }
+
+  .footer-links a:hover::before {
+    left: 0;
+    opacity: 1;
+  }
+
+  /* Scroll-based 3D Animations */
+  .scroll-animate {
+    opacity: 0;
+    transform: translateY(50px) rotateX(15deg);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+  }
+
+  .scroll-animate.visible {
+    opacity: 1;
+    transform: translateY(0) rotateX(0deg);
+  }
+
+  .scroll-parallax {
+    transition: transform 0.1s ease-out;
+  }
+
+  /* Enhanced Keyframe Animations */
+  @keyframes headerShimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  @keyframes topBarFlow {
+    0%, 100% { transform: translateX(-100%) skew(-45deg); }
+    50% { transform: translateX(100%) skew(-45deg); }
+  }
+
+  @keyframes footerGlow {
+    0% { 
+      background: linear-gradient(90deg, transparent, var(--sg-navy), transparent);
+    }
+    33% { 
+      background: linear-gradient(90deg, transparent, var(--sg-navy-light), transparent);
+    }
+    66% { 
+      background: linear-gradient(90deg, transparent, var(--sg-red), transparent);
+    }
+    100% { 
+      background: linear-gradient(90deg, transparent, var(--sg-navy), transparent);
+    }
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* 3D Card Grid System */
+  .resources-grid {
+    perspective: 1500px;
+    transform-style: preserve-3d;
+  }
+
+  .resources-grid .resource-card:nth-child(1) { animation-delay: 0.1s; }
+  .resources-grid .resource-card:nth-child(2) { animation-delay: 0.2s; }
+  .resources-grid .resource-card:nth-child(3) { animation-delay: 0.3s; }
+  .resources-grid .resource-card:nth-child(4) { animation-delay: 0.4s; }
+
+  @keyframes subtleFloat {
+    0%, 100% { 
+      transform: translateY(0px) rotateX(0deg);
+    }
+    33% { 
+      transform: translateY(-5px) rotateX(1deg);
+    }
+    66% { 
+      transform: translateY(-3px) rotateX(-1deg);
+    }
+  }
+
+  /* Enhanced Service Card 3D Effects */
+  .service-card {
+    transform-style: preserve-3d;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .service-card:hover {
+    transform: translateY(-8px) rotateX(5deg) rotateY(2deg) scale(1.02);
+    box-shadow: 0 25px 50px rgba(30, 58, 138, 0.15), 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  /* 3D Button Press Effect */
+  .service-btn:active {
+    transform: translateY(1px) scale(0.98);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* Modern Glassmorphism Card Backdrop */
+  .service-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+    z-index: -1;
+    border-radius: 8px;
+  }
+
+  .service-card:hover::before {
+    opacity: 1;
+  }
+}
+
+/* Enhanced 3D Animation Keyframes */
+@keyframes ripple {
+  from {
+    transform: scale(0);
+    opacity: 1;
+  }
+  to {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes enhancedRipple {
+  0% {
+    transform: scale(0) rotateZ(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1) rotateZ(180deg);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2.5) rotateZ(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 
+      0 0 20px rgba(30, 58, 138, 0.3),
+      0 0 40px rgba(59, 130, 246, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  50% {
+    box-shadow: 
+      0 0 30px rgba(30, 58, 138, 0.5),
+      0 0 60px rgba(59, 130, 246, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+}
+
+@keyframes cardFloat {
+  0%, 100% {
+    transform: translateY(0px) rotateX(0deg);
+  }
+  50% {
+    transform: translateY(-5px) rotateX(1deg);
+  }
+}
+
+@keyframes magneticPull {
+  0% {
+    transform: scale(1) translateZ(0px);
+  }
+  100% {
+    transform: scale(1.05) translateZ(10px);
+  }
+}
+
+/* Responsive Design Enhancements */
+@media (max-width: 768px) {
+  .service-card {
+    margin-bottom: 1rem;
+  }
+  
+  .service-card h3 {
+    font-size: 1rem;
+  }
+  
+  .service-card p {
+    font-size: 0.875rem;
+  }
+  
+  .service-card .btn {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+  }
+  
+  /* Reduce 3D effects on mobile for performance */
+  .resource-card {
+    transform: none !important;
+    transition: transform 0.3s ease !important;
+  }
+  
+  .resource-card:hover {
+    transform: translateY(-5px) !important;
+  }
+  
+  /* Simplify service card animations on mobile */
+  .service-card:hover {
+    transform: translateY(-5px) scale(1.01) !important;
+  }
+  
+  /* Disable complex animations for better mobile performance */
+  .service-card::before,
+  .resource-card::before {
+    display: none;
   }
 }

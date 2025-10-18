@@ -36,12 +36,38 @@ export function saveIdle(key, value) {
 
 export function hideLoading() {
     const el = document.getElementById('loading-overlay');
-    if (el) el.classList.add('hidden');
+    if (el) {
+        el.classList.remove('active');
+        setTimeout(() => {
+            el.classList.add('hidden');
+        }, 300);
+    }
 }
 
-export function showLoading() {
+export function showLoading(message = '') {
     const el = document.getElementById('loading-overlay');
-    if (el) el.classList.remove('hidden');
+    if (el) {
+        // Update message if provided
+        if (message) {
+            const messageEl = el.querySelector('.loading-message-3d');
+            if (messageEl) {
+                messageEl.textContent = message;
+            }
+        }
+        
+        // Show with enhanced effects
+        el.classList.remove('hidden');
+        requestAnimationFrame(() => {
+            el.classList.add('active');
+        });
+        
+        // Trigger particle effects if available
+        if (typeof window.InteractiveEffects !== 'undefined') {
+            setTimeout(() => {
+                window.InteractiveEffects.enhanceLoadingOverlay();
+            }, 100);
+        }
+    }
 }
 
 export async function callApi(path, token, method = "GET") {
