@@ -705,7 +705,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const effects = [
             'scroll-fade-in', 'scroll-slide-left', 'scroll-slide-right', 'scroll-scale-up',
             'scroll-3d-flip', 'scroll-3d-rotate', 'scroll-3d-bounce', 'scroll-3d-fold',
-            'scroll-3d-depth', 'scroll-3d-parallax'
+            'scroll-3d-depth', 'scroll-3d-parallax', 'scroll-3d-perspective'
         ];
         
         console.log('🎭 Testing 3D Scroll Effects...');
@@ -714,6 +714,34 @@ document.addEventListener('DOMContentLoaded', () => {
             console.log(`${effect}: ${elements.length} elements found`);
         });
         console.log('💡 Scroll down to see the 3D effects in action!');
+    };
+    
+    // Test function for true 3D perspective scaling
+    window.testPerspectiveScaling = function() {
+        console.log('🌟 Testing True 3D Perspective Scaling...');
+        
+        const perspectiveElements = document.querySelectorAll('.scroll-3d-perspective');
+        console.log(`Found ${perspectiveElements.length} perspective elements`);
+        
+        perspectiveElements.forEach((el, i) => {
+            const rect = el.getBoundingClientRect();
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            const elementCenterX = rect.left + rect.width / 2;
+            const elementCenterY = rect.top + rect.height / 2;
+            
+            console.log(`Element ${i + 1}:`, {
+                position: { x: Math.round(elementCenterX), y: Math.round(elementCenterY) },
+                distanceFromCenter: Math.round(Math.sqrt(
+                    Math.pow(elementCenterX - centerX, 2) + 
+                    Math.pow(elementCenterY - centerY, 2)
+                )),
+                currentTransform: el.style.transform || 'none'
+            });
+        });
+        
+        console.log('✅ Perspective scaling analysis completed');
+        console.log('💡 Scroll or resize to see real-time perspective changes!');
     };
     
     // Initialize authentication

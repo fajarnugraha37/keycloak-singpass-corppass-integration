@@ -1022,17 +1022,101 @@ body {
   display: none !important;
 }
 
-/* Console Section */
+/* Modern Retro Console Section */
 .console-section {
-  background: var(--cpds-white);
-  border: 1px solid var(--cpds-gray-200);
-  border-radius: var(--cpds-radius-xl);
-  box-shadow: var(--cpds-shadow-lg);
+  background: 
+    radial-gradient(ellipse at center, rgba(0, 255, 255, 0.15) 0%, transparent 70%),
+    linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 25%, #16213e 50%, #1a1a2e 75%, #0a0a1a 100%);
+  border: 3px solid #00ffff;
+  border-radius: 20px;
+  box-shadow: 
+    0 0 50px rgba(0, 255, 255, 0.5),
+    0 0 100px rgba(0, 255, 255, 0.3),
+    inset 0 0 40px rgba(0, 255, 255, 0.1),
+    inset 0 0 80px rgba(0, 50, 50, 0.4);
   margin-bottom: var(--cpds-space-12);
+  position: relative;
+  overflow: hidden;
+}
+
+/* CRT Screen Scanlines Effect */
+.console-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 255, 255, 0.08) 2px,
+      rgba(0, 255, 255, 0.08) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 100px,
+      rgba(0, 255, 255, 0.03) 100px,
+      rgba(0, 255, 255, 0.03) 101px
+    );
+  pointer-events: none;
+  z-index: 1;
+  animation: crt-flicker 0.15s infinite linear alternate;
+}
+
+/* Moving Terminal Scan Line */
+.console-section::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(0, 255, 255, 0.8) 20%, 
+    rgba(255, 255, 255, 1) 50%, 
+    rgba(0, 255, 255, 0.8) 80%, 
+    transparent
+  );
+  box-shadow: 
+    0 0 20px rgba(0, 255, 255, 0.9),
+    0 0 40px rgba(0, 255, 255, 0.6);
+  animation: terminal-scan 4s linear infinite;
+  z-index: 2;
+}
+
+@keyframes terminal-scan {
+  0% { 
+    transform: translateY(-100%); 
+    opacity: 0; 
+  }
+  5% { 
+    opacity: 0.8; 
+  }
+  95% { 
+    opacity: 0.8; 
+  }
+  100% { 
+    transform: translateY(calc(100vh + 50px)); 
+    opacity: 0; 
+  }
+}
+
+@keyframes crt-flicker {
+  0% { opacity: 1; }
+  98% { opacity: 1; }
+  99% { opacity: 0.98; }
+  100% { opacity: 1; }
 }
 
 .console-wrapper {
   padding: var(--cpds-space-6);
+  background: linear-gradient(145deg, rgba(15, 15, 35, 0.9) 0%, rgba(30, 30, 62, 0.7) 100%);
+  border-radius: var(--cpds-radius-lg);
 }
 
 .console-header {
@@ -1041,7 +1125,8 @@ body {
   align-items: center;
   margin-bottom: var(--cpds-space-6);
   padding-bottom: var(--cpds-space-4);
-  border-bottom: 2px solid var(--cpds-gray-100);
+  border-bottom: 2px solid rgba(32, 80, 152, 0.3);
+  background: linear-gradient(90deg, transparent 0%, rgba(0, 255, 255, 0.1) 50%, transparent 100%);
 }
 
 .console-title {
@@ -1050,7 +1135,9 @@ body {
   gap: var(--cpds-space-3);
   font-size: 1.25rem;
   font-weight: 600;
-  color: var(--cpds-gray-900);
+  color: #00ffff;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+  font-family: 'Courier New', monospace;
 }
 
 .console-icon {
@@ -1116,30 +1203,84 @@ body {
 }
 
 .console-output {
-  background: var(--cpds-gray-900);
-  color: var(--cpds-gray-100);
-  font-family: var(--cpds-font-mono);
+  background: linear-gradient(145deg, #000812 0%, #001122 50%, #002244 100%);
+  color: #00ff41;
+  font-family: 'Courier New', monospace;
   font-size: 0.875rem;
   padding: var(--cpds-space-4);
-  min-height: 200px;
+  min-height: 250px;
   max-height: 400px;
   overflow-y: auto;
-  line-height: 1.5;
+  line-height: 1.6;
   margin: 0;
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  border-radius: var(--cpds-radius-lg);
+  position: relative;
+  text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
+}
+
+.console-output::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 2px,
+      rgba(0, 255, 65, 0.03) 2px,
+      rgba(0, 255, 65, 0.03) 4px
+    );
+  pointer-events: none;
+  animation: scanlines 2s linear infinite;
+}
+
+@keyframes scanlines {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(4px); }
 }
 
 .console-welcome {
-  color: var(--cpds-primary-light);
+  color: #ff6b6b;
   font-weight: 600;
+  text-shadow: 0 0 8px rgba(255, 107, 107, 0.5);
+  animation: console-pulse 2s ease-in-out infinite;
 }
 
 .console-info {
-  color: var(--cpds-success);
+  color: #4ecdc4;
+  text-shadow: 0 0 6px rgba(78, 205, 196, 0.4);
 }
 
 .console-timestamp {
-  color: var(--cpds-gray-400);
+  color: #ffd93d;
   font-size: 0.8125rem;
+  text-shadow: 0 0 4px rgba(255, 217, 61, 0.3);
+}
+
+.console-log-line {
+  margin: 0.25rem 0;
+  opacity: 0;
+  animation: console-line-appear 0.5s ease-out forwards;
+}
+
+@keyframes console-pulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+@keyframes console-line-appear {
+  0% {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 /* Footer */
@@ -1557,6 +1698,17 @@ body {
   }
 }
 /* ===== ADVANCED 3D SCROLL EFFECTS ===== */
+
+/* True 3D Perspective Scaling */
+.scroll-3d-perspective {
+  transform-style: preserve-3d;
+  transform-origin: center center;
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  position: relative;
+  z-index: 1;
+}
 
 /* Enhanced 3D Scroll-triggered animations */
 .scroll-fade-in {

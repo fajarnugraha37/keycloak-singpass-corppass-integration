@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/assets/images/sso-icon-B3TNf_Jq-mgwvku2w.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="CPDS - Central Personnel Data System | Modern SaaS Platform" />
+    <title>CPDS - Personnel Data System</title>
+    
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <script type="module" crossorigin src="/assets/modulepreload-polyfill-B5Qt9EMX-mgwvku52.js"></script>
+    <script type="module" crossorigin src="/assets/shared-BObi8OaW-mgwvku50.js"></script>
+    <script type="module" crossorigin src="/assets/htmx.esm-hCWdS4WT-mgwvku55.js"></script>
+    <script type="module" crossorigin src="/assets/cpds-CPi4Oh_9-mgwvku5a.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/styles/cpds-Bx0dou17-mgwvku6r.css">
+    <link rel="stylesheet" crossorigin href="/assets/styles/common-kkToMlIO-mgwvku76.css">
+  </head>
+  <body>
+
+    <!-- App Container with Modern SaaS Layout -->
+    <div class="min-h-screen cpds-saas-bg">
+
+      <!-- Singapore Government Top Bar -->
+      <div class="gov-bar">
+        <div class="container">
+          <div class="gov-bar-content">
+            <span class="gov-text">A Singapore Government Agency Portal</span>
+            <div class="gov-actions">
+              <a href="#" class="gov-link">Contact</a>
+              <span class="gov-divider">|</span>
+              <a href="#" class="gov-link">Feedback</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modern Navigation Header -->
+      <header class="cpds-modern-header">
+        <div class="header-background">
+          <div class="header-pattern"></div>
+        </div>
+        <div class="container header-container">
+          <div class="nav-brand-modern">
+            <div class="logo-container-modern">
+              <div class="logo-3d">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"/>
+                </svg>
+              </div>
+              <div class="brand-text-modern">
+                <h1 class="brand-title">CPDS</h1>
+                <span class="brand-subtitle">Central Personnel Data System</span>
+              </div>
+            </div>
+          </div>
+          
+          <nav class="nav-menu-modern">
+            <a href="#overview" class="nav-link-modern">Overview</a>
+            <a href="#features" class="nav-link-modern">Features</a>
+            <a href="#console" class="nav-link-modern">Console</a>
+            <div class="nav-actions">
+              <!-- Auth Status Indicator with 3D Effect -->
+              <div id="auth-status-3d" class="status-indicator-3d status-offline">
+                <div class="status-pulse"></div>
+                <span class="status-text">Not Authenticated</span>
+              </div>
+              
+              <!-- Theme Toggle -->
+              <button id="theme-toggle-3d" class="theme-btn-3d">
+                <svg class="theme-icon" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                </svg>
+              </button>
+              
+              <!-- Back to Home -->
+              <a href="/" class="back-btn-3d" title="Back to Home">
+                <svg fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M9.707 14.707a1 1 0 01-1.414 0L3.586 10l4.707-4.707a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd"></path>
+                </svg>
+              </a>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <!-- Enhanced Loading Overlay with 3D Effects -->
+      <div id="loading-overlay" class="loading-overlay-3d">
+        <div class="loading-content-3d">
+          <div class="loading-icon-3d">
+            <svg class="loading-spinner" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"/>
+            </svg>
+          </div>
+          <div class="loading-title-3d">Initializing CPDS</div>
+          <div class="loading-message-3d">Central Personnel Data System</div>
+          <div class="loader-3d">
+            <div class="bar-3d"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Authentication Flow Card -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 p-8 mb-8">
+          <div class="mb-6">
+            <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Authentication Flow</h2>
+            <p class="text-slate-600 dark:text-slate-300">
+              Federated authentication through <code>IDS provider</code> that brokers tokens with Keycloak, demonstrating Authorization Code + PKCE flow and token isolation patterns.
+            </p>
+          </div>
+          
+          <!-- Action Buttons -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <button id="login" class="btn-primary cpds-primary hidden">
+              <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+              Login
+            </button>
+            
+            <button id="logout" class="btn-danger bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 hidden">
+              <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd"></path>
+              </svg>
+              Logout
+            </button>
+            
+            <button id="userinfo" class="btn-secondary cpds-secondary hidden">
+              <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd"></path>
+              </svg>
+              User Info
+            </button>
+            
+            <button id="callapi" class="btn-secondary cpds-secondary hidden">
+              <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0m5 0m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0m5 0m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+              </svg>
+              Call API
+            </button>
+            
+            <button id="switch" class="btn-primary bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 shadow-lg shadow-orange-200 dark:shadow-orange-900/30 btn-smooth">
+              <svg class="w-4 h-4 mr-2 transition-transform group-hover:rotate-180" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"></path>
+              </svg>
+              Switch to ACEAS
+            </button>
+          </div>
+        </div>
+
+        <!-- Information Cards Grid -->
+        <div class="grid lg:grid-cols-2 gap-8 mb-8">
+          <!-- Authentication Details -->
+          <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-blue-200 dark:border-slate-700 p-6">
+            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center">
+              <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+              Authentication Details
+            </h3>
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-slate-600 dark:text-slate-300">Provider:</span>
+                <span class="font-medium text-blue-700 dark:text-blue-300">IDS (Node OIDC)</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-600 dark:text-slate-300">Backend:</span>
+                <span class="font-medium text-blue-700 dark:text-blue-300">Keycloak Federated</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-600 dark:text-slate-300">Flow:</span>
+                <span class="font-medium text-blue-700 dark:text-blue-300">Authorization Code + PKCE</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-600 dark:text-slate-300">Library:</span>
+                <span class="font-medium text-blue-700 dark:text-blue-300">oidc-client-ts</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-600 dark:text-slate-300">Token Isolation:</span>
+                <span class="font-medium text-blue-700 dark:text-blue-300">Enabled</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Features -->
+          <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-blue-200 dark:border-slate-700 p-6">
+            <h3 class="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center">
+              <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+              Features
+            </h3>
+            <div class="space-y-3">
+              <div class="flex items-center space-x-3">
+                <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-slate-700 dark:text-slate-300">Token brokering via IDS</span>
+              </div>
+              <div class="flex items-center space-x-3">
+                <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-slate-700 dark:text-slate-300">Application-specific tokens</span>
+              </div>
+              <div class="flex items-center space-x-3">
+                <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-slate-700 dark:text-slate-300">Cross-app SSO</span>
+              </div>
+              <div class="flex items-center space-x-3">
+                <svg class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                </svg>
+                <span class="text-slate-700 dark:text-slate-300">Silent token renewal</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Output Console -->
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+          <div class="bg-slate-50 dark:bg-slate-700 px-6 py-4 border-b border-slate-200 dark:border-slate-600">
+            <div class="flex items-center justify-between">
+              <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Console Output</h3>
+              <button id="clear-console" class="text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors">
+                Clear
+              </button>
+            </div>
+          </div>
+          <div class="p-6">
+            <pre id="out" class="bg-slate-900 text-green-400 p-4 rounded-lg overflow-auto max-h-96 text-sm font-mono">Welcome to SDPC SSO Demo
+Waiting for user interaction...</pre>
+          </div>
+        </div>
+      </main>
+    </div>
+
+  </body>
+</html>

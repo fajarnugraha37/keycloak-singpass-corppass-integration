@@ -1,2 +1,0 @@
-import"../modulepreload-polyfill-B5Qt9EMX-mgwkkpee.js";import{o as e}from"../oidc-CttL1XcN-mgwkkpeh.js";import"../vendor-oidc-C7bVSgrn-mgwkkpdz.js";new URLSearchParams(window.location.search)?.get("type")?.toLocaleLowerCase()==="silent"?e.signinSilentCallback().then(()=>{window.location.replace("/aceas/")}):e.signinCallback().then(()=>{window.location.replace("/aceas/")});
-//# sourceMappingURL=callback-OVb4lBq5-mgwkkpdm.js.map

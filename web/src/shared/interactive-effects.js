@@ -37,7 +37,7 @@ class InteractiveEffects {
   }
 
   /**
-   * Initialize scroll-triggered animations
+   * Initialize scroll-triggered animations with true 3D perspective
    */
   initScrollAnimations() {
     const observerOptions = {
@@ -61,6 +61,63 @@ class InteractiveEffects {
     );
     
     animatedElements.forEach(el => observer.observe(el));
+    
+    // Initialize true 3D perspective scaling
+    this.init3DPerspectiveScaling();
+  }
+
+  /**
+   * Initialize true 3D perspective scaling based on viewport center
+   */
+  init3DPerspectiveScaling() {
+    const elements3D = document.querySelectorAll('.scroll-3d-perspective');
+    
+    if (elements3D.length === 0) return;
+
+    const updatePerspective = () => {
+      const viewportCenterX = window.innerWidth / 2;
+      const viewportCenterY = window.innerHeight / 2;
+
+      elements3D.forEach(element => {
+        const rect = element.getBoundingClientRect();
+        const elementCenterX = rect.left + rect.width / 2;
+        const elementCenterY = rect.top + rect.height / 2;
+
+        // Calculate distance from viewport center
+        const deltaX = Math.abs(elementCenterX - viewportCenterX);
+        const deltaY = Math.abs(elementCenterY - viewportCenterY);
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        
+        // Calculate maximum possible distance (corner of viewport)
+        const maxDistance = Math.sqrt(viewportCenterX * viewportCenterX + viewportCenterY * viewportCenterY);
+        
+        // Calculate scale factor (1 = center, 0.5 = edge)
+        const scaleFactor = Math.max(0.5, 1 - (distance / maxDistance) * 0.5);
+        
+        // Calculate rotation based on position relative to center
+        const rotationX = (elementCenterY - viewportCenterY) / viewportCenterY * 15; // max 15deg
+        const rotationY = (elementCenterX - viewportCenterX) / viewportCenterX * 15; // max 15deg
+        
+        // Apply the transform
+        element.style.transform = `
+          perspective(1000px)
+          scale3d(${scaleFactor}, ${scaleFactor}, 1)
+          rotateX(${-rotationX}deg)
+          rotateY(${rotationY}deg)
+          translateZ(${(1 - scaleFactor) * -100}px)
+        `;
+        
+        // Adjust opacity based on scale
+        element.style.opacity = 0.6 + (scaleFactor * 0.4);
+      });
+    };
+
+    // Update on scroll and resize
+    window.addEventListener('scroll', updatePerspective, { passive: true });
+    window.addEventListener('resize', updatePerspective, { passive: true });
+    
+    // Initial update
+    updatePerspective();
   }
 
   /**
