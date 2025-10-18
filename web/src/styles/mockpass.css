@@ -814,30 +814,35 @@ body {
 .endpoints-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
+    gap: 3rem;
     perspective: 2500px;
     transform-style: preserve-3d;
+    isolation: isolate;
+    justify-items: center;
 }
 
 .endpoint-card {
     background: white;
     border-radius: 16px;
     padding: 2rem;
+    margin: 0;
     box-shadow: var(--shadow-md);
     transition: all var(--transition-normal);
     border-left: 4px solid transparent;
     position: relative;
-    overflow: visible;
+    overflow: hidden;
     transform: translateY(30px) rotateX(10deg);
     opacity: 0;
     transform-style: preserve-3d;
+    contain: layout style;
+    isolation: isolate;
 }
 
 .endpoint-card::before {
     content: '';
     position: absolute;
     top: 0;
-    left: -100%;
+    left: -120%;
     width: 100%;
     height: 100%;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
@@ -848,16 +853,17 @@ body {
 .endpoint-card::after {
     content: '';
     position: absolute;
-    top: -15px;
-    left: -15px;
-    right: -15px;
-    bottom: -15px;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
     background: inherit;
-    border-radius: 26px;
+    border-radius: 14px;
     z-index: -2;
-    filter: blur(25px);
+    filter: blur(15px);
     opacity: 0;
     transition: opacity var(--transition-normal);
+    pointer-events: none;
 }
 
 .endpoint-card:hover::before {
@@ -876,17 +882,14 @@ body {
 
 .endpoint-card:nth-child(1).animate {
     transition-delay: 0.1s;
-    animation: flipIn3D 0.8s ease-out 0.1s both;
 }
 
 .endpoint-card:nth-child(2).animate {
     transition-delay: 0.2s;
-    animation: flipIn3D 0.8s ease-out 0.2s both;
 }
 
 .endpoint-card:nth-child(3).animate {
     transition-delay: 0.3s;
-    animation: flipIn3D 0.8s ease-out 0.3s both;
 }
 
 .endpoint-card.primary {
@@ -902,10 +905,23 @@ body {
 }
 
 .endpoint-card:hover {
-    transform: translateY(-12px) rotateX(-8deg) rotateY(3deg) scale(1.02);
+    transform: translateY(-6px) scale(1.01);
     box-shadow: 
-        0 35px 70px rgba(0, 0, 0, 0.15),
-        0 18px 35px rgba(0, 0, 0, 0.1);
+        0 20px 40px rgba(0, 0, 0, 0.12),
+        0 10px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Prevent hover state propagation for endpoint cards */
+.endpoint-card:not(:hover) {
+    transform: translateY(30px) rotateX(10deg);
+}
+
+.endpoint-card.animate:not(:hover) {
+    transform: translateY(0) rotateX(0);
+}
+
+.endpoint-card:not(:hover) .endpoint-icon {
+    transform: none;
 }
 
 .endpoint-card.primary:hover {
@@ -1079,9 +1095,12 @@ body {
 .docs-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
+    gap: 3rem;
     perspective: 2000px;
     transform-style: preserve-3d;
+    isolation: isolate;
+    justify-items: center;
+    align-items: start;
 }
 
 .doc-card {
@@ -1094,32 +1113,57 @@ body {
     text-align: center;
     transform-style: preserve-3d;
     position: relative;
-    overflow: visible;
+    overflow: hidden;
+    margin: 0;
+    contain: layout style;
+    isolation: isolate;
 }
 
 .doc-card::before {
     content: '';
     position: absolute;
-    top: -10px;
-    left: -10px;
-    right: -10px;
-    bottom: -10px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background: linear-gradient(45deg, 
         rgba(228, 0, 43, 0.1), 
         rgba(0, 102, 204, 0.1),
         rgba(0, 170, 68, 0.1));
-    border-radius: 26px;
+    border-radius: 16px;
     z-index: -1;
     opacity: 0;
     transition: opacity var(--transition-normal);
-    filter: blur(15px);
+    filter: blur(5px);
+    pointer-events: none;
+}
+
+/* Remove the problematic ::after element that was causing offset issues */
+.doc-card {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: var(--shadow-md);
+    transition: all var(--transition-normal);
+    border: 1px solid var(--gray-200);
+    text-align: center;
+    transform-style: preserve-3d;
+    position: relative;
+    overflow: hidden;
+    margin: 0;
+    contain: layout style;
+    isolation: isolate;
 }
 
 .doc-card:hover {
-    transform: translateY(-8px) rotateX(-5deg) rotateY(3deg) scale(1.02);
+    transform: translateY(-4px) rotateX(-2deg) rotateY(1deg) scale(1.01);
     box-shadow: 
-        0 25px 50px rgba(0, 0, 0, 0.15),
-        0 12px 25px rgba(0, 0, 0, 0.1);
+        0 15px 30px rgba(0, 0, 0, 0.1),
+        0 8px 15px rgba(0, 0, 0, 0.08);
+}
+
+.doc-card:hover::before {
+    opacity: 1;
 }
 
 .doc-card:hover::before {
@@ -1147,21 +1191,22 @@ body {
 .doc-icon::before {
     content: '';
     position: absolute;
-    top: -5px;
-    left: -5px;
-    right: -5px;
-    bottom: -5px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background: inherit;
-    border-radius: 21px;
+    border-radius: 16px;
     z-index: -1;
-    filter: blur(10px);
+    filter: blur(5px);
     opacity: 0;
     transition: opacity var(--transition-normal);
+    pointer-events: none;
 }
 
 .doc-card:hover .doc-icon {
-    transform: scale(1.1) rotateY(10deg) rotateX(-10deg) translateZ(20px);
-    animation: spin3D 2s ease-in-out infinite;
+    transform: scale(1.05) rotateY(5deg) rotateX(-5deg) translateZ(10px);
+    animation: pulse3D 1.5s ease-in-out infinite;
 }
 
 .doc-card:hover .doc-icon::before {
@@ -1197,11 +1242,24 @@ body {
     color: var(--secondary-blue-dark);
 }
 
-/* Footer */
+/* Footer with Enhanced Animations */
 .footer {
     background: var(--gray-800);
     color: white;
     padding: 3rem 0 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary-red), var(--secondary-blue), var(--accent-green), transparent);
+    animation: footerGlow 8s linear infinite;
 }
 
 .footer-content {
@@ -1209,6 +1267,15 @@ body {
     grid-template-columns: 1fr 2fr;
     gap: 4rem;
     margin-bottom: 2rem;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 1s ease-out 0.2s forwards;
+}
+
+.footer-brand {
+    opacity: 0;
+    transform: translateX(-20px);
+    animation: slideInLeft 0.8s ease-out 0.4s forwards;
 }
 
 .footer-brand .logo-container {
@@ -1226,28 +1293,74 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.footer-brand .logo::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    transform: scale(0);
+    transition: transform 0.6s ease-out;
+}
+
+.footer-brand .logo:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 8px 25px rgba(228, 0, 43, 0.3);
+}
+
+.footer-brand .logo:hover::before {
+    transform: scale(1);
 }
 
 .footer-brand .logo svg {
     width: 24px;
     height: 24px;
     color: white;
+    transition: transform var(--transition-normal);
+}
+
+.footer-brand .logo:hover svg {
+    transform: rotate(-5deg) scale(1.1);
 }
 
 .footer-brand h3 {
     font-size: 1.25rem;
     font-weight: 700;
     margin: 0;
+    background: linear-gradient(45deg, white, rgba(255, 255, 255, 0.8));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% 200%;
+    animation: shimmerText 3s ease-in-out infinite;
 }
 
 .footer-brand span {
     font-size: 0.875rem;
     opacity: 0.8;
+    transition: opacity var(--transition-normal);
+}
+
+.footer-brand:hover span {
+    opacity: 1;
 }
 
 .footer-brand p {
     opacity: 0.8;
     line-height: 1.6;
+    transition: all var(--transition-normal);
+}
+
+.footer-brand:hover p {
+    opacity: 1;
+    transform: translateY(-2px);
 }
 
 .footer-links {
@@ -1256,10 +1369,44 @@ body {
     gap: 2rem;
 }
 
+.link-group {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.link-group:nth-child(1) {
+    animation: fadeInUp 0.8s ease-out 0.6s forwards;
+}
+
+.link-group:nth-child(2) {
+    animation: fadeInUp 0.8s ease-out 0.8s forwards;
+}
+
+.link-group:nth-child(3) {
+    animation: fadeInUp 0.8s ease-out 1s forwards;
+}
+
 .link-group h4 {
     font-weight: 600;
     margin-bottom: 1rem;
     color: white;
+    position: relative;
+    transition: all var(--transition-normal);
+}
+
+.link-group h4::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary-red), var(--secondary-blue));
+    transition: width var(--transition-normal);
+}
+
+.link-group:hover h4::after {
+    width: 30px;
 }
 
 .link-group a {
@@ -1267,11 +1414,30 @@ body {
     color: rgba(255, 255, 255, 0.8);
     text-decoration: none;
     margin-bottom: 0.5rem;
-    transition: var(--transition-fast);
+    transition: all var(--transition-fast);
+    position: relative;
+    padding-left: 0;
+    overflow: hidden;
+}
+
+.link-group a::before {
+    content: '→';
+    position: absolute;
+    left: -20px;
+    opacity: 0;
+    transition: all var(--transition-fast);
+    color: var(--primary-red);
 }
 
 .link-group a:hover {
     color: white;
+    padding-left: 15px;
+    transform: translateX(5px);
+}
+
+.link-group a:hover::before {
+    left: 0;
+    opacity: 1;
 }
 
 .footer-bottom {
@@ -1280,6 +1446,21 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeInUp 0.8s ease-out 1.2s forwards;
+    position: relative;
+}
+
+.footer-bottom::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--primary-red), var(--secondary-blue), var(--accent-green), transparent);
+    animation: borderFlow 6s linear infinite;
 }
 
 .footer-badges {
@@ -1294,6 +1475,32 @@ body {
     border-radius: 50px;
     font-size: 0.75rem;
     font-weight: 500;
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.footer .badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.6s ease-out;
+}
+
+.footer .badge:hover {
+    background: var(--gray-600);
+    color: white;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.footer .badge:hover::before {
+    left: 100%;
 }
 
 /* Toast Notification */
@@ -1625,6 +1832,51 @@ body {
     }
     66% {
         transform: translateY(-8px) rotateX(-3deg) rotateZ(-1deg);
+    }
+}
+
+/* Footer-specific Animations */
+@keyframes footerGlow {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+
+@keyframes borderFlow {
+    0% {
+        background: linear-gradient(90deg, transparent, var(--primary-red), transparent);
+    }
+    33% {
+        background: linear-gradient(90deg, transparent, var(--secondary-blue), transparent);
+    }
+    66% {
+        background: linear-gradient(90deg, transparent, var(--accent-green), transparent);
+    }
+    100% {
+        background: linear-gradient(90deg, transparent, var(--primary-red), transparent);
+    }
+}
+
+@keyframes shimmerText {
+    0%, 100% {
+        background-position: 200% 0;
+    }
+    50% {
+        background-position: -200% 0;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 

@@ -121,8 +121,8 @@ function initParallaxEffects() {
 
 // Advanced 3D Scroll Effects
 function init3DScrollEffects() {
-    const sections = document.querySelectorAll('.feature-grid, .endpoints-grid, .docs-grid');
-    const cards = document.querySelectorAll('.feature-card, .endpoint-card, .docs-card');
+    const sections = document.querySelectorAll('.feature-grid, .endpoints-grid');
+    const cards = document.querySelectorAll('.feature-card, .endpoint-card');
     
     function handle3DScroll() {
         const scrollY = window.scrollY;
@@ -149,7 +149,7 @@ function init3DScrollEffects() {
             `;
         });
         
-        // 3D Card animations based on scroll
+        // 3D Card animations based on scroll with better boundaries (exclude doc cards)
         cards.forEach((card, index) => {
             const cardRect = card.getBoundingClientRect();
             const cardCenter = cardRect.top + cardRect.height / 2;
@@ -158,18 +158,21 @@ function init3DScrollEffects() {
             const maxDistance = windowHeight / 2;
             const progress = Math.max(0, 1 - distance / maxDistance);
             
-            const rotateY = (cardCenter - viewportCenter) / maxDistance * 15;
-            const rotateX = (cardCenter - viewportCenter) / maxDistance * 8;
-            const translateZ = progress * 30;
-            const scale = 0.9 + progress * 0.1;
-            
-            card.style.transform = `
-                perspective(1500px) 
-                rotateY(${rotateY}deg) 
-                rotateX(${rotateX}deg) 
-                translateZ(${translateZ}px) 
-                scale3d(${scale}, ${scale}, 1)
-            `;
+            // Only apply transforms if card is reasonably in view
+            if (cardRect.top < windowHeight && cardRect.bottom > 0) {
+                const rotateY = (cardCenter - viewportCenter) / maxDistance * 8; // Reduced from 15
+                const rotateX = (cardCenter - viewportCenter) / maxDistance * 4; // Reduced from 8
+                const translateZ = progress * 20; // Reduced from 30
+                const scale = 0.95 + progress * 0.05; // Reduced scaling
+                
+                card.style.transform = `
+                    perspective(1200px) 
+                    rotateY(${rotateY}deg) 
+                    rotateX(${rotateX}deg) 
+                    translateZ(${translateZ}px) 
+                    scale3d(${scale}, ${scale}, 1)
+                `;
+            }
         });
         
         // 3D Depth layers for hero
@@ -514,11 +517,12 @@ function showToast(message, type = 'success') {
     }, 3500);
 }
 
-// Enhanced Smooth Scrolling
+// Enhanced Smooth Scrolling for All Internal Links
 function initSmoothScrolling() {
-    const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
+    // Select all links that start with # (including nav links and hero buttons)
+    const internalLinks = document.querySelectorAll('a[href^="#"]:not([href="#"])');
     
-    navLinks.forEach(link => {
+    internalLinks.forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
             
@@ -532,14 +536,32 @@ function initSmoothScrolling() {
                 // Enhanced scroll with easing
                 smoothScrollTo(targetPosition, 800);
                 
-                // Visual feedback
-                link.style.transform = 'scale(0.95)';
-                link.style.background = 'rgba(255, 255, 255, 0.1)';
-                
-                setTimeout(() => {
-                    link.style.transform = 'scale(1)';
-                    link.style.background = '';
-                }, 150);
+                // Visual feedback based on element type
+                if (link.classList.contains('nav-link')) {
+                    // Nav link feedback
+                    link.style.transform = 'scale(0.95)';
+                    link.style.background = 'rgba(255, 255, 255, 0.1)';
+                    
+                    setTimeout(() => {
+                        link.style.transform = 'scale(1)';
+                        link.style.background = '';
+                    }, 150);
+                } else if (link.classList.contains('btn')) {
+                    // Button feedback
+                    link.style.transform = 'scale(0.96)';
+                    link.style.filter = 'brightness(0.9)';
+                    
+                    setTimeout(() => {
+                        link.style.transform = 'scale(1)';
+                        link.style.filter = '';
+                    }, 200);
+                } else {
+                    // Generic link feedback
+                    link.style.opacity = '0.7';
+                    setTimeout(() => {
+                        link.style.opacity = '';
+                    }, 150);
+                }
             }
         });
     });
@@ -593,26 +615,29 @@ function initHeaderScrollEffect() {
     observer.observe(heroSection);
 }
 
-// Advanced Interactive Animations
+// Advanced Interactive Animations with Debouncing
 function initInteractiveAnimations() {
     // Enhanced identity cards animation
     const identityCards = document.querySelectorAll('.card');
     identityCards.forEach((card, index) => {
-        card.addEventListener('mouseenter', () => {
+        let animationTimeout = null;
+        
+        const debouncedMouseEnter = debounce(() => {
             card.style.animationPlayState = 'paused';
             card.style.transform = 'translateY(-15px) scale(1.05) rotateY(5deg)';
             card.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.3)';
-            
-            // Add glow effect
             card.style.filter = 'brightness(1.1)';
-        });
+        }, 50);
         
-        card.addEventListener('mouseleave', () => {
+        const debouncedMouseLeave = debounce(() => {
             card.style.animationPlayState = 'running';
             card.style.transform = '';
             card.style.boxShadow = '';
             card.style.filter = '';
-        });
+        }, 50);
+        
+        card.addEventListener('mouseenter', debouncedMouseEnter);
+        card.addEventListener('mouseleave', debouncedMouseLeave);
     });
     
     // Enhanced button interactions with ripple effect
@@ -622,58 +647,168 @@ function initInteractiveAnimations() {
             createRippleEffect(e, this);
         });
         
-        button.addEventListener('mouseenter', () => {
+        const debouncedButtonEnter = debounce(() => {
             const icon = button.querySelector('svg');
             if (icon) {
                 icon.style.transform = 'translateX(5px) scale(1.1) rotate(5deg)';
             }
-        });
+        }, 30);
         
-        button.addEventListener('mouseleave', () => {
+        const debouncedButtonLeave = debounce(() => {
             const icon = button.querySelector('svg');
             if (icon) {
                 icon.style.transform = 'translateX(0) scale(1) rotate(0deg)';
             }
-        });
+        }, 30);
+        
+        button.addEventListener('mouseenter', debouncedButtonEnter);
+        button.addEventListener('mouseleave', debouncedButtonLeave);
     });
     
     // Interactive feature icons with magnetic effect
     const featureIcons = document.querySelectorAll('.feature-icon');
     featureIcons.forEach(icon => {
-        icon.addEventListener('mouseenter', () => {
+        const debouncedIconEnter = debounce(() => {
             icon.style.transform = 'scale(1.2) rotate(15deg)';
             icon.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.2)';
-        });
+        }, 50);
         
-        icon.addEventListener('mouseleave', () => {
+        const debouncedIconLeave = debounce(() => {
             icon.style.transform = 'scale(1) rotate(0deg)';
             icon.style.boxShadow = '';
-        });
+        }, 50);
+        
+        icon.addEventListener('mouseenter', debouncedIconEnter);
+        icon.addEventListener('mouseleave', debouncedIconLeave);
     });
     
-    // Endpoint cards with advanced hover effects
+    // Endpoint cards with precise hover detection
     const endpointCards = document.querySelectorAll('.endpoint-card');
-    endpointCards.forEach(card => {
-        card.addEventListener('mouseenter', () => {
+    endpointCards.forEach((card, index) => {
+        let isHovering = false;
+        let hoverTimeout = null;
+        
+        function isMouseInCard(e) {
+            const rect = card.getBoundingClientRect();
+            const margin = 2;
+            
+            return (
+                e.clientX >= rect.left + margin &&
+                e.clientX <= rect.right - margin &&
+                e.clientY >= rect.top + margin &&
+                e.clientY <= rect.bottom - margin
+            );
+        }
+        
+        function startAnimation() {
+            if (isHovering) return;
+            isHovering = true;
+            
             const icon = card.querySelector('.endpoint-icon');
             if (icon) {
-                icon.style.transform = 'scale(1.15) rotate(-10deg)';
+                icon.style.transition = 'transform 0.3s ease-out';
+                icon.style.transform = 'scale(1.1) rotate(-5deg)';
             }
             
-            // Add shimmer effect
-            card.style.background = 'linear-gradient(45deg, white 25%, rgba(255,255,255,0.8) 50%, white 75%)';
+            // Subtle shimmer effect
+            card.style.background = 'linear-gradient(45deg, white 25%, rgba(255,255,255,0.9) 50%, white 75%)';
             card.style.backgroundSize = '200% 100%';
             card.style.animation = 'shimmer 1.5s ease-in-out infinite';
-        });
+        }
         
-        card.addEventListener('mouseleave', () => {
+        function stopAnimation() {
+            isHovering = false;
+            
             const icon = card.querySelector('.endpoint-icon');
             if (icon) {
+                icon.style.transition = 'transform 0.3s ease-out';
                 icon.style.transform = 'scale(1) rotate(0deg)';
             }
             
             card.style.background = 'white';
             card.style.animation = '';
+        }
+        
+        card.addEventListener('mouseenter', (e) => {
+            clearTimeout(hoverTimeout);
+            
+            if (isMouseInCard(e)) {
+                hoverTimeout = setTimeout(startAnimation, 100);
+            }
+        }, { passive: true });
+        
+        card.addEventListener('mouseleave', (e) => {
+            clearTimeout(hoverTimeout);
+            hoverTimeout = setTimeout(stopAnimation, 50);
+        }, { passive: true });
+        
+        window.addEventListener('beforeunload', () => {
+            clearTimeout(hoverTimeout);
+        });
+    });
+    
+    // Documentation cards with precise hover detection and isolation
+    const docCards = document.querySelectorAll('.doc-card');
+    docCards.forEach((card, index) => {
+        let isHovering = false;
+        let hoverTimeout = null;
+        
+        function isMouseInCard(e) {
+            // Get fresh bounding rect to avoid stale coordinates
+            const rect = card.getBoundingClientRect();
+            const margin = 2; // Very small margin to account for border
+            
+            return (
+                e.clientX >= rect.left + margin &&
+                e.clientX <= rect.right - margin &&
+                e.clientY >= rect.top + margin &&
+                e.clientY <= rect.bottom - margin
+            );
+        }
+        
+        function startAnimation() {
+            if (isHovering) return;
+            isHovering = true;
+            
+            const icon = card.querySelector('.doc-icon');
+            if (icon) {
+                icon.style.transition = 'transform 0.3s ease-out';
+                icon.style.transform = 'scale(1.05) rotate(5deg)';
+                icon.style.animation = 'pulse3D 1.5s ease-in-out infinite';
+            }
+        }
+        
+        function stopAnimation() {
+            isHovering = false;
+            
+            const icon = card.querySelector('.doc-icon');
+            if (icon) {
+                icon.style.transition = 'transform 0.3s ease-out';
+                icon.style.transform = '';
+                icon.style.animation = '';
+            }
+        }
+        
+        // Use only mouseenter and mouseleave for cleaner detection
+        card.addEventListener('mouseenter', (e) => {
+            clearTimeout(hoverTimeout);
+            
+            // Double-check that we're actually inside the card
+            if (isMouseInCard(e)) {
+                hoverTimeout = setTimeout(startAnimation, 100);
+            }
+        }, { passive: true });
+        
+        card.addEventListener('mouseleave', (e) => {
+            clearTimeout(hoverTimeout);
+            
+            // Immediate stop when leaving
+            hoverTimeout = setTimeout(stopAnimation, 50);
+        }, { passive: true });
+        
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            clearTimeout(hoverTimeout);
         });
     });
 }
