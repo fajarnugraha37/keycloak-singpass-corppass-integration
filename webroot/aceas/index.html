@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/assets/vite-DcBtz0py.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACEAS App</title>
+    
+
+    <script type="module" crossorigin src="/assets/aceas\index-DI0R6aeb.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-B5Qt9EMX.js">
+    <link rel="modulepreload" crossorigin href="/assets/sched-DruKi8Dd.js">
+    <link rel="modulepreload" crossorigin href="/assets/oidc-DAcC_2S7.js">
+    <link rel="stylesheet" crossorigin href="/assets/common-CHl353dM.css">
+  </head>
+  <body>
+    <div id="loading-overlay">
+      <div class="loader"><div class="bar"></div></div>
+      <div>Checking authentication&hellip;</div>
+    </div>
+
+    <h1 class="text-3xl font-bold">ACEAS SPA!</h1>
+    <h3>
+      Auth: Keycloak (agency-realm) via keycloak-js (PKCE S256, check-sso)
+    </h3>
+
+    <div>
+      <button id="login">Login</button>
+      <button id="logout">Logout (realm)</button>
+      <button id="userinfo">UserInfo</button>
+      <button id="callapi">Call ACEAS API</button>
+      <button id="switch">Switch to CPDS</button>
+    </div>
+
+    <pre id="out"></pre>
+
+
+  </body>
+</html>

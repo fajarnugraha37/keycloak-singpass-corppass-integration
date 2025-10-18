@@ -1,0 +1,16 @@
+{
+  "name": "ids-op",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "jose": "^6.0.12",
+    "openid-client": "^6.6.4"
+  }
+}

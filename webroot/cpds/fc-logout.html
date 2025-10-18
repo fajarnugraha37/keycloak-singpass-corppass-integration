@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/assets/vite-DcBtz0py.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CPDS front-channel logout</title>
+    
+    <link rel="stylesheet" crossorigin href="/assets/common-CHl353dM.css">
+  </head>
+  <body>
+    <h1 class="text-3xl font-bold">Front-channel logout landing</h1>
+
+    <h3>
+      SPA state cleared. You can close this tab or <a href="/cpds/">go back</a>.
+    </h3>
+
+    <div>
+      <a href="/aceas/">ACEAS</a>
+      <a href="/cpds/">CPDS</a>
+    </div>
+
+    <script>
+      // Best-effort: since we use in-memory store, a reload is enough; try to clear any temp state keys we might use in future
+      try {
+        sessionStorage.clear();
+        localStorage.clear();
+      } catch {}
+    </script>
+  </body>
+</html>

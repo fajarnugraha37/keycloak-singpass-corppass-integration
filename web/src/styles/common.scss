@@ -1,0 +1,36 @@
+@use "overlay";
+
+h1 {
+  font-size: 3.2em;
+  line-height: 2;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+h2 {
+  font-size: 2.4em;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+h3 {
+  font-size: 1.6em;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  font-weight: 400;
+}
+
+pre {
+  font-family: monospace, monospace;
+  font-size: 1.5rem;
+  line-height: 1.5;
+  padding: 1em;
+  border-radius: 1em;
+  overflow-x: auto;
+  background: #111; 
+  color: #0f0; 
+  min-height: 25rem;
+  white-space: pre-wrap;
+  word-break: break-all;
+}

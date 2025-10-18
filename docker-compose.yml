@@ -1,0 +1,147 @@
+services:
+  mockpass:
+    build: ./mockpass
+    image: kc_mockpass
+    container_name: mockpass
+    ports:
+      - "3001:3001"
+    environment:
+      MOCKPASS_PORT: 3001
+      MOCKPASS_STATELESS: false
+      SHOW_LOGIN_PAGE: true
+      MOCKPASS_NRIC: S8979373D
+      SINGPASS_CLIENT_PROFILE: direct_pii_allowed # direct, pii_allowed, bridge
+      SP_RP_JWKS_ENDPOINT: ${HOST:-http://localhost}/auth/realms/agency-realm/protocol/openid-connect/certs
+      CP_RP_JWKS_ENDPOINT: ${HOST:-http://localhost}/auth/realms/agency-realm/protocol/openid-connect/certs
+      MOCKPASS_SERVER_HOST: ${MOCKPASS_SERVER_HOST:-http://mockpass.localhost}
+      SERVICE_PROVIDER_MYINFO_SECRET: your-client-secret
+      ENCRYPT_MYINFO: true
+
+  db:
+    image: postgres:16
+    container_name: kc_db_agency
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+    ports:
+      - "5432:5432"
+    volumes:
+      - kc_pgdata_agency:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak -d keycloak"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  keycloak:
+    build: ./keycloak-custom
+    image: kc_keycloak
+    container_name: kc_agency
+    command:
+      - start-dev
+      - --import-realm
+      - --log=console
+      - --log-level=info,jakarta.ws:debug,org.keycloak:debug,org.keycloak.events:debug,org.keycloak.services:debug,org.keycloak.authentication:debug,org.keycloak.protocol:debug,org.keycloak.broker:debug,com.example:debug
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://db:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak 
+      KC_HOSTNAME_URL: ${DNS:-localhost}
+      KC_HOSTNAME_STRICT: "false"
+      KC_HTTP_RELATIVE_PATH: /auth
+      KC_LOG_CONSOLE_FORMAT: "%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p (%t) [%X{cid}] %X{state} [%c] %s%e%n"
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./keycloak-import:/opt/keycloak/data/import
+
+  ids:
+    build: ./services/ids
+    container_name: ids_op
+    image: kc_ids
+    environment:
+      HOST: ${HOST:-http://localhost}
+      ISSUER_BASE: ${HOST:-http://localhost}/ids
+      KEYCLOAK_ISSUER: ${HOST:-http://localhost}/auth/realms/agency-realm
+      KEYCLOAK_AUTH: ${HOST:-http://localhost}/auth/realms/agency-realm/protocol/openid-connect/auth
+      KEYCLOAK_TOKEN: ${HOST:-http://localhost}/auth/realms/agency-realm/protocol/openid-connect/token
+      KEYCLOAK_USERINFO: ${HOST:-http://localhost}/auth/realms/agency-realm/protocol/openid-connect/userinfo
+      KEYCLOAK_CLIENT_ID: cpds-spa
+      KEYCLOAK_CLIENT_SECRET: cpds-oidc-secret
+      SESSION_KEYS: k1,k2
+      AUDIENCE: cpds-api
+      LOG_LEVEL: info
+    depends_on:
+      keycloak:
+        condition: service_started
+    volumes:
+      - ids_data:/data
+    expose:
+      - "7000"
+
+  aceas-api:
+    build: ./services/aceas-api
+    image: kc_aceas_api
+    container_name: aceas_api
+    environment:
+      PORT: 3000
+      ISSUER: ${HOST:-http://localhost}/auth/realms/agency-realm
+      AUDIENCE: aceas-api
+      JWKS_URL: ${HOST:-http://localhost}/auth/realms/agency-realm/protocol/openid-connect/certs
+    depends_on:
+      keycloak:
+        condition: service_started
+    expose:
+      - "3000"
+
+  cpds-api:
+    build: ./services/cpds-api
+    image: kc_cpds_api
+    container_name: cpds_api
+    environment:
+      PORT: 3001
+      ISSUER: ${HOST:-http://localhost}/ids
+      AUDIENCE: cpds-api
+      JWKS_URL: ${HOST:-http://localhost}/ids/.well-known/jwks.json
+    depends_on:
+      ids:
+        condition: service_started
+    expose:
+      - "3001"
+
+  web:
+    image: nginx:1.27-alpine
+    container_name: web
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    depends_on:
+      - aceas-api
+      - cpds-api
+      - ids
+      - mockpass
+      - keycloak
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/common.conf:/etc/nginx/common.conf:ro
+      - ./nginx/proxy.conf:/etc/nginx/proxy.conf:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./webroot:/usr/share/nginx/html:ro
+    networks:
+      default:
+        aliases:
+          - eservice.localhost
+          - mockpass.localhost
+
+volumes:
+  kc_pgdata_agency:
+  kc_pgdata_idp:
+  ids_data:

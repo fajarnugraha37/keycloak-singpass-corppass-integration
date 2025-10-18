@@ -1,0 +1,2 @@
+com.example.key.ECDSAKeyProviderFactory
+com.example.key.SingleJwkKeyProviderFactory

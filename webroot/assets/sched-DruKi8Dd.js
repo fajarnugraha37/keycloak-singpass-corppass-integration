@@ -1,0 +1,2 @@
+function a(){const t=document.getElementById("loading-overlay");t&&t.classList.add("hidden")}function d(){const t=document.getElementById("loading-overlay");t&&t.classList.remove("hidden")}async function i(t,e,n="GET"){const o=await fetch(t,{method:n,headers:e?{Authorization:`Bearer ${e}`}:{}}),s=await o.text();return{ok:o.ok,status:o.status,body:s}}function c(t,e){const n=document.getElementById(t);n.textContent=(n.textContent+`
+`+e).trim()}typeof scheduler<"u"&&scheduler.postTask;export{i as c,a as h,c as l,d as s};

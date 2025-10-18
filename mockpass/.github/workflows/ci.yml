@@ -1,0 +1,20 @@
+name: ci
+on:
+  push:
+  pull_request:
+    types: [opened, reopened]
+jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+      - run: npm ci
+      - run: npx lockfile-lint --type npm --path package-lock.json --validate-https --allowed-hosts npm
+      - run: npm run lint

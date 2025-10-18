@@ -1,0 +1,2 @@
+com.example.authenticator.CaptureInitiatingClientAuthenticatorFactory
+com.example.authenticator.StoreInitiatingClientToUserAttrFactory

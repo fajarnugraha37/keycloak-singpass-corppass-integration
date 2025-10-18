@@ -1,0 +1,7 @@
+node_modules/
+package-lock.json
+.vscode/
+mse/
+mse-dev/
+mse-test/
+logs/

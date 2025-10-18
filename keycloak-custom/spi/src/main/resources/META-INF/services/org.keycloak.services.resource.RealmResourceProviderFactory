@@ -1,0 +1,5 @@
+com.example.resources.CustomCertsApiProviderFactory
+com.example.resources.DemoRealmResourceProvider
+com.example.resources.SharedKeyApiProviderFactory
+com.example.resources.UserCheckApiProviderFactory
+com.example.resources.UserInfoAlternativeApiProviderFactory

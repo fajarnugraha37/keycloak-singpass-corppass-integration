@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/src/assets/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ACEAS App</title>
+    
+    <link href="/src/styles/style.css" crossorigin rel="stylesheet" />
+  </head>
+  <body>
+    <div id="loading-overlay">
+      <div class="loader"><div class="bar"></div></div>
+      <div>Checking authentication&hellip;</div>
+    </div>
+
+    <h1 class="text-3xl font-bold">ACEAS SPA!</h1>
+    <h3>
+      Auth: Keycloak (agency-realm) via keycloak-js (PKCE S256, check-sso)
+    </h3>
+
+    <div>
+      <button id="login">Login</button>
+      <button id="logout">Logout (realm)</button>
+      <button id="userinfo">UserInfo</button>
+      <button id="callapi">Call ACEAS API</button>
+      <button id="switch">Switch to CPDS</button>
+    </div>
+
+    <pre id="out"></pre>
+
+    <script type="module" src="/src/pages/aceas.js"></script>
+  </body>
+</html>
