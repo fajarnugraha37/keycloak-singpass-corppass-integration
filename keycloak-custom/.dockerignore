@@ -1,0 +1,46 @@
+# Build artifacts
+spi/build/
+spi/.gradle/
+spi/gradle-app.setting
+spi/gradlew.lock
+
+# IDE files
+spi/.idea/
+spi/.vscode/
+spi/*.iml
+spi/*.iws
+spi/*.ipr
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Logs
+spi/logs/
+spi/*.log
+
+# Temporary files
+spi/tmp/
+spi/temp/
+spi/*.tmp
+spi/*.swp
+spi/*.swo
+spi/*~
+
+# Test reports
+spi/test-results/
+spi/reports/
+
+# Documentation
+README.md
+*.md
+docs/

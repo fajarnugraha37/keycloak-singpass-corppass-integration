@@ -1,3 +1,4 @@
+# Alternative optimized Dockerfile with distroless approach
 # ---- stage 1: build the SPI jar
 FROM gradle:8.10.2-jdk17 AS builder
 WORKDIR /workspace
@@ -20,25 +21,42 @@ COPY spi/src/ /workspace/spi/src/
 # Build with optimizations
 RUN gradle --no-daemon clean build -x test --parallel --build-cache
 
-# ---- stage 2: assemble custom keycloak
-# pick an exact 25.x tag you use in prod
-FROM quay.io/keycloak/keycloak:25.0.6
+# ---- stage 2: Create a minimal Keycloak build stage
+FROM quay.io/keycloak/keycloak:25.0.6 AS keycloak-builder
 
-# Switch to root temporarily for installation
 USER root
 
-# Copy JARs in a single layer and clean up build artifacts
+# Copy JARs from builder stage
 COPY --from=builder /workspace/spi/build/libs/jars/*.jar /opt/keycloak/providers/
 COPY --from=builder /workspace/spi/build/libs/*.jar /opt/keycloak/providers/
 
-# Build the Quarkus image with optimizations
+# Build the Quarkus image with production optimizations
 RUN /opt/keycloak/bin/kc.sh build \
     --health-enabled=true \
     --metrics-enabled=true \
-    --verbose 
+    --db=postgres \
+    --features=preview \
+    --verbose
 
-# Switch back to the container user
+# ---- stage 3: Create the runtime image
+FROM quay.io/keycloak/keycloak:25.0.6
+
+# Copy the built Keycloak installation from the builder stage
+COPY --from=keycloak-builder /opt/keycloak/ /opt/keycloak/
+
+# Use non-root user
 USER 1000
 
-# Set default entrypoint arguments for production
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3
+CMD curl -f http://localhost:8080/health/ready || exit 1
+
+# Production environment variables
+ENV KC_HEALTH_ENABLED=true
+ENV KC_METRICS_ENABLED=true
+ENV KC_CACHE=ispn
+ENV KC_CACHE_STACK=kubernetes
+
+# Set default entrypoint
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
+CMD ["start", "--optimized"]
