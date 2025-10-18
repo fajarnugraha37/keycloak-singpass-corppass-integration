@@ -11,11 +11,20 @@ public class MyEventListenerProvider implements EventListenerProvider {
   @Override
   public void onEvent(Event event) {
     if (event.getError() != null) {
-      logger.errorf("auth-error type=%s realm=%s client=%s user=%s details=%s", event.getType(), event.getRealmId(),
-          event.getClientId(), event.getUserId(), event.getDetails(), event.getError());
+      logger.errorf("auth-error type=%s realm=%s client=%s user=%s details=%s",
+              event.getType(),
+              event.getRealmId(),
+              event.getClientId(),
+              event.getUserId(),
+              event.getDetails(),
+              event.getError());
     } else {
-      logger.infof("auth type=%s realm=%s client=%s user=%s details=%s", event.getType(), event.getRealmId(),
-          event.getClientId(), event.getUserId(), event.getDetails());
+      logger.infof("auth type=%s realm=%s client=%s user=%s details=%s",
+              event.getType(),
+              event.getRealmId(),
+              event.getClientId(),
+              event.getUserId(),
+              event.getDetails());
     }
   }
 
