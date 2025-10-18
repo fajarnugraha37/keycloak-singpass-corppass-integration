@@ -1,0 +1,560 @@
+/* Enhanced eService Landing Page Styles with Advanced Animations */
+
+/* CSS Variables for Enhanced Theming */
+:root {
+  /* Enhanced Color Palette */
+  --primary-blue: #3b82f6;
+  --primary-blue-dark: #2563eb;
+  --primary-orange: #ea580c;
+  --primary-orange-dark: #dc2626;
+  --accent-green: #10b981;
+  --accent-purple: #8b5cf6;
+  
+  /* Enhanced Gradients */
+  --gradient-primary: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  --gradient-secondary: linear-gradient(135deg, #ea580c, #dc2626);
+  --gradient-accent: linear-gradient(135deg, #10b981, #059669);
+  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  
+  /* Enhanced Shadows */
+  --shadow-glow-blue: 0 0 30px rgba(59, 130, 246, 0.3);
+  --shadow-glow-orange: 0 0 30px rgba(234, 88, 12, 0.3);
+  --shadow-floating: 0 20px 40px rgba(0, 0, 0, 0.1);
+  --shadow-deep: 0 25px 50px rgba(0, 0, 0, 0.15);
+  
+  /* Animation Variables */
+  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Enhanced Body and Root Animations */
+body {
+  overflow-x: hidden;
+}
+
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Enhanced Header with Glassmorphism */
+header {
+  backdrop-filter: blur(20px);
+  background: rgba(15, 23, 42, 0.9);
+  position: relative;
+  overflow: hidden;
+}
+
+header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  animation: headerShimmer 8s linear infinite;
+  z-index: 1;
+}
+
+.header-content {
+  position: relative;
+  z-index: 2;
+}
+
+/* Enhanced Top Bar Animation */
+.bg-red-600 {
+  background: linear-gradient(90deg, #dc2626, #b91c1c);
+  position: relative;
+  overflow: hidden;
+}
+
+.bg-red-600::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, 
+    rgba(255, 255, 255, 0.1) 0%, 
+    transparent 50%, 
+    rgba(255, 255, 255, 0.1) 100%);
+  animation: topBarFlow 6s ease-in-out infinite;
+}
+
+/* Enhanced Logo Animation */
+.logo-container {
+  transition: var(--transition-smooth);
+}
+
+.logo-container:hover {
+  transform: scale(1.05) rotate(2deg);
+}
+
+.logo-container .w-10 {
+  transition: var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+.logo-container .w-10::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
+  transform: scale(0);
+  transition: transform 0.6s ease-out;
+}
+
+.logo-container:hover .w-10::before {
+  transform: scale(1);
+}
+
+/* Enhanced Navigation Links */
+nav a {
+  position: relative;
+  transition: var(--transition-smooth);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+}
+
+nav a::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--gradient-primary);
+  transition: all 0.3s ease-out;
+  transform: translateX(-50%);
+}
+
+nav a:hover::before {
+  width: 80%;
+}
+
+nav a:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Enhanced Main Content Container */
+main {
+  position: relative;
+}
+
+/* Animated Background Patterns */
+main::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(234, 88, 12, 0.1) 0%, transparent 50%);
+  opacity: 0.6;
+  z-index: -1;
+  animation: backgroundPulse 20s ease-in-out infinite;
+}
+
+/* Enhanced Page Title Animation */
+.page-title {
+  background: var(--gradient-primary);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% 200%;
+  animation: gradientShift 4s ease-in-out infinite;
+  position: relative;
+  display: inline-block;
+}
+
+.page-title::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--gradient-primary);
+  opacity: 0.3;
+  border-radius: 2px;
+  animation: titleUnderline 2s ease-out 0.5s forwards;
+  transform: scaleX(0);
+}
+
+/* Enhanced Alert Banner */
+.alert-banner {
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.alert-banner::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(245, 158, 11, 0.1), 
+    transparent);
+  animation: alertShimmer 3s ease-in-out infinite;
+}
+
+/* Enhanced Service Cards with 3D Effects */
+.service-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transform-style: preserve-3d;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.service-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--gradient-glass);
+  opacity: 0;
+  transition: opacity 0.3s ease-out;
+  z-index: 1;
+}
+
+.service-card:hover::before {
+  opacity: 1;
+}
+
+.service-card:hover {
+  transform: translateY(-8px) rotateX(5deg) rotateY(-2deg);
+  box-shadow: var(--shadow-floating);
+}
+
+/* Enhanced Service Card Headers */
+.service-header {
+  position: relative;
+  z-index: 2;
+}
+
+.service-icon {
+  transition: var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+.service-icon::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+  transform: scale(0);
+  transition: transform 0.6s ease-out;
+}
+
+.service-card:hover .service-icon {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.service-card:hover .service-icon::before {
+  transform: scale(1);
+}
+
+/* Enhanced Online Status Indicator */
+.status-online {
+  animation: statusPulse 2s ease-in-out infinite;
+}
+
+/* Enhanced Feature Lists */
+.feature-list .flex {
+  transition: var(--transition-smooth);
+  padding: 0.25rem 0;
+  border-radius: 0.25rem;
+}
+
+.feature-list .flex:hover {
+  background: rgba(59, 130, 246, 0.1);
+  transform: translateX(5px);
+}
+
+/* Enhanced Service Buttons with Advanced Effects */
+.service-btn {
+  position: relative;
+  overflow: hidden;
+  background: var(--gradient-primary);
+  transform-style: preserve-3d;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.service-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease-out;
+}
+
+.service-btn:hover::before {
+  left: 100%;
+}
+
+.service-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: var(--shadow-glow-blue);
+}
+
+.service-btn.orange {
+  background: var(--gradient-secondary);
+}
+
+.service-btn.orange:hover {
+  box-shadow: var(--shadow-glow-orange);
+}
+
+/* Enhanced System Resources Section */
+.resources-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.resource-card {
+  position: relative;
+  transition: var(--transition-bounce);
+  transform-style: preserve-3d;
+}
+
+.resource-card:hover {
+  transform: translateY(-5px) scale(1.05) rotateY(5deg);
+}
+
+.resource-icon {
+  transition: var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+}
+
+.resource-icon::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+  border-radius: 50%;
+  transition: all 0.4s ease-out;
+  transform: translate(-50%, -50%);
+}
+
+.resource-card:hover .resource-icon::after {
+  width: 100%;
+  height: 100%;
+}
+
+/* Enhanced Footer with Gradient Animation */
+footer {
+  position: relative;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  overflow: hidden;
+}
+
+footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    var(--primary-blue), 
+    var(--primary-orange), 
+    var(--accent-green), 
+    transparent);
+  animation: footerGlow 8s linear infinite;
+}
+
+.footer-content {
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.8s ease-out 0.5s forwards;
+}
+
+.footer-links a {
+  position: relative;
+  transition: var(--transition-smooth);
+}
+
+.footer-links a::before {
+  content: '→';
+  position: absolute;
+  left: -15px;
+  opacity: 0;
+  transition: all 0.3s ease-out;
+  color: var(--primary-blue);
+}
+
+.footer-links a:hover {
+  padding-left: 15px;
+  color: white;
+}
+
+.footer-links a:hover::before {
+  left: 0;
+  opacity: 1;
+}
+
+/* Enhanced Dark Mode Support */
+.dark .service-card {
+  background: rgba(30, 41, 59, 0.95);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dark .service-card:hover {
+  background: rgba(30, 41, 59, 0.98);
+}
+
+/* Scroll-based Animations */
+.scroll-fade {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scroll-fade.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Enhanced Keyframe Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes headerShimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+@keyframes topBarFlow {
+  0%, 100% { transform: translateX(-100%) skew(-45deg); }
+  50% { transform: translateX(100%) skew(-45deg); }
+}
+
+@keyframes backgroundPulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes titleUnderline {
+  to { transform: scaleX(1); }
+}
+
+@keyframes alertShimmer {
+  0% { left: -100%; }
+  50% { left: 0%; }
+  100% { left: 100%; }
+}
+
+@keyframes statusPulse {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+  50% { 
+    transform: scale(1.1);
+    box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+  }
+}
+
+@keyframes footerGlow {
+  0% { 
+    background: linear-gradient(90deg, transparent, var(--primary-blue), transparent);
+  }
+  50% { 
+    background: linear-gradient(90deg, transparent, var(--primary-orange), transparent);
+  }
+  100% { 
+    background: linear-gradient(90deg, transparent, var(--accent-green), transparent);
+  }
+}
+
+/* Responsive Enhancements */
+@media (max-width: 768px) {
+  .service-card:hover {
+    transform: translateY(-4px) scale(1.02);
+  }
+  
+  .resource-card:hover {
+    transform: translateY(-3px) scale(1.03);
+  }
+  
+  .page-title {
+    font-size: 2rem;
+  }
+}
+
+/* Performance Optimizations */
+.service-card,
+.resource-card {
+  will-change: transform;
+}
+
+/* Accessibility Enhancements */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Enhanced Focus States */
+.service-btn:focus {
+  outline: 2px solid var(--primary-blue);
+  outline-offset: 2px;
+}
+
+.resource-card:focus {
+  outline: 2px solid var(--primary-blue);
+  outline-offset: 2px;
+  border-radius: 0.5rem;
+}
