@@ -179,82 +179,6 @@ class AceaAnimationController {
 // Initialize animation controller
 const animationController = new AceaAnimationController();
 
-// Handler functions for authentication actions
-async function handleLogin() {
-    try {
-        enhancedLog("🔐 Initiating ACEAS login...", 'info');
-        animationController.triggerButtonAnimation(loginBtn);
-        await oidc.signinRedirect();
-    } catch (error) {
-        enhancedLog(`❌ Login failed: ${error.message}`, 'error');
-    }
-}
-
-async function handleLogout() {
-    try {
-        enhancedLog("🚪 Initiating logout...", 'info');
-        animationController.triggerButtonAnimation(logoutBtn);
-        await oidc.signoutRedirect({ 
-            post_logout_redirect_uri: `${window.location.origin}/aceas/` 
-        });
-        await oidc.removeUser();
-        state.isAuthenticated.value = false;
-        enhancedLog("✅ Logout completed", 'success');
-    } catch (error) {
-        enhancedLog(`❌ Logout failed: ${error.message}`, 'error');
-    }
-}
-
-async function handleUserInfo() {
-    try {
-        const u = await oidc.getUser();
-        if (!u) {
-            enhancedLog("❌ Not logged in!", 'error');
-            return;
-        }
-        
-        enhancedLog("👤 Fetching user information from Keycloak...", 'info');
-        animationController.triggerButtonAnimation(userInfoBtn);
-        
-        const res = await fetch(
-            "http://eservice.localhost/auth/realms/agency-realm/protocol/openid-connect/userinfo",
-            { headers: { Authorization: `Bearer ${u.access_token}` } }
-        );
-        const info = await res.json();
-        state.userInfo.value = info;
-        enhancedLog("✅ Keycloak userinfo retrieved:", 'success');
-        enhancedLog(`📋 User Info:\n${JSON.stringify(info, null, 2)}`, 'info');
-        
-    } catch (error) {
-        enhancedLog(`❌ Failed to get user info: ${error.message}`, 'error');
-    }
-}
-
-async function handleCallApi() {
-    try {
-        const u = await oidc.getUser();
-        if (!u) {
-            enhancedLog("❌ Login first", 'error');
-            return;
-        }
-        
-        enhancedLog("🌐 Calling ACEAS API...", 'info');
-        animationController.triggerButtonAnimation(callApiBtn);
-        const r = await callApi("/aceas/api/hello", u.access_token);
-        enhancedLog("✅ ACEAS API response received:", 'success');
-        enhancedLog(`📊 ACEAS API [${r.status}]:\n${r.body}`, 'info');
-        
-    } catch (error) {
-        enhancedLog(`❌ ACEAS API call failed: ${error.message}`, 'error');
-    }
-}
-
-function handleSwitch() {
-    enhancedLog("🔄 Switching to CPDS platform...", 'info');
-    animationController.triggerButtonAnimation(switchBtn);
-    window.location.href = '/cpds/#switcher';
-}
-
 // Enhanced logging with 3D console effects
 function enhancedLog(message, type = 'info') {
     const timestamp = new Date().toLocaleTimeString();
@@ -298,7 +222,6 @@ function enhancedLog(message, type = 'info') {
 
 // Clear console functionality with 3D effects
 function clearConsole() {
-    console.log("🧹 Clear console function called");
     const consoleOutput = document.getElementById('out');
     if (consoleOutput) {
         consoleOutput.innerHTML = `
@@ -306,28 +229,20 @@ function clearConsole() {
 <span class="console-info">🚀 Enterprise SSO ready for interaction...</span>
 <span class="console-timestamp">[${new Date().toLocaleTimeString()}] Console cleared</span>
         `.trim();
-        console.log("✅ Console content cleared");
-        animationController.showToast('Console cleared successfully!');
-    } else {
-        console.error("❌ Console output element not found");
     }
+    animationController.showToast('Console cleared successfully!');
 }
 
 // Copy console content with animation
 function copyConsoleContent() {
-    console.log("📋 Copy console function called");
     const consoleOutput = document.getElementById('out');
     if (consoleOutput) {
         const textContent = consoleOutput.textContent;
         navigator.clipboard.writeText(textContent).then(() => {
-            console.log("✅ Console content copied to clipboard");
             animationController.showToast('Console content copied to clipboard!');
-        }).catch((error) => {
-            console.error("❌ Failed to copy content:", error);
+        }).catch(() => {
             animationController.showToast('Failed to copy console content', 'error');
         });
-    } else {
-        console.error("❌ Console output element not found");
     }
 }
 
@@ -373,12 +288,10 @@ function updateAuthStatus(isAuthenticated, userInfo = null) {
     }
     
     // Animate status change
-    if (authStatus) {
-        authStatus.style.transform = 'scale(1.1)';
-        setTimeout(() => {
-            authStatus.style.transform = '';
-        }, 200);
-    }
+    authStatus.style.transform = 'scale(1.1)';
+    setTimeout(() => {
+        authStatus.style.transform = '';
+    }, 200);
 }
 
 // Enhanced button visibility with 3D animations
@@ -395,7 +308,6 @@ function updateButtonVisibility(isAuthenticated) {
         
         if (showWhen) {
             element.classList.remove('hidden');
-            element.style.display = 'inline-flex'; // Ensure proper display
             element.style.opacity = '0';
             element.style.transform = 'translateY(20px) scale(0.9)';
             
@@ -411,28 +323,129 @@ function updateButtonVisibility(isAuthenticated) {
             
             setTimeout(() => {
                 element.classList.add('hidden');
-                element.style.display = 'none'; // Properly hide
             }, 300);
         }
     });
 }
 
-effect(() => {
-    const isLoading = state.isLoading.value;
-    if (isLoading) {
-        enhancedLog("⏳ System processing...", "info");
-    }
-});
-
-// Initialize theme from localStorage
-function initializeTheme() {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-        document.body.classList.add('dark');
+// Authentication functions with enhanced animations
+async function handleLogin() {
+    try {
+        enhancedLog("🔐 Initiating ACEAS login process...", 'info');
+        animationController.triggerButtonAnimation(loginBtn);
+        
+        showLoading("Redirecting to Keycloak...");
+        
+        const result = await oidc.login();
+        enhancedLog("✅ Login successful! Keycloak authentication completed.", 'success');
+        enhancedLog(`🎯 Session details: ${JSON.stringify(result, null, 2)}`, 'info');
+        
+        animationController.showToast('Login successful! Welcome to ACEAS.', 'success');
+        
+    } catch (error) {
+        enhancedLog(`❌ Login failed: ${error.message}`, 'error');
+        animationController.showToast('Login failed. Please try again.', 'error');
+        console.error("Login error:", error);
+    } finally {
+        hideLoading();
     }
 }
 
-// Loading state helper
+async function handleLogout() {
+    try {
+        enhancedLog("🚪 Initiating ACEAS logout process...", 'info');
+        animationController.triggerButtonAnimation(logoutBtn);
+        
+        showLoading("Logging out...");
+        
+        await oidc.logout();
+        enhancedLog("✅ Logout successful! Session terminated.", 'success');
+        
+        animationController.showToast('Logout successful. Session ended.', 'success');
+        
+    } catch (error) {
+        enhancedLog(`❌ Logout failed: ${error.message}`, 'error');
+        animationController.showToast('Logout failed. Please try again.', 'error');
+        console.error("Logout error:", error);
+    } finally {
+        hideLoading();
+    }
+}
+
+async function handleUserInfo() {
+    try {
+        enhancedLog("👤 Fetching user information from Keycloak...", 'info');
+        animationController.triggerButtonAnimation(userInfoBtn);
+        
+        showLoading("Loading user profile...");
+        
+        const userInfo = await oidc.loadUserProfile();
+        enhancedLog("✅ User information retrieved successfully:", 'success');
+        enhancedLog(`📋 User Profile:\n${JSON.stringify(userInfo, null, 2)}`, 'info');
+        
+        state.userInfo.value = userInfo;
+        animationController.showToast('User profile loaded successfully!', 'success');
+        
+    } catch (error) {
+        enhancedLog(`❌ Failed to load user info: ${error.message}`, 'error');
+        animationController.showToast('Failed to load user profile.', 'error');
+        console.error("UserInfo error:", error);
+    } finally {
+        hideLoading();
+    }
+}
+
+async function handleCallApi() {
+    try {
+        enhancedLog("🌐 Testing API call with ACEAS authentication...", 'info');
+        animationController.triggerButtonAnimation(callApiBtn);
+        
+        showLoading("Calling protected API...");
+        
+        const response = await callApi();
+        enhancedLog("✅ API call successful! Response received:", 'success');
+        enhancedLog(`📊 API Response:\n${JSON.stringify(response, null, 2)}`, 'info');
+        
+        animationController.showToast('API call completed successfully!', 'success');
+        
+    } catch (error) {
+        enhancedLog(`❌ API call failed: ${error.message}`, 'error');
+        animationController.showToast('API call failed. Check authentication.', 'error');
+        console.error("API call error:", error);
+    } finally {
+        hideLoading();
+    }
+}
+
+function handleSwitch() {
+    enhancedLog("🔄 Switching to CPDS platform...", 'info');
+    animationController.triggerButtonAnimation(switchBtn);
+    
+    setTimeout(() => {
+        enhancedLog("🎯 Redirecting to CPDS authentication system...", 'info');
+        animationController.showToast('Switching to CPDS platform...', 'info');
+        window.location.href = '/cpds/';
+    }, 1000);
+}
+// Theme toggle functionality
+function toggleTheme() {
+    const body = document.body;
+    const isDark = body.classList.contains('dark');
+    
+    if (isDark) {
+        body.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+        animationController.showToast('Switched to light theme');
+    } else {
+        body.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+        animationController.showToast('Switched to dark theme');
+    }
+    
+    enhancedLog(`🎨 Theme switched to ${isDark ? 'light' : 'dark'} mode`, 'info');
+}
+
+// Enhanced loading states
 function setLoadingState(message) {
     const loadingOverlay = document.getElementById('loading-overlay');
     const loadingMessage = loadingOverlay?.querySelector('.loading-message-3d');
@@ -451,7 +464,6 @@ async function checkSSO() {
         const cached = await oidc.getUser();
         if (cached && !cached.expired) {
             enhancedLog("✅ Using cached ACEAS session", "success");
-            enhancedLog(`📋 Cached User: ${JSON.stringify(cached.profile, null, 2)}`, "info");
             updateAuthStatus(true, cached.profile);
             return true;
         }
@@ -461,7 +473,6 @@ async function checkSSO() {
         const user = await oidc.signinSilent();
         if (user && !user.expired) {
             enhancedLog("✅ Silent signin successful - ACEAS SSO session active", "success");
-            enhancedLog(`📋 Silent User: ${JSON.stringify(user.profile, null, 2)}`, "info");
             updateAuthStatus(true, user.profile);
             return true;
         }
@@ -474,64 +485,17 @@ async function checkSSO() {
     return false;
 }
 
-// Simple theme toggle
-function toggleTheme() {
-    const body = document.body;
-    const isDark = body.classList.contains('dark');
-    
-    if (isDark) {
-        body.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
-        animationController.showToast('Switched to light theme');
-    } else {
-        body.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-        animationController.showToast('Switched to dark theme');
-    }
-    
-    enhancedLog(`🎨 Theme switched to ${isDark ? 'light' : 'dark'} mode`, 'info');
-}
-
 async function bootstrapAuth() {
     console.log("🚀 Bootstrapping ACEAS authentication system...");
     state.isLoading.value = true;
     
     try {
+        // Initialize event handlers
+        setupEventHandlers();
+        
         // Check for existing authentication
         const isAuthenticated = await checkSSO();
         state.isAuthenticated.value = isAuthenticated;
-        
-        // Handle switcher hash (from working version)
-        if (!isAuthenticated && window.location.hash.includes("switcher")) {
-            await oidc.signinRedirect();
-            return;
-        }
-        
-        // Token lifecycle management (from working version)
-        oidc.events.addAccessTokenExpiring(async () => {
-            try {
-                await oidc.signinSilent();
-                enhancedLog("🔄 Token expiring → silent renew successful", "success");
-            } catch (error) {
-                enhancedLog(`⚠️ Silent renew error: ${error.message}`, "warning");
-            }
-        });
-        
-        oidc.events.addAccessTokenExpired(async () => {
-            try {
-                await oidc.signinSilent();
-                enhancedLog("🔄 Token expired → silent renew successful", "success");
-            } catch (error) {
-                enhancedLog(`❌ Silent renew error: ${error.message}`, "error");
-                state.isAuthenticated.value = false;
-            }
-        });
-        
-        oidc.events.addUserSignedOut(async () => {
-            await oidc.removeUser();
-            state.isAuthenticated.value = false;
-            enhancedLog("👋 User signed out", "info");
-        });
         
         enhancedLog("🎯 ACEAS authentication system initialized", "success");
         enhancedLog(`📊 Authentication status: ${isAuthenticated ? 'Active' : 'Inactive'}`, "info");
@@ -539,7 +503,6 @@ async function bootstrapAuth() {
     } catch (error) {
         enhancedLog(`❌ Authentication bootstrap failed: ${error.message}`, "error");
         console.error("Bootstrap error:", error);
-        state.isAuthenticated.value = false;
     } finally {
         state.isLoading.value = false;
         hideLoading();
@@ -548,53 +511,16 @@ async function bootstrapAuth() {
 
 // Setup enhanced event handlers with animations
 function setupEventHandlers() {
-    console.log("🔧 Setting up event handlers...");
-    
-    // Debug: Check if elements exist
-    console.log("DOM Elements:", {
-        loginBtn: !!loginBtn,
-        logoutBtn: !!logoutBtn,
-        userInfoBtn: !!userInfoBtn,
-        callApiBtn: !!callApiBtn,
-        switchBtn: !!switchBtn
-    });
-    
     // Authentication buttons
-    if (loginBtn) {
-        loginBtn.addEventListener("click", handleLogin);
-        console.log("✅ Login button event handler attached");
-    }
-    if (logoutBtn) {
-        logoutBtn.addEventListener("click", handleLogout);
-        console.log("✅ Logout button event handler attached");
-    }
-    if (userInfoBtn) {
-        userInfoBtn.addEventListener("click", handleUserInfo);
-        console.log("✅ UserInfo button event handler attached");
-    }
-    if (callApiBtn) {
-        callApiBtn.addEventListener("click", handleCallApi);
-        console.log("✅ CallAPI button event handler attached");
-    }
-    if (switchBtn) {
-        switchBtn.addEventListener("click", handleSwitch);
-        console.log("✅ Switch button event handler attached");
-    }
+    loginBtn?.addEventListener("click", handleLogin);
+    logoutBtn?.addEventListener("click", handleLogout);
+    userInfoBtn?.addEventListener("click", handleUserInfo);
+    callApiBtn?.addEventListener("click", handleCallApi);
+    switchBtn?.addEventListener("click", handleSwitch);
     
     // Console controls
-    if (clearConsoleBtn) {
-        clearConsoleBtn.addEventListener("click", clearConsole);
-        console.log("✅ Clear console button event handler attached");
-    } else {
-        console.warn("⚠️ Clear console button not found");
-    }
-    
-    if (copyConsoleBtn) {
-        copyConsoleBtn.addEventListener("click", copyConsoleContent);
-        console.log("✅ Copy console button event handler attached");
-    } else {
-        console.warn("⚠️ Copy console button not found");
-    }
+    clearConsoleBtn?.addEventListener("click", clearConsole);
+    copyConsoleBtn?.addEventListener("click", copyConsoleContent);
     
     // Theme toggle
     themeToggle?.addEventListener("click", toggleTheme);
@@ -629,37 +555,17 @@ function setupEventHandlers() {
             }
         }
     });
-    
-    console.log("🎯 All event handlers setup complete");
 }
 
 // State effects with enhanced animations
 effect(() => {
     const isAuthenticated = state.isAuthenticated.value;
-    console.log(`🔄 Authentication state changed: ${isAuthenticated}`);
-    
-    // Simple UI toggle like the working version but using CSS classes
-    if (isAuthenticated) {
-        loginBtn.classList.add('hidden');
-        logoutBtn.classList.remove('hidden');
-        userInfoBtn.classList.remove('hidden');
-        callApiBtn.classList.remove('hidden');
-    } else {
-        loginBtn.classList.remove('hidden');
-        logoutBtn.classList.add('hidden');
-        userInfoBtn.classList.add('hidden');
-        callApiBtn.classList.add('hidden');
-    }
-    
+    updateButtonVisibility(isAuthenticated);
     updateAuthStatus(isAuthenticated, state.userInfo.value);
     
     if (isAuthenticated) {
         enhancedLog("🎉 User successfully authenticated in ACEAS", "success");
         animationController.showToast("Welcome to ACEAS! Authentication successful.", "success");
-        
-        // Handlers are now properly set up via addEventListener in setupEventHandlers
-    } else {
-        enhancedLog("👤 User not authenticated - showing login options", "info");
     }
 });
 
@@ -670,15 +576,20 @@ effect(() => {
     }
 });
 
+// Initialize theme from localStorage
+function initializeTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark');
+    }
+}
+
 // Initialize everything when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     console.log("🔧 Initializing ACEAS Enterprise Authentication Platform...");
     
     // Initialize theme
     initializeTheme();
-    
-    // Setup event handlers first
-    setupEventHandlers();
     
     // Initialize animation system
     setTimeout(() => {
@@ -717,5 +628,105 @@ window.aceaAuth = {
     clearConsole,
     animationController
 };
+        loginBtn.onclick = () => oidc.signinRedirect(); // sama dg kc.login()
+        switchBtn.onclick = () => {
+            const go = encodeURIComponent("/cpds/");
+            window.location.href = `/cpds/#switcher`;     // sama seperti contohmu
+        };
+
+        // “check-sso” dulu
+        const ok = await checkSSO();
+        state.isAuthenticated.value = ok;
+
+        if (!ok) {
+            console.log("Not authenticated.");
+            log("out", "Not authenticated.");
+            // jika datang dengan hash #switcher → paksa login (login-required)
+            if (window.location.hash.includes("switcher")) {
+                console.log("Switch detected, forcing login...");
+                await oidc.signinRedirect();
+                return;
+            }
+        } else {
+            console.log("Authenticated.");
+            log("out", "Authenticated.");
+        }
+
+        // token lifecycle (mirip kc.updateToken)
+        oidc.events.addAccessTokenExpiring(async () => {
+            console.log("Access token expiring...");
+            try {
+                await oidc.signinSilent(); log("out", "token expiring → silent renew");
+                log("out", "silent renew success");
+            } catch (error) {
+                log("out", "silent renew error: " + error);
+            }
+        });
+        oidc.events.addAccessTokenExpired(async () => {
+            console.log("Access token expired");
+            // coba renew; jika gagal, status jadi logged out
+            try {
+                await oidc.signinSilent(); 
+console.log("🎯 ACEAS authentication system fully loaded and ready!");
+
+effect(() => {
+    // ui toggle - use consistent CSS classes
+    const authed = state.isAuthenticated.value;
+    if (authed) {
+        loginBtn.classList.add("hidden");
+        logoutBtn.classList.remove("hidden");
+        userInfoBtn.classList.remove("hidden");
+        callApiBtn.classList.remove("hidden");
+    } else {
+        loginBtn.classList.remove("hidden");
+        logoutBtn.classList.add("hidden");
+        userInfoBtn.classList.add("hidden");
+        callApiBtn.classList.add("hidden");
+    }
+
+    if (authed) {
+        if (!logoutBtn.onclick) {
+            logoutBtn.onclick = async () => {
+                try {
+                    await oidc.signoutRedirect({ post_logout_redirect_uri: `${window.location.origin}/aceas/` });
+                } finally {
+                    await oidc.removeUser(); // local cleanup
+                    state.isAuthenticated.value = false;
+                }
+            };
+        }
+
+        if (!userInfoBtn.onclick) {
+            userInfoBtn.onclick = async () => {
+                const u = await oidc.getUser();
+                if (!u) 
+                    return log("out", "Not logged in!");
+                const res = await fetch(
+                    "http://eservice.localhost/auth/realms/agency-realm/protocol/openid-connect/userinfo",
+                    { headers: { Authorization: `Bearer ${u.access_token}` } }
+                );
+                const info = await res.json();
+                state.userInfo.value = info;
+                log("out", "userinfo: " + JSON.stringify(info, null, 2));
+
+                const ping = await fetch(
+                    "http://eservice.localhost/auth/realms/agency-realm/demo/ping",
+                    { headers: { Authorization: `Bearer ${u.access_token}` } }
+                );
+                log("out", "ping: " + JSON.stringify(await ping.json(), null, 2));
+            };
+        }
+
+        if (!callApiBtn.onclick) {
+            callApiBtn.onclick = async () => {
+                const u = await oidc.getUser();
+                if (!u) 
+                    return log("out", "Login first");
+                const r = await callApi("/aceas/api/hello", u.access_token);
+                log("out", `ACEAS API [${r.status}]:\n${r.body}`);
+            };
+        }
+    }
+});
 
 console.log("🎯 ACEAS authentication system fully loaded and ready!");
