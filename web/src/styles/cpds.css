@@ -1556,3 +1556,135 @@ body {
     display: none;
   }
 }
+/* ===== ADVANCED 3D SCROLL EFFECTS ===== */
+
+/* Enhanced 3D Scroll-triggered animations */
+.scroll-fade-in {
+  opacity: 0;
+  transform: translateY(60px) rotateX(25deg) scale(0.9);
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  transition: all 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.scroll-fade-in.visible {
+  opacity: 1;
+  transform: translateY(0) rotateX(0deg) scale(1);
+}
+
+.scroll-slide-left {
+  opacity: 0;
+  transform: translateX(-100px) rotateY(-25deg) rotateZ(-5deg);
+  transform-style: preserve-3d;
+  perspective: 1200px;
+  transition: all 1.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.scroll-slide-left.visible {
+  opacity: 1;
+  transform: translateX(0) rotateY(0deg) rotateZ(0deg);
+}
+
+.scroll-slide-right {
+  opacity: 0;
+  transform: translateX(100px) rotateY(25deg) rotateZ(5deg);
+  transform-style: preserve-3d;
+  perspective: 1200px;
+  transition: all 1.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.scroll-slide-right.visible {
+  opacity: 1;
+  transform: translateX(0) rotateY(0deg) rotateZ(0deg);
+}
+
+.scroll-scale-up {
+  opacity: 0;
+  transform: scale(0.6) rotateX(-20deg) rotateY(-10deg) translateZ(-50px);
+  transform-style: preserve-3d;
+  perspective: 1500px;
+  transition: all 1.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.scroll-scale-up.visible {
+  opacity: 1;
+  transform: scale(1) rotateX(0deg) rotateY(0deg) translateZ(0px);
+}
+
+/* Advanced 3D scroll effects */
+.scroll-3d-flip {
+  opacity: 0;
+  transform: perspective(1000px) rotateX(-90deg) translateZ(-100px);
+  transform-style: preserve-3d;
+  transition: all 1.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.scroll-3d-flip.visible {
+  opacity: 1;
+  transform: perspective(1000px) rotateX(0deg) translateZ(0px);
+}
+
+.scroll-3d-rotate {
+  opacity: 0;
+  transform: perspective(1200px) rotateY(-180deg) rotateX(30deg) scale(0.8);
+  transform-style: preserve-3d;
+  transition: all 1.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.scroll-3d-rotate.visible {
+  opacity: 1;
+  transform: perspective(1200px) rotateY(0deg) rotateX(0deg) scale(1);
+}
+
+.scroll-3d-bounce {
+  opacity: 0;
+  transform: translateY(200px) rotateX(45deg) scale(0.7);
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  transition: all 2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.scroll-3d-bounce.visible {
+  opacity: 1;
+  transform: translateY(0) rotateX(0deg) scale(1);
+}
+
+.scroll-3d-fold {
+  opacity: 0;
+  transform: perspective(2000px) rotateX(-90deg) translateZ(-200px) scaleY(0);
+  transform-origin: top;
+  transform-style: preserve-3d;
+  transition: all 1.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.scroll-3d-fold.visible {
+  opacity: 1;
+  transform: perspective(2000px) rotateX(0deg) translateZ(0px) scaleY(1);
+}
+
+/* 3D Depth Layers */
+.scroll-3d-depth {
+  opacity: 0;
+  transform: translateZ(-300px) scale(1.2) rotateX(15deg);
+  transform-style: preserve-3d;
+  perspective: 1800px;
+  transition: all 1.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.scroll-3d-depth.visible {
+  opacity: 1;
+  transform: translateZ(0px) scale(1) rotateX(0deg);
+}
+
+/* Parallax 3D Effect */
+.scroll-3d-parallax {
+  opacity: 0;
+  transform: perspective(2000px) translateY(80px) rotateX(-20deg) translateZ(-150px);
+  transform-style: preserve-3d;
+  transition: all 1.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.scroll-3d-parallax.visible {
+  opacity: 1;
+  transform: perspective(2000px) translateY(0px) rotateX(0deg) translateZ(0px);
+}

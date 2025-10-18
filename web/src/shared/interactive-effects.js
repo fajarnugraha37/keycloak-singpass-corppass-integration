@@ -55,7 +55,9 @@ class InteractiveEffects {
 
     // Observe elements with scroll animation classes
     const animatedElements = document.querySelectorAll(
-      '.scroll-fade-in, .scroll-slide-left, .scroll-slide-right, .scroll-scale-up'
+      '.scroll-fade-in, .scroll-slide-left, .scroll-slide-right, .scroll-scale-up, ' +
+      '.scroll-3d-flip, .scroll-3d-rotate, .scroll-3d-bounce, .scroll-3d-fold, ' +
+      '.scroll-3d-depth, .scroll-3d-parallax'
     );
     
     animatedElements.forEach(el => observer.observe(el));

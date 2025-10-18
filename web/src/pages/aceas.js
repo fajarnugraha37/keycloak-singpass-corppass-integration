@@ -700,6 +700,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 4000);
     };
     
+    // Add test function for 3D scroll effects (remove in production)
+    window.test3DScrollEffects = function() {
+        const effects = [
+            'scroll-fade-in', 'scroll-slide-left', 'scroll-slide-right', 'scroll-scale-up',
+            'scroll-3d-flip', 'scroll-3d-rotate', 'scroll-3d-bounce', 'scroll-3d-fold',
+            'scroll-3d-depth', 'scroll-3d-parallax'
+        ];
+        
+        console.log('🎭 Testing 3D Scroll Effects...');
+        effects.forEach(effect => {
+            const elements = document.querySelectorAll(`.${effect}`);
+            console.log(`${effect}: ${elements.length} elements found`);
+        });
+        console.log('💡 Scroll down to see the 3D effects in action!');
+    };
+    
     // Initialize authentication
     setTimeout(() => {
         bootstrapAuth();
