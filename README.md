@@ -30,11 +30,108 @@ The stack consists of containerized services orchestrated with Docker Compose:
 ### Prerequisites
 - [Docker](https://docs.docker.com/get-docker/) and Docker Compose V2
 - [Make](https://www.gnu.org/software/make/) (for convenience commands)
-- Host entries in `/etc/hosts` (Windows: `C:\Windows\System32\drivers\etc\hosts`):
-  ```
-  127.0.0.1 eservice.localhost
-  127.0.0.1 mockpass.localhost
-  ```
+- **Host file configuration** (see setup below)
+
+### Host File Configuration
+
+For the application to work correctly, you need to add entries to your system's hosts file to point the required domains to localhost.
+
+#### 🪟 Windows
+1. **Open Command Prompt as Administrator**
+   - Press `Win + R`, type `cmd`, then press `Ctrl + Shift + Enter`
+
+2. **Edit the hosts file**
+   ```cmd
+   notepad C:\Windows\System32\drivers\etc\hosts
+   ```
+
+3. **Add these lines at the end of the file**
+   ```
+   127.0.0.1 eservice.localhost
+   127.0.0.1 mockpass.localhost
+   ```
+
+4. **Save and close the file**
+
+#### 🍎 macOS
+1. **Open Terminal**
+
+2. **Edit the hosts file with your preferred editor**
+   ```bash
+   sudo nano /etc/hosts
+   ```
+   Or with vim:
+   ```bash
+   sudo vim /etc/hosts
+   ```
+
+3. **Add these lines at the end of the file**
+   ```
+   127.0.0.1 eservice.localhost
+   127.0.0.1 mockpass.localhost
+   ```
+
+4. **Save and exit**
+   - For nano: `Ctrl + X`, then `Y`, then `Enter`
+   - For vim: `:wq` then `Enter`
+
+5. **Flush DNS cache**
+   ```bash
+   sudo dscacheutil -flushcache
+   sudo killall -HUP mDNSResponder
+   ```
+
+#### 🐧 Linux
+1. **Open Terminal**
+
+2. **Edit the hosts file**
+   ```bash
+   sudo nano /etc/hosts
+   ```
+   Or with your preferred editor:
+   ```bash
+   sudo vim /etc/hosts
+   ```
+
+3. **Add these lines at the end of the file**
+   ```
+   127.0.0.1 eservice.localhost
+   127.0.0.1 mockpass.localhost
+   ```
+
+4. **Save and exit**
+   - For nano: `Ctrl + X`, then `Y`, then `Enter`
+   - For vim: `:wq` then `Enter`
+
+5. **Flush DNS cache** (varies by distribution)
+   ```bash
+   # Ubuntu/Debian
+   sudo systemctl restart systemd-resolved
+   
+   # CentOS/RHEL/Fedora
+   sudo systemctl restart NetworkManager
+   
+   # Or manually flush
+   sudo systemctl flush-dns
+   ```
+
+#### ✅ Verify Configuration
+After updating your hosts file, verify the configuration works:
+
+```bash
+# Test eservice.localhost
+ping eservice.localhost
+
+# Test mockpass.localhost  
+ping mockpass.localhost
+```
+
+Both should resolve to `127.0.0.1` (localhost).
+
+**Alternative: Using /etc/hosts managers**
+- **Windows**: [HostsMan](http://www.abelhadigital.com/hostsman) or [Hosts File Editor](https://hostsfileeditor.com/)
+- **macOS**: [Gas Mask](https://github.com/2ndalpha/gasmask) or [SwitchHosts](https://switchhosts.vercel.app/)
+- **Linux**: [SwitchHosts](https://switchhosts.vercel.app/) (cross-platform)
 
 ### Getting Started
 
