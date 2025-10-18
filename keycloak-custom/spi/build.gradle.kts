@@ -1,6 +1,5 @@
 plugins {
     `java-library`
-    // uncomment if you want a fat jar:
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
@@ -22,7 +21,8 @@ val nimbusVersion = "9.40"
 val nimbusOidcVersion = "11.7.1"
 val junitVersion = "5.10.3"
 val httpClientVersion = "5.3.1"
-var jacksonVersion = "2.20.0"
+val jacksonVersion = "2.20.0"
+val jbossVersion = "3.5.1.Final";
 
 dependencies {
     compileOnly("org.keycloak:keycloak-core:$kcVersion")
@@ -39,14 +39,12 @@ dependencies {
     implementation("com.nimbusds:oauth2-oidc-sdk:$nimbusOidcVersion")
     implementation("com.nimbusds:nimbus-jose-jwt:$nimbusVersion")
     implementation("org.apache.httpcomponents.client5:httpclient5:$httpClientVersion")
+    implementation("org.jboss.logging:jboss-logging:$jbossVersion")
 
-    // jboss logging
-    implementation("org.jboss.logging:jboss-logging:3.5.1.Final")
     testImplementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     testImplementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 }
 
@@ -65,11 +63,22 @@ tasks.jar {
     }
 }
 
-tasks.shadowJar {
-    archiveClassifier.set("") // overwrite default jar
-    relocate("com.nimbusds", "com.example.shaded.nimbus")
-    relocate("com.apache.httpcomponents.client5", "com.example.shaded.apache.httpcomponents.client5")
+tasks.register<Copy>("copyDependencies") {
+    from(configurations.runtimeClasspath) {
+        exclude("org.keycloak:*")
+        exclude("jakarta.interceptor:*")
+        exclude("jakarta.inject:*")
+        exclude("jakarta.annotation:*")
+        exclude("jakarta.enterprise:*")
+    }
+    into(layout.buildDirectory.dir("libs/jars"))
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
+
+tasks.shadowJar {
+    dependsOn("copyDependencies")
+}
+
 tasks.build {
-    dependsOn("shadowJar")
+    dependsOn("copyDependencies", "shadowJar")
 }

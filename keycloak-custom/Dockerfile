@@ -12,6 +12,7 @@ FROM quay.io/keycloak/keycloak:25.0.6
 
 # put your provider(s) here
 USER root
+COPY --from=builder /workspace/spi/build/libs/jars/*.jar /opt/keycloak/providers/
 COPY --from=builder /workspace/spi/build/libs/*.jar /opt/keycloak/providers/
 
 # (optional) if you have extra libs your SPI needs:
