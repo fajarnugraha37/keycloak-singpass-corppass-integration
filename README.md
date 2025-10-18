@@ -38,7 +38,8 @@ Singapore SingPass simulation providing realistic government authentication expe
 ### 🚨 Error Pages
 Professional error handling with government-styled 404 and 50x pages featuring animations and auto-refresh functionality.
 
-![Error Pages](./docs/images/error-pages.png)
+![Error 404](./docs/images/error-404.png)
+![Error 5XX](./docs/images/error-50x.png)
 
 ## 📖 Table of Contents
 
