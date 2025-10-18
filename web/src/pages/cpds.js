@@ -1,3 +1,4 @@
+import 'htmx.org';
 import './common.js';
 import { callApi, log, showLoading, hideLoading } from "../shared";
 
@@ -29,6 +30,8 @@ window.onload = async () => {
         const isAuth = await authCheck();
         if (!isAuth) {
             log("out", `State: not authenticated, please login`);
+            // Show login button when not authenticated
+            document.getElementById("login").classList.remove("hidden");
             if (window.location.hash.includes("switcher")) {
                 console.log("Switching");
                 // keep overlay visible while redirecting
@@ -41,11 +44,22 @@ window.onload = async () => {
         }
 
         log("out", `Authenticated.`);
+        
+        // Show authenticated buttons
+        document.getElementById("logout").classList.remove("hidden");
+        document.getElementById("userinfo").classList.remove("hidden");
+        document.getElementById("callapi").classList.remove("hidden");
+        
         var interval = setInterval(async () => {
             const isAuth = await authCheck();
             if (!isAuth) {
                 log("out", `State: not authenticated, clearing interval`);
                 clearInterval(interval);
+                // Hide authenticated buttons
+                document.getElementById("logout").classList.add("hidden");
+                document.getElementById("userinfo").classList.add("hidden");
+                document.getElementById("callapi").classList.add("hidden");
+                document.getElementById("login").classList.remove("hidden");
                 return;
             }
         }, 60000); // Check every minute 
@@ -92,3 +106,11 @@ document.getElementById("switch").onclick = () => {
     const go = encodeURIComponent("/aceas/");
     window.location.href = `/aceas/#switcher`;
 };
+
+// Clear console functionality
+document.getElementById("clear-console")?.addEventListener('click', () => {
+    const consoleOutput = document.getElementById('out');
+    if (consoleOutput) {
+        consoleOutput.textContent = 'Console cleared.\nWaiting for user interaction...';
+    }
+});

@@ -1,0 +1,105 @@
+/* ACEAS Theme - CEA Singapore Orange */
+
+/* Header adjustments for better proportions */
+.aceas-header {
+  min-height: 3rem; /* Reduce from 3.5rem */
+}
+
+.aceas-title {
+  font-size: 0.875rem; /* text-sm instead of text-base */
+  line-height: 1.25rem;
+  font-weight: 600; /* semibold instead of bold */
+  color: #0f172a; /* slate-900 */
+}
+
+.dark .aceas-title {
+  color: #ffffff; /* white */
+}
+
+.aceas-subtitle {
+  font-size: 0.75rem; /* text-xs */
+  line-height: 1rem;
+  color: #c2410c; /* orange-700 */
+}
+
+.dark .aceas-subtitle {
+  color: #fb923c; /* orange-400 */
+}
+
+.aceas-icon {
+  width: 1.5rem; /* w-6 instead of w-7 */
+  height: 1.5rem; /* h-6 instead of h-7 */
+}
+
+.aceas-icon svg {
+  width: 0.875rem; /* w-3.5 */
+  height: 0.875rem; /* h-3.5 */
+}
+
+/* Button improvements */
+.btn-primary,
+.btn-secondary,
+.btn-danger {
+  font-size: 0.875rem; /* text-sm */
+  padding: 0.625rem 1rem; /* py-2.5 px-4 */
+  font-weight: 500; /* font-medium */
+  border-radius: 0.5rem; /* rounded-lg */
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-smooth {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-smooth:hover {
+  transform: translateY(-2px);
+}
+
+.btn-smooth:active {
+  transform: translateY(0);
+  transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ACEAS Orange Theme Colors */
+.aceas-bg-gradient {
+  background: linear-gradient(135deg, #fed7aa 0%, #fef3c7 50%, #fed7aa 100%);
+}
+
+.aceas-primary {
+  background: linear-gradient(135deg, #ea580c 0%, #ea580c 50%, #f59e0b 100%);
+  box-shadow: 0 10px 15px -3px rgba(251, 146, 60, 0.2);
+  color: white;
+}
+
+.aceas-primary:hover {
+  background: linear-gradient(135deg, #c2410c 0%, #c2410c 50%, #d97706 100%);
+  box-shadow: 0 10px 15px -3px rgba(251, 146, 60, 0.3);
+  transform: translateY(-1px);
+}
+
+.aceas-secondary {
+  border: 2px solid #fdba74;
+  color: #c2410c;
+  background: white;
+}
+
+.aceas-secondary:hover {
+  background-color: #fed7aa;
+  border-color: #fb923c;
+  transform: translateY(-1px);
+}
+
+.aceas-header-bg {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 2px solid #fdba74;
+}
+
+.dark .aceas-header-bg {
+  background: rgba(15, 23, 42, 0.95);
+  border-bottom-color: #7c2d12;
+}
+
+.aceas-icon-gradient {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 50%, #f59e0b 100%);
+}

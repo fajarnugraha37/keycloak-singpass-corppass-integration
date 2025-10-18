@@ -1,42 +1,192 @@
 
-/* Loading overlay */
+/* Enhanced Loading overlay */
 #loading-overlay {
   position: fixed;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(8px);
   z-index: 9999;
-  color: #fff;
+  color: #f8fafc;
   flex-direction: column;
-  gap: 1rem;
-}
-#loading-overlay.hidden {
-  display: none;
-}
-.loader {
-  width: 24rem;
-  height: 0.6rem;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 0.3rem;
-  overflow: hidden;
-}
-.loader > .bar {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, #4fd1c5, #63b3ed);
-  animation: progress 2.5s linear infinite;
+  gap: 2rem;
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+  
+  &.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  
+  .loading-content {
+    text-align: center;
+    max-width: 400px;
+    padding: 3rem;
+    background: rgba(30, 41, 59, 0.9);
+    border-radius: 2rem;
+    border: 1px solid rgba(71, 85, 105, 0.3);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+  
+  .loading-icon {
+    width: 6rem;
+    height: 6rem;
+    margin: 0 auto 2rem;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse 2s ease-in-out infinite;
+    
+    svg {
+      width: 2.4rem;
+      height: 2.4rem;
+      color: white;
+    }
+  }
+  
+  .loading-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #f8fafc;
+  }
+  
+  .loading-message {
+    font-size: 1.4rem;
+    color: #cbd5e1;
+    margin-bottom: 2rem;
+  }
 }
 
-@keyframes progress {
-  0% {
+/* Enhanced progress bar */
+.loader {
+  width: 100%;
+  height: 0.8rem;
+  background: rgba(71, 85, 105, 0.3);
+  border-radius: 1rem;
+  overflow: hidden;
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: rgba(71, 85, 105, 0.1);
+    width: 100%;
+    border-radius: inherit;
+  }
+  
+  > .bar {
+    height: 100%;
     width: 0%;
+    background: linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899);
+    background-size: 200% 100%;
+    border-radius: inherit;
+    position: relative;
+    animation: progress 2.5s ease-in-out infinite, shimmer 1.5s ease-in-out infinite;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      animation: shine 2s ease-in-out infinite;
+    }
+  }
+}
+
+/* Progress bar animations */
+@keyframes progress {
+  0% { width: 0%; }
+  25% { width: 40%; }
+  50% { width: 70%; }
+  75% { width: 90%; }
+  100% { width: 0%; }
+}
+
+@keyframes shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes shine {
+  0% { transform: translateX(-100%); }
+  50%, 100% { transform: translateX(100%); }
+}
+
+/* Spinner component */
+.spinner {
+  width: 4rem;
+  height: 4rem;
+  border: 3px solid rgba(71, 85, 105, 0.3);
+  border-top: 3px solid #6366f1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Pulse animation for status indicators */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
   }
   50% {
-    width: 75%;
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+/* Success state */
+.loading-success {
+  .loading-icon {
+    background: linear-gradient(135deg, #10b981, #059669);
+    animation: none;
+    
+    svg {
+      animation: checkmark 0.5s ease-in-out;
+    }
+  }
+}
+
+/* Error state */
+.loading-error {
+  .loading-icon {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    animation: shake 0.5s ease-in-out;
+  }
+}
+
+@keyframes checkmark {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
   }
   100% {
-    width: 0%;
+    transform: scale(1);
+    opacity: 1;
   }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
 }

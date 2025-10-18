@@ -1,0 +1,105 @@
+/* CPDS Theme - Professional Youthful Blue */
+
+/* Header adjustments for better proportions */
+.cpds-header {
+  min-height: 3rem; /* Reduce from 3.5rem */
+}
+
+.cpds-title {
+  font-size: 0.875rem; /* text-sm instead of text-base */
+  line-height: 1.25rem;
+  font-weight: 600; /* semibold instead of bold */
+  color: #0f172a; /* slate-900 */
+}
+
+.dark .cpds-title {
+  color: #ffffff; /* white */
+}
+
+.cpds-subtitle {
+  font-size: 0.75rem; /* text-xs */
+  line-height: 1rem;
+  color: #1e40af; /* blue-800 */
+}
+
+.dark .cpds-subtitle {
+  color: #60a5fa; /* blue-400 */
+}
+
+.cpds-icon {
+  width: 1.5rem; /* w-6 instead of w-7 */
+  height: 1.5rem; /* h-6 instead of h-7 */
+}
+
+.cpds-icon svg {
+  width: 0.875rem; /* w-3.5 */
+  height: 0.875rem; /* h-3.5 */
+}
+
+/* Button improvements */
+.btn-primary,
+.btn-secondary,
+.btn-danger {
+  font-size: 0.875rem; /* text-sm */
+  padding: 0.625rem 1rem; /* py-2.5 px-4 */
+  font-weight: 500; /* font-medium */
+  border-radius: 0.5rem; /* rounded-lg */
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-smooth {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-smooth:hover {
+  transform: translateY(-2px);
+}
+
+.btn-smooth:active {
+  transform: translateY(0);
+  transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* CPDS Blue Theme Colors */
+.cpds-bg-gradient {
+  background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 50%, #e0e7ff 100%);
+}
+
+.cpds-primary {
+  background: linear-gradient(135deg, #2563eb 0%, #2563eb 50%, #4338ca 100%);
+  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.2);
+  color: white;
+}
+
+.cpds-primary:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1d4ed8 50%, #3730a3 100%);
+  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+  transform: translateY(-1px);
+}
+
+.cpds-secondary {
+  border: 2px solid #93c5fd;
+  color: #1e40af;
+  background: white;
+}
+
+.cpds-secondary:hover {
+  background-color: #dbeafe;
+  border-color: #60a5fa;
+  transform: translateY(-1px);
+}
+
+.cpds-header-bg {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 2px solid #93c5fd;
+}
+
+.dark .cpds-header-bg {
+  background: rgba(15, 23, 42, 0.95);
+  border-bottom-color: #1e3a8a;
+}
+
+.cpds-icon-gradient {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #4338ca 100%);
+}

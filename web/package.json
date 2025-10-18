@@ -1,12 +1,18 @@
 {
-  "name": "vanilla",
+  "name": "sso-playground-web",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "SSO Playground - Frontend applications for learning authentication patterns",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build --watch",
-    "preview": "vite preview"
+    "dev": "vite --host",
+    "build": "vite build",
+    "build:watch": "vite build --watch",
+    "preview": "vite preview --host",
+    "clean": "rm -rf ../webroot/* || rmdir /s /q ..\\webroot\\* 2>nul",
+    "analyze": "vite build --mode analyze",
+    "lint": "echo 'ESLint not configured - consider adding for code quality'",
+    "type-check": "echo 'TypeScript not configured - consider adding for type safety'"
   },
   "devDependencies": {
     "glob": "^11.0.3",
@@ -16,8 +22,20 @@
   "dependencies": {
     "@preact/signals": "^2.2.1",
     "@tailwindcss/vite": "^4.1.12",
+    "htmx.org": "^2.0.7",
     "keycloak-js": "25.0.6",
     "oidc-client-ts": "^2.4.1",
     "tailwindcss": "^4.1.12"
-  }
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "sso",
+    "authentication",
+    "keycloak",
+    "oidc",
+    "playground",
+    "learning"
+  ]
 }

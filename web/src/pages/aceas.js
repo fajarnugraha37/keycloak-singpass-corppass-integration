@@ -1,41 +1,98 @@
+import 'htmx.org';
 import './common.js';
 import { signal, effect } from "@preact/signals";
 import { callApi, log, showLoading, hideLoading } from "../shared/index.js";
 import { oidc } from "./oidc.js";
 
+// DOM elements
 const loginBtn = document.getElementById("login");
 const logoutBtn = document.getElementById("logout");
 const userInfoBtn = document.getElementById("userinfo");
 const callApiBtn = document.getElementById("callapi");
 const switchBtn = document.getElementById("switch");
+const authStatus = document.getElementById("auth-status");
+const clearConsoleBtn = document.getElementById("clear-console");
 
+// State management
 const state = {
     isAuthenticated: signal(false),
     isLoading: signal(false),
     userInfo: signal(null),
 };
 
-async function checkSSO() {
-    console.log("Checking SSO...");
-    // 1) local cache
-    console.log("Checking local cache...");
-    const cached = await oidc.getUser();
-    if (cached && !cached.expired) {
-        console.log("Using cached user:", cached);
-        log("out", "Using cached user: " + JSON.stringify(cached, null, 2));
-        return true;
-    }
+// Enhanced logging with timestamps and styling
+function enhancedLog(message, type = 'info') {
+    const timestamp = new Date().toLocaleTimeString();
+    const prefix = `[${timestamp}] [${type.toUpperCase()}]`;
+    const styledMessage = `${prefix} ${message}`;
+    log("out", styledMessage);
+    console.log(styledMessage);
+}
 
-    // 2) silent (prompt=none) → sukses jika masih ada SSO cookie di keycloak
-    try {
-        console.log("Trying silent signin...");
-        const u = await oidc.signinSilent();
-        console.log("Silent signin success:", u);
-        log("out", "Silent signin success: " + JSON.stringify(u, null, 2));
-        return !!u && !u.expired;
-    } catch {
-        return false;
+// Clear console functionality
+function clearConsole() {
+    const consoleOutput = document.getElementById('out');
+    if (consoleOutput) {
+        consoleOutput.textContent = 'Console cleared.\nWaiting for user interaction...';
     }
+}
+
+// Update authentication status indicator
+function updateAuthStatus(isAuthenticated, userInfo = null) {
+    if (!authStatus) return;
+    
+    const statusDot = authStatus.querySelector('div');
+    const statusText = authStatus.querySelector('span');
+    
+    if (isAuthenticated) {
+        authStatus.className = 'status-indicator status-online';
+        if (statusDot) statusDot.className = 'w-2 h-2 bg-green-500 rounded-full animate-pulse';
+        if (statusText) statusText.textContent = userInfo ? `${userInfo.preferred_username || 'User'}` : 'Authenticated';
+    } else {
+        authStatus.className = 'status-indicator status-offline';
+        if (statusDot) statusDot.className = 'w-2 h-2 bg-red-500 rounded-full';
+        if (statusText) statusText.textContent = 'Not Authenticated';
+    }
+}
+
+// Enhanced loading states
+function setLoadingState(message) {
+    const loadingOverlay = document.getElementById('loading-overlay');
+    const loadingMessage = loadingOverlay?.querySelector('.loading-message');
+    if (loadingMessage) {
+        loadingMessage.textContent = message;
+    }
+    showLoading();
+}
+
+async function checkSSO() {
+    enhancedLog("Checking SSO status...", "info");
+    setLoadingState("Checking local cache...");
+    
+    try {
+        // 1) Check local cache first
+        const cached = await oidc.getUser();
+        if (cached && !cached.expired) {
+            enhancedLog("Using cached user session", "success");
+            updateAuthStatus(true, cached.profile);
+            return true;
+        }
+
+        // 2) Try silent signin (prompt=none)
+        setLoadingState("Checking SSO session...");
+        const user = await oidc.signinSilent();
+        if (user && !user.expired) {
+            enhancedLog("Silent signin successful - SSO session active", "success");
+            updateAuthStatus(true, user.profile);
+            return true;
+        }
+    } catch (error) {
+        enhancedLog(`SSO check failed: ${error.message}`, "warn");
+    }
+    
+    enhancedLog("No active SSO session found", "info");
+    updateAuthStatus(false);
+    return false;
 }
 
 async function bootstrapAuth() {
@@ -105,12 +162,19 @@ async function bootstrapAuth() {
 }
 
 effect(() => {
-    // ui toggle
+    // ui toggle - use consistent CSS classes
     const authed = state.isAuthenticated.value;
-    loginBtn.style.display = authed ? "none" : "inline-block";
-    logoutBtn.style.display = authed ? "inline-block" : "none";
-    userInfoBtn.style.display = authed ? "inline-block" : "none";
-    callApiBtn.style.display = authed ? "inline-block" : "none";
+    if (authed) {
+        loginBtn.classList.add("hidden");
+        logoutBtn.classList.remove("hidden");
+        userInfoBtn.classList.remove("hidden");
+        callApiBtn.classList.remove("hidden");
+    } else {
+        loginBtn.classList.remove("hidden");
+        logoutBtn.classList.add("hidden");
+        userInfoBtn.classList.add("hidden");
+        callApiBtn.classList.add("hidden");
+    }
 
     if (authed) {
         if (!logoutBtn.onclick) {
@@ -158,5 +222,10 @@ effect(() => {
 });
 
 effect(() => state.isLoading.value ? showLoading() : hideLoading());
+
+// Add clear console event listener
+if (clearConsoleBtn) {
+    clearConsoleBtn.addEventListener('click', clearConsole);
+}
 
 bootstrapAuth();
