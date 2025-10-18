@@ -2869,5 +2869,80 @@
   },
   "clientPolicies": {
     "policies": []
-  }
+  },
+  "users": [
+    {
+      "username": "demo",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "demo@example.com",
+      "firstName": "Demo",
+      "lastName": "User",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "demo123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "cpds-user",
+        "aceas-user"
+      ]
+    },
+    {
+      "username": "alice",
+      "enabled": true,
+      "email": "alice@example.com",
+      "emailVerified": true,
+      "firstName": "Alice",
+      "lastName": "Anderson",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "alicepassword"
+        }
+      ],
+      "realmRoles": [
+        "cpds-user",
+        "aceas-user"
+      ]
+    },
+    {
+      "username": "bob",
+      "enabled": true,
+      "email": "bob@example.com",
+      "emailVerified": true,
+      "firstName": "Bob",
+      "lastName": "Brown",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "bobpassword"
+        }
+      ],
+      "realmRoles": [
+        "cpds-user",
+        "aceas-user"
+      ]
+    },
+    {
+      "username": "charlie",
+      "enabled": true,
+      "email": "charlie@example.com",
+      "emailVerified": true,
+      "firstName": "Charlie",
+      "lastName": "Clark",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "charliepassword"
+        }
+      ],
+      "realmRoles": [
+        "cpds-user",
+        "aceas-user"
+      ]
+    }
+  ]
 }
