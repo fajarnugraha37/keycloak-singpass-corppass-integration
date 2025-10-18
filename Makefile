@@ -73,5 +73,5 @@ log-mockpass:
 	docker logs mockpass -f
 log-kc:
 	docker logs kc_agency -f
-log-kc:
+log-db:
 	docker logs kc_db_agency -f
