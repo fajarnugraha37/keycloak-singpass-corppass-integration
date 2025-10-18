@@ -31,4 +31,4 @@ class h{constructor(){this.init()}init(){this.addKeyboardShortcuts(),this.addVis
                 <span>Auto-refresh disabled. Please try again manually.</span>
             </div>
         `,document.body.appendChild(e),setTimeout(()=>{e.remove()},5e3)}}document.addEventListener("DOMContentLoaded",()=>{new h,new f});
-//# sourceMappingURL=error-pages-4wducuVM-mgwkawxp.js.map
+//# sourceMappingURL=error-pages-DYPjAwEM-mgwkhzyp.js.map
