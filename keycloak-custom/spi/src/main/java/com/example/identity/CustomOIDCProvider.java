@@ -111,13 +111,17 @@ public class CustomOIDCProvider extends OIDCIdentityProvider {
 
     @Override
     public Response performLogin(AuthenticationRequest request) {
-        logger.infof("[performLogin] Performing login in CustomOIDCProvider: %s %s", request.getRedirectUri(), request.getState());
         var redirectUri = request.getRedirectUri();
         var realmId = request.getRealm().getId();
         var clientId = request.getState().getClientId();
         var authSession = request.getAuthenticationSession();
         var authSessionId = authSession.getTabId();
-        logger.infof("[performLogin] Login details - Realm ID: %s, Client ID: %s, Auth Session ID: %s, Redirect URI: %s", realmId, clientId, authSessionId, redirectUri);
+        logger.infof("[performLogin] Login details - Realm ID: %s, Client ID: %s, Auth Session ID: %s, Redirect URI: %s, State: %s",
+                realmId,
+                clientId,
+                authSessionId,
+                redirectUri,
+                request.getState());
 
         var httpMethod = request.getHttpRequest().getHttpMethod();
         var httpPath = request.getHttpRequest().getUri().getPath();
@@ -716,6 +720,11 @@ public class CustomOIDCProvider extends OIDCIdentityProvider {
         return super.hasExternalExchangeToken(event, tokenUserSession, params);
     }
 
+    @Override
+    public void close() {
+        logger.info("[close] Closing CustomOIDCProvider");
+        super.close();
+    }
 
     protected static class CustomOIDCEndpoint extends OIDCEndpoint {
 
