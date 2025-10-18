@@ -15,6 +15,7 @@ nginx/
 ├── cors.conf               # CORS configuration (NEW)
 ├── ssl.conf                # SSL/TLS configuration (NEW)
 ├── cache.conf              # Caching configuration (NEW)
+├── vite-cache.conf         # Vite-specific cache busting (NEW)
 └── conf.d/
     ├── default.conf        # Default server (simplified)
     ├── eservice.localhost.conf    # eService configuration (optimized)
@@ -98,6 +99,74 @@ include /etc/nginx/cors.conf;       # CORS headers
 - **Graceful fallbacks** - Proper error page routing
 - **Auto-refresh for 5xx** - Automatic retry for service errors
 
+## 🎯 **Vite Cache Busting Integration** 🆕
+
+### **Overview**
+The nginx configuration is optimized to work seamlessly with Vite's cache busting strategy, ensuring browsers always fetch fresh content after new builds while maximizing performance for static assets.
+
+### **How It Works**
+
+1. **Vite Build Process**:
+   ```bash
+   npm run build  # Generates: assets/index-D0N7gXsW-mgwgoinm.js
+   ```
+
+2. **Nginx Pattern Recognition**:
+   ```nginx
+   # Matches Vite's pattern: name-contenthash-timestamp.ext
+   location ~* ^/assets/.+-[a-zA-Z0-9_-]{8,}-[a-zA-Z0-9]{8,}\.(css|js)$
+   ```
+
+3. **Cache Strategy Application**:
+   - **Hashed files**: Cache for 1 year (safe due to content hashing)
+   - **HTML files**: Zero cache (references new hashed URLs)
+   - **Non-hashed files**: 1 hour cache (development fallback)
+
+### **Testing Cache Busting**
+
+1. **Build & Check URLs**:
+   ```bash
+   cd web && npm run build
+   # Look for: assets/index-hash-timestamp.js pattern
+   ```
+
+2. **Verify Cache Headers**:
+   ```bash
+   curl -I http://localhost/assets/index-D0N7gXsW-mgwgoinm.js
+   # Should show: X-Vite-Cache: hashed-asset
+   ```
+
+3. **Test Fresh HTML**:
+   ```bash
+   curl -I http://localhost/
+   # Should show: X-Vite-Build: fresh
+   ```
+
+4. **Verify Cache Busting**:
+   ```bash
+   # Build again
+   npm run build
+   # URLs should change, forcing fresh downloads
+   ```
+
+### **Cache Busting Benefits**
+
+1. **✅ Zero Cache Issues**: Every build forces fresh downloads
+2. **⚡ Maximum Performance**: Hashed assets cached aggressively 
+3. **🔄 Fresh HTML Always**: HTML references new asset URLs
+4. **🛠️ Dev-Friendly**: Development files bypass cache
+5. **📊 Debug Headers**: `X-Vite-Cache` and `X-Vite-Build` for monitoring
+
+### **Docker Integration**
+
+When rebuilding containers:
+1. New Vite build generates unique asset URLs
+2. Nginx serves fresh HTML with new asset references  
+3. Browsers fetch new hashed assets (URLs changed)
+4. Old assets naturally expire from cache
+
+**Result**: Zero-downtime deployments with guaranteed cache invalidation! 🚀
+
 ## 🔧 **Configuration Details**
 
 ### **Rate Limiting Zones (Updated)**
@@ -112,10 +181,53 @@ include /etc/nginx/cors.conf;       # CORS headers
 
 ### **Caching Strategy**
 
-#### **Static Assets**
+#### **Static Assets (Traditional)**
 - **Browser caching** - 1 year for immutable assets
 - **Server caching** - 24 hours for static content
 - **Compression** - Gzip with optimal levels
+
+#### **Vite Cache Busting Strategy** 🆕
+
+##### **🎯 Hashed Assets (Vite Generated)**
+Files matching pattern: `/assets/name-contenthash-timestamp.ext`
+- **Cache Duration**: 1 year
+- **Cache-Control**: `public, immutable`
+- **Why**: Content hash changes when file changes, timestamp ensures uniqueness per build
+
+##### **📄 HTML Files**
+All `.html` files (index.html, 404.html, 50x.html, etc.)
+- **Cache Duration**: No cache (`expires -1`)
+- **Cache-Control**: `no-cache, no-store, must-revalidate`
+- **Why**: HTML references hashed assets, must be fresh to pick up new asset URLs
+
+##### **🔄 Non-Hashed Assets** 
+Assets without Vite hash pattern
+- **Cache Duration**: 1 hour
+- **Cache-Control**: `public, must-revalidate`
+- **Why**: Fallback for development or non-Vite assets
+
+##### **Cache Headers for Vite Builds**
+
+**Hashed Assets:**
+```
+Cache-Control: public, immutable
+Expires: 1 year
+X-Vite-Cache: hashed-asset
+```
+
+**HTML Files:**
+```
+Cache-Control: no-cache, no-store, must-revalidate, proxy-revalidate
+Pragma: no-cache
+Expires: -1
+X-Vite-Build: fresh
+```
+
+**Development Files:**
+```
+Cache-Control: no-cache, no-store, must-revalidate
+X-Vite-Cache: dev-file
+```
 
 #### **Dynamic Content**
 - **API responses** - 5 minutes for GET requests
@@ -186,8 +298,11 @@ include /etc/nginx/ssl.conf;
 
 ### **Enable Caching**
 ```nginx
-# Add to main nginx.conf
+# Add to main nginx.conf for traditional caching
 include /etc/nginx/cache.conf;
+
+# Add to server config for Vite cache busting
+include /etc/nginx/vite-cache.conf;
 ```
 
 ### **Custom Service**
@@ -250,6 +365,9 @@ make log-web
 
 # Monitor health
 curl http://localhost/health
+
+# Test Vite cache busting
+curl -I http://localhost/assets/index-hash-timestamp.js  # Should show X-Vite-Cache header
 ```
 
 ### **Common Issues**
@@ -351,6 +469,7 @@ docker exec web nginx -T | grep limit_req_zone
 - **🆕 Enhanced error handling**: Professional error pages with graceful fallbacks
 - **🆕 Improved burst limits**: Increased burst capacity across all zones
 - **🆕 Better logging**: Enhanced JSON logging with upstream metrics
+- **🆕 Vite cache busting**: Intelligent cache strategy for Vite builds with `vite-cache.conf`
 
 #### **Configuration Changes**
 ```nginx
@@ -376,6 +495,7 @@ nginx/
 ├── proxy.conf              # Enhanced proxy settings
 ├── locations.conf          # Added health endpoints
 + ├── cors.conf              # NEW: Dedicated CORS config
++ ├── vite-cache.conf        # NEW: Vite-specific cache busting
 ├── ssl.conf                # Ready for production
 ├── cache.conf              # Advanced caching rules
 └── conf.d/

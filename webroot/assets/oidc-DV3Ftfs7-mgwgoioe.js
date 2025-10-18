@@ -1,0 +1,2 @@
+import{U as e,W as o}from"./vendor-oidc-C7bVSgrn-mgwgoinv.js";const a=new e({authority:"http://eservice.localhost/auth/realms/agency-realm",client_id:"aceas-spa",redirect_uri:`${window.location.origin}/aceas/callback.html`,silent_redirect_uri:`${window.location.origin}/aceas/callback.html?type=silent`,response_type:"code",scope:"openid profile email",userStore:new o({store:window.localStorage}),automaticSilentRenew:!0,monitorSession:!0});export{a as o};
+//# sourceMappingURL=oidc-DV3Ftfs7-mgwgoioe.js.map

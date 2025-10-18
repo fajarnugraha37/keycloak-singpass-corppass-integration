@@ -328,6 +328,7 @@ services:
       - ./nginx/cors.conf:/etc/nginx/cors.conf:ro
       - ./nginx/cache.conf:/etc/nginx/cache.conf:ro
       - ./nginx/ssl.conf:/etc/nginx/ssl.conf:ro
+      - ./nginx/vite-cache.conf:/etc/nginx/vite-cache.conf:ro
       
       # Static content (read-only)
       - ./webroot:/usr/share/nginx/html:ro

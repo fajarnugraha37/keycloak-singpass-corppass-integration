@@ -79,7 +79,11 @@ endif
 .PHONY: up down restart stop start
 .PHONY: build build-no-cache rebuild
 .PHONY: $(addprefix re-,$(SERVICES))
+.PHONY: $(addprefix restart-,$(SERVICES))
+.PHONY: $(addprefix stop-,$(SERVICES))
+.PHONY: $(addprefix start-,$(SERVICES))
 .PHONY: $(addprefix log-,$(SERVICES))
+.PHONY: $(addprefix tail-,$(SERVICES))
 .PHONY: $(addprefix shell-,$(SERVICES))
 .PHONY: dev prod test
 .PHONY: backup restore reset
@@ -106,11 +110,14 @@ help: ## 📋 Show this help message
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "  $(CYAN)%-20s$(RESET) %s\n", $$1, $$2}' $(MAKEFILE_LIST) | grep -E "(🛠️|🔒|📦|⚡)"
 	@echo ""
 	@echo "$(BOLD)Examples:$(RESET)"
-	@echo "  make up              # Start all services"
-	@echo "  make dev             # Start in development mode"
-	@echo "  make logs            # Show all logs"
-	@echo "  make log-keycloak    # Show Keycloak logs"
-	@echo "  make re-keycloak     # Rebuild and restart Keycloak"
+	@echo "  make up                 # Start all services"
+	@echo "  make dev                # Start in development mode"
+	@echo "  make logs               # Show all logs"
+	@echo "  make log-keycloak       # Show Keycloak logs"
+	@echo "  make re-keycloak        # Rebuild and restart Keycloak"
+	@echo "  make restart-keycloak   # Restart Keycloak without rebuilding"
+	@echo "  make stop-web           # Stop web service only"
+	@echo "  make start-web          # Start web service if stopped"
 
 # =============================================================================
 # Environment and Dependency Checks
@@ -229,6 +236,15 @@ test: ## 🧪 Run tests (placeholder for future implementation)
 
 # Generate rebuild targets for each service
 $(foreach service,$(SERVICES),$(eval re-$(service): ## 🔧 Rebuild and restart $(service); @echo "$(BOLD)$(BLUE)Rebuilding $(service)...$(RESET)"; $(DOCKER_COMPOSE_CMD) up -d --no-deps --build --force-recreate $(service)))
+
+# Generate restart targets for each service
+$(foreach service,$(SERVICES),$(eval restart-$(service): ## 🔄 Restart $(service) without rebuilding; @echo "$(BOLD)$(BLUE)Restarting $(service)...$(RESET)"; $(DOCKER_COMPOSE_CMD) restart $(service)))
+
+# Generate stop targets for each service
+$(foreach service,$(SERVICES),$(eval stop-$(service): ## 🛑 Stop $(service); @echo "$(BOLD)$(YELLOW)Stopping $(service)...$(RESET)"; $(DOCKER_COMPOSE_CMD) stop $(service)))
+
+# Generate start targets for each service
+$(foreach service,$(SERVICES),$(eval start-$(service): ## 🚀 Start $(service) (if stopped); @echo "$(BOLD)$(GREEN)Starting $(service)...$(RESET)"; $(DOCKER_COMPOSE_CMD) start $(service)))
 
 # Generate log targets for each service
 $(foreach service,$(SERVICES),$(eval log-$(service): ## 📝 Show logs for $(service); @echo "$(BOLD)$(BLUE)Showing logs for $(service)...$(RESET)"; $(DOCKER_COMPOSE_CMD) logs -f $(service)))

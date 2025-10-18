@@ -14,13 +14,23 @@ export default defineConfig({
         cors: true,
         hmr: {
             overlay: true
+        },
+        // Disable caching in development
+        headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
         }
     },
     
     // Preview server configuration
     preview: {
         port: 3000,
-        open: true
+        open: true,
+        // Cache control for preview
+        headers: {
+            'Cache-Control': 'no-cache, max-age=0'
+        }
     },
     
     // Build configuration
@@ -53,7 +63,7 @@ export default defineConfig({
                 return [relativePath, filePath];
             })),
             
-            // Output configuration
+            // Output configuration with enhanced cache busting
             output: {
                 // Chunk splitting for better caching
                 manualChunks: {
@@ -65,20 +75,27 @@ export default defineConfig({
                     'shared': ['./src/shared/index.js']
                 },
                 
-                // Asset naming
-                chunkFileNames: 'assets/[name]-[hash].js',
-                entryFileNames: 'assets/[name]-[hash].js',
+                // Enhanced asset naming with timestamps for aggressive cache busting
+                chunkFileNames: (chunkInfo) => {
+                    const timestamp = Date.now().toString(36);
+                    return `assets/[name]-[hash]-${timestamp}.js`;
+                },
+                entryFileNames: (chunkInfo) => {
+                    const timestamp = Date.now().toString(36);
+                    return `assets/[name]-[hash]-${timestamp}.js`;
+                },
                 assetFileNames: (assetInfo) => {
                     const info = assetInfo.name.split('.');
                     const ext = info[info.length - 1];
+                    const timestamp = Date.now().toString(36);
 
                     if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext)) {
-                        return `assets/images/[name]-[hash][extname]`;
+                        return `assets/images/[name]-[hash]-${timestamp}[extname]`;
                     }
                     if (/css/i.test(ext)) {
-                        return `assets/styles/[name]-[hash][extname]`;
+                        return `assets/styles/[name]-[hash]-${timestamp}[extname]`;
                     }
-                    return `assets/[name]-[hash][extname]`;
+                    return `assets/[name]-[hash]-${timestamp}[extname]`;
                 }
             }
         },
@@ -130,6 +147,7 @@ export default defineConfig({
     define: {
         __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '1.0.0'),
         __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+        __BUILD_TIMESTAMP__: JSON.stringify(Date.now()),
         __DEV__: JSON.stringify(process.env.NODE_ENV === 'development')
     }
 })
