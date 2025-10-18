@@ -18,6 +18,31 @@ const router = express.Router();
 // Health check endpoint
 router.get('/health', (req, res) => res.json({ ok: true }));
 
+// OpenID Connect Discovery endpoint
+router.get('/.well-known/openid-configuration', (req, res) => {
+  const baseUrl = `${config.host}${config.prefix}`;
+  const discoveryResponse = {
+    issuer: config.issuer,
+    authorization_endpoint: `${baseUrl}${config.loginPath}`,
+    token_endpoint: `${baseUrl}${config.refreshPath}`,
+    userinfo_endpoint: `${baseUrl}${config.mePath}`,
+    jwks_uri: `${baseUrl}${config.jwksPath}`,
+    end_session_endpoint: `${baseUrl}${config.logoutPath}`,
+    scopes_supported: config.scopes,
+    response_types_supported: ['code'],
+    response_modes_supported: ['query'],
+    grant_types_supported: ['authorization_code', 'refresh_token'],
+    subject_types_supported: ['public'],
+    id_token_signing_alg_values_supported: ['RS256'],
+    token_endpoint_auth_methods_supported: ['none', 'client_secret_basic', 'client_secret_post'],
+    code_challenge_methods_supported: ['S256'],
+    claims_supported: ['sub', 'iss', 'aud', 'exp', 'iat', 'auth_time', 'nonce', 'email', 'email_verified', 'name', 'given_name', 'family_name', 'preferred_username'],
+    claim_types_supported: ['normal']
+  };
+  
+  res.json(discoveryResponse);
+});
+
 // ====== API PROTECTED ======
 router.get(config.mePath, authGuard, (req, res) => res.json({ ...req.user }));
 
