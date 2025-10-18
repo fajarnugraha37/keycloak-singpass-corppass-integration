@@ -1,4 +1,4 @@
-import"./modulepreload-polyfill-B5Qt9EMX-mgwkhzyp.js";/* empty css                        */import"./htmx.esm-hCWdS4WT-mgwkhzyq.js";document.addEventListener("DOMContentLoaded",function(){document.body.classList.add("htmx-settling"),window.htmx&&(htmx.config.defaultSwapStyle="outerHTML",htmx.config.defaultSwapDelay=100,htmx.config.defaultSettleDelay=200)});document.querySelector("#app").innerHTML=`
+import"./modulepreload-polyfill-B5Qt9EMX-mgwkkpee.js";/* empty css                        */import"./htmx.esm-hCWdS4WT-mgwkkpef.js";document.addEventListener("DOMContentLoaded",function(){document.body.classList.add("htmx-settling"),window.htmx&&(htmx.config.defaultSwapStyle="outerHTML",htmx.config.defaultSwapDelay=100,htmx.config.defaultSettleDelay=200)});document.querySelector("#app").innerHTML=`
   <div class="min-h-screen bg-white dark:bg-slate-900 fade-in-up">
     <!-- Government Header -->
     <header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
@@ -212,13 +212,13 @@ import"./modulepreload-polyfill-B5Qt9EMX-mgwkhzyp.js";/* empty css              
             <span class="text-xs font-medium text-slate-700 dark:text-slate-300 text-center">Keycloak Admin</span>
           </a>
           
-          <a href="http://mockpass.localhost/singpass/v2/.well-known/openid-configuration" target="_blank" class="flex flex-col items-center p-3 rounded-lg bg-slate-50 hover:bg-slate-100 dark:bg-slate-700 dark:hover:bg-slate-600 transition-colors group">
+          <a href="http://mockpass.localhost" target="_blank" class="flex flex-col items-center p-3 rounded-lg bg-slate-50 hover:bg-slate-100 dark:bg-slate-700 dark:hover:bg-slate-600 transition-colors group">
             <div class="w-8 h-8 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg flex items-center justify-center mb-2">
               <svg class="w-4 h-4 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
               </svg>
             </div>
-            <span class="text-xs font-medium text-slate-700 dark:text-slate-300 text-center">SingPass MockPass</span>
+            <span class="text-xs font-medium text-slate-700 dark:text-slate-300 text-center">MockPass</span>
           </a>
           
           <a href="http://eservice.localhost/ids/.well-known/openid-configuration" target="_blank" class="flex flex-col items-center p-3 rounded-lg bg-slate-50 hover:bg-slate-100 dark:bg-slate-700 dark:hover:bg-slate-600 transition-colors group">
@@ -282,4 +282,4 @@ import"./modulepreload-polyfill-B5Qt9EMX-mgwkhzyp.js";/* empty css              
     </footer>
   </div>
 `;const l=document.getElementById("theme-toggle"),s=document.documentElement,o=localStorage.getItem("theme")||"light";s.classList.toggle("dark",o==="dark");l.addEventListener("click",()=>{const t=s.classList.contains("dark");s.classList.toggle("dark",!t),localStorage.setItem("theme",t?"light":"dark")});document.addEventListener("DOMContentLoaded",()=>{document.querySelectorAll(".group").forEach(e=>{e.addEventListener("mouseenter",()=>{e.style.transform="translateY(-2px)",e.style.transition="all 0.2s ease-in-out"}),e.addEventListener("mouseleave",()=>{e.style.transform="translateY(0)"})}),document.querySelectorAll("a").forEach(e=>{e.addEventListener("focus",()=>{e.style.outline="2px solid #3b82f6",e.style.outlineOffset="2px"}),e.addEventListener("blur",()=>{e.style.outline="none"})}),document.querySelectorAll('a[href^="/"]').forEach(e=>{e.addEventListener("click",a=>{a.preventDefault();const r=e.getAttribute("href");document.body.style.opacity="0",document.body.style.transform="translateY(-10px)",setTimeout(()=>{window.location.href=r},150)})})});document.addEventListener("DOMContentLoaded",()=>{document.body.style.opacity="0",document.body.style.transform="translateY(10px)",setTimeout(()=>{document.body.style.transition="opacity 300ms ease-out, transform 300ms ease-out",document.body.style.opacity="1",document.body.style.transform="translateY(0)"},50)});
-//# sourceMappingURL=index-DShiqHiE-mgwkhzxz.js.map
+//# sourceMappingURL=index-BuVakFRT-mgwkkpdl.js.map
