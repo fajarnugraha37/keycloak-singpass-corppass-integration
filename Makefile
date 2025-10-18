@@ -311,6 +311,34 @@ format: ## 🔍 Format configuration files
 	fi
 
 # =============================================================================
+# Nginx Management
+# =============================================================================
+
+nginx-test: ## 🔍 Test nginx configuration
+	@echo "$(BOLD)$(BLUE)Testing nginx configuration...$(RESET)"
+	@docker exec web nginx -t && echo "$(GREEN)✓ Nginx configuration is valid$(RESET)" || echo "$(RED)✗ Nginx configuration has errors$(RESET)"
+
+nginx-reload: ## 🔄 Reload nginx configuration
+	@echo "$(BOLD)$(BLUE)Reloading nginx configuration...$(RESET)"
+	@docker exec web nginx -s reload && echo "$(GREEN)✓ Nginx configuration reloaded$(RESET)" || echo "$(RED)✗ Failed to reload nginx$(RESET)"
+
+nginx-status: ## 📊 Show nginx status
+	@echo "$(BOLD)$(BLUE)Nginx status:$(RESET)"
+	@curl -s http://localhost/nginx-status 2>/dev/null || echo "$(YELLOW)⚠️  Nginx status endpoint not accessible$(RESET)"
+
+nginx-logs: ## 📝 Show nginx access logs in JSON format
+	@echo "$(BOLD)$(BLUE)Nginx access logs:$(RESET)"
+	@$(DOCKER_COMPOSE_CMD) logs web | tail -20 | grep -E '\{.*\}' | jq . 2>/dev/null || $(DOCKER_COMPOSE_CMD) logs web | tail -20
+
+nginx-errors: ## 📝 Show nginx error logs
+	@echo "$(BOLD)$(BLUE)Nginx error logs:$(RESET)"
+	@docker exec web cat /var/log/nginx/error.log 2>/dev/null | tail -20 || echo "$(YELLOW)⚠️  No error log found$(RESET)"
+
+nginx-config: ## 🔍 Show nginx configuration
+	@echo "$(BOLD)$(BLUE)Current nginx configuration:$(RESET)"
+	@docker exec web nginx -T 2>/dev/null | head -50 || echo "$(RED)✗ Cannot access nginx configuration$(RESET)"
+
+# =============================================================================
 # Package Management
 # =============================================================================
 
@@ -363,7 +391,9 @@ run-recreate: rebuild ## 🔄 Legacy: Rebuild and restart (alias for 'rebuild')
 re-ids: re-ids ## 🔧 Legacy: Rebuild IDS service
 re-cpds: re-cpds-api ## 🔧 Legacy: Rebuild CPDS API service  
 re-aceas: re-aceas-api ## 🔧 Legacy: Rebuild ACEAS API service
-re-web: re-web ## 🔧 Legacy: Rebuild web service
+re-web: ## 🔧 Legacy: Rebuild web service
+	@echo "$(BOLD)$(BLUE)Rebuilding web service...$(RESET)"
+	@$(DOCKER_COMPOSE_CMD) up -d --no-deps --build --force-recreate web
 re-mockpass: re-mockpass ## 🔧 Legacy: Rebuild mockpass service
 re-kc: re-keycloak ## 🔧 Legacy: Rebuild Keycloak service
 re-db: re-db ## 🔧 Legacy: Rebuild database service
@@ -371,7 +401,9 @@ re-db: re-db ## 🔧 Legacy: Rebuild database service
 log-ids: log-ids ## 📝 Legacy: Show IDS logs
 log-cpds: log-cpds-api ## 📝 Legacy: Show CPDS API logs
 log-aceas: log-aceas-api ## 📝 Legacy: Show ACEAS API logs
-log-web: log-web ## 📝 Legacy: Show web logs
+log-web: ## 📝 Legacy: Show web logs
+	@echo "$(BOLD)$(BLUE)Showing logs for web...$(RESET)"
+	@$(DOCKER_COMPOSE_CMD) logs -f web
 log-mockpass: log-mockpass ## 📝 Legacy: Show mockpass logs
 log-kc: log-keycloak ## 📝 Legacy: Show Keycloak logs
 log-db: log-db ## 📝 Legacy: Show database logs
