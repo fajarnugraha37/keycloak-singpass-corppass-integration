@@ -685,18 +685,36 @@ document.addEventListener('DOMContentLoaded', () => {
         animationController.init();
     }, 100);
     
+    // Enhance loading overlay with particle effects
+    setTimeout(() => {
+        if (typeof window.InteractiveEffects !== 'undefined') {
+            window.InteractiveEffects.enhanceLoadingOverlay();
+        }
+    }, 200);
+    
+    // Add test function for enhanced loading (remove in production)
+    window.testEnhancedLoading = function() {
+        setLoadingState('Testing Enhanced 3D Loading...');
+        setTimeout(() => {
+            hideLoading();
+        }, 4000);
+    };
+    
     // Initialize authentication
     setTimeout(() => {
         bootstrapAuth();
     }, 500);
     
-    // Add initial welcome message
+    // Add initial welcome message and hide loading
     setTimeout(() => {
         enhancedLog("🏛️ ACEAS - Agency Corporate E-Authentication Service", "info");
         enhancedLog("🔐 Enterprise-grade authentication powered by Keycloak", "info");
         enhancedLog("🌟 Modern SaaS platform ready for interaction", "success");
         enhancedLog("💡 Tip: Use Ctrl+L to login, Ctrl+K to clear console, Ctrl+U for user info", "info");
-    }, 1000);
+        
+        // Hide loading overlay after initialization
+        hideLoading();
+    }, 2500);
 });
 
 // Handle page visibility changes

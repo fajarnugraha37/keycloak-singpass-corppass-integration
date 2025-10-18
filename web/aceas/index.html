@@ -81,17 +81,22 @@
       </header>
 
       <!-- Enhanced Loading Overlay with 3D Effects -->
-      <div id="loading-overlay" class="loading-overlay-3d">
+      <div id="loading-overlay" class="loading-overlay-3d active">
         <div class="loading-content-3d">
           <div class="loading-icon-3d">
             <svg class="loading-spinner" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z" clip-rule="evenodd"></path>
             </svg>
           </div>
-          <div class="loading-title-3d">Initializing SAECA</div>
-          <div class="loading-message-3d">Enterprise Authentication Platform</div>
+          <div class="loading-title-3d">Initializing ACEAS</div>
+          <div class="loading-message-3d">Agency Corporate E-Authentication Service</div>
           <div class="loader-3d">
             <div class="bar-3d"></div>
+          </div>
+          <div class="loading-dots-3d">
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
+            <div class="loading-dot"></div>
           </div>
         </div>
       </div>
@@ -190,9 +195,9 @@
             <!-- Information Cards Grid with 3D Effects -->
             <div class="info-section">
               <div class="container">
-                <div class="info-grid">
+                <div class="info-grid scroll-fade-in">
                   <!-- Authentication Details Card -->
-                  <div class="info-card">
+                  <div class="info-card interactive-card scroll-slide-left">
                     <div class="card-header">
                       <div class="card-title">
                         <span class="status-dot"></span>
@@ -224,7 +229,7 @@
                   </div>
 
                   <!-- Features Card -->
-                  <div class="info-card">
+                  <div class="info-card interactive-card scroll-slide-right">
                     <div class="card-header">
                       <div class="card-title">
                         <span class="status-dot success"></span>
@@ -452,5 +457,6 @@
     </div>
 
     <script type="module" src="/src/pages/aceas.js"></script>
+    <script type="module" src="/src/shared/interactive-effects.js"></script>
   </body>
 </html>
