@@ -3,284 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Server Error | eServices Portal</title>
-    <link rel="icon" type="image/svg+xml" href="/assets/images/favicon-CkhPfrXW-mgwvtz03.svg">
-  <script type="module" crossorigin src="/assets/modulepreload-polyfill-B5Qt9EMX-mgwvtz1z.js"></script>
-  <script type="module" crossorigin src="/assets/error-pages-B1NwOkag-mgwvtz20.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/styles/error-pages-CbCG7_3U-mgwvtz2x.css">
+    
+            <title>Server Error | eServices Portal</title>
+            <link rel="icon" type="image/svg+xml" href="/assets/images/favicon-CkhPfrXW-mgxfcc2u.svg">
+  <script type="module" crossorigin src="/assets/modulepreload-polyfill-B5Qt9EMX-mgxfcc74.js"></script>
+  <script type="module" crossorigin src="/assets/errors-DKwqV2ME-mgxfcc74.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/styles/errors-CHU5VZ46-mgxfcc7p.css">
 </head>
-<body class="min-h-screen error-gradient">
-    <div class="min-h-screen flex flex-col">
-        <!-- Government Header -->
-        <header class="gov-header text-white shadow-xl">
-            <div class="gov-top-bar py-1">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="flex justify-between items-center text-xs">
-                        <span class="font-medium">A Singapore Government Agency Portal</span>
-                        <div class="hidden sm:flex items-center space-x-4">
-                            <a href="#" class="text-white/80 hover:text-white transition-colors">Contact</a>
-                            <a href="#" class="text-white/80 hover:text-white transition-colors">Support</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="py-4">
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div class="flex items-center space-x-4">
-                        <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center logo-pulse shadow-lg">
-                            <svg class="w-7 h-7 text-red-600" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <h1 class="text-xl font-bold text-white">eServices Portal</h1>
-                            <p class="text-white/90 text-sm">Government Digital Services</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <!-- Main Content -->
-        <main class="flex-1 flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8">
-            <div class="max-w-4xl mx-auto text-center">
-                <!-- Error Illustration -->
-                <div class="mb-12 animate-slide-in-up">
-                    <div class="inline-flex items-center justify-center w-40 h-40 bg-gradient-to-br from-amber-100 via-orange-50 to-white rounded-full mb-8 animate-float shadow-2xl">
-                        <div class="w-24 h-24 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full flex items-center justify-center shadow-xl">
-                            <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-                            </svg>
+<body
+        class="min-h-screen error-gradient" 
+    >
+            <div class="min-h-screen flex flex-col">
+                <!-- Government Header -->
+                <header class="gov-header text-white shadow-xl">
+                    <!-- Top Bar -->
+                    <div class="gov-top-bar py-1">
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div class="flex justify-between items-center text-xs">
+                                <span class="font-medium">A Singapore Government Agency Portal</span>
+                                <div class="hidden sm:flex items-center space-x-4">
+                                    <a href="#" class="text-white/80 hover:text-white transition-colors">Contact</a>
+                                    <a href="#" class="text-white/80 hover:text-white transition-colors">Feedback</a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="animate-scale-in animation-delay-100">
-                        <h1 class="text-8xl md:text-9xl font-black server-error-gradient mb-4 tracking-tight">5xx</h1>
-                    </div>
-                    
-                    <div class="animate-scale-in animation-delay-200">
-                        <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Server Error</h2>
-                    </div>
-                    
-                    <div class="animate-scale-in animation-delay-300">
-                        <p class="text-lg md:text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed">
-                            We're experiencing some technical difficulties. Our team has been notified and is working to resolve this issue. Please try again in a few minutes.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Status Information -->
-                <div class="bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-8 mb-12 max-w-4xl mx-auto shadow-xl animate-slide-in-up animation-delay-200">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <div class="text-center">
-                            <div class="w-16 h-16 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                                <svg class="w-8 h-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
-                                </svg>
+                    <!-- Main Header -->
+                    <div class="py-4">
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center logo-pulse shadow-lg">
+                                    <svg class="w-7 h-7 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h1 class="text-xl font-bold text-white">eServices Portal</h1>
+                                    <p class="text-white/90 text-sm">Government Digital Services</p>
+                                </div>
                             </div>
-                            <h3 class="text-lg font-bold text-gray-900 mb-2">Service Status</h3>
-                            <p class="text-red-600 font-medium">Temporarily Down</p>
-                        </div>
-                        
-                        <div class="text-center">
-                            <div class="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                                <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
-                                </svg>
-                            </div>
-                            <h3 class="text-lg font-bold text-gray-900 mb-2">Estimated Fix</h3>
-                            <p class="text-gray-600">Within 30 minutes</p>
-                        </div>
-                        
-                        <div class="text-center">
-                            <div class="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                                <svg class="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
-                                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
-                                </svg>
-                            </div>
-                            <h3 class="text-lg font-bold text-gray-900 mb-2">Updates</h3>
-                            <p class="text-gray-600">Auto-refresh page</p>
                         </div>
                     </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16 animate-slide-in-up animation-delay-300">
-                    <button onclick="location.reload()" class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl btn-smooth shadow-lg shadow-blue-200/50 group">
-                        <svg class="w-5 h-5 mr-3 group-hover:rotate-180 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                        </svg>
-                        Try Again
-                    </button>
-                    <a href="/" class="inline-flex items-center px-8 py-4 bg-white hover:bg-gray-50 border-2 border-gray-300 hover:border-gray-400 text-gray-700 font-semibold rounded-xl btn-smooth shadow-lg group">
-                        <svg class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
-                        </svg>
-                        Return Home
-                    </a>
-                </div>
-
-                <!-- Help Section -->
-                <div class="bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-8 max-w-3xl mx-auto shadow-xl animate-slide-in-up animation-delay-300">
-                    <h3 class="text-2xl font-bold text-gray-900 mb-8">Need Immediate Assistance?</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <a href="#" class="flex items-center p-6 bg-white border border-gray-200 rounded-xl hover:shadow-lg hover:border-gray-300 transition-all group">
-                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
-                                <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
+                </header>
+    
+                <!-- Main Content -->
+                <main class="flex-1 flex items-center justify-center py-16 px-4 sm:px-6 lg:px-8">
+                    <div class="max-w-4xl mx-auto text-center">
+                        <!-- Error Illustration -->
+                        <!-- Error Illustration -->
+                        <div class="mb-12 animate-slide-in-up">
+                            <div class="inline-flex items-center justify-center w-40 h-40 bg-gradient-to-br from-amber-100 via-orange-50 to-white rounded-full mb-8 animate-float shadow-2xl">
+                                <div class="w-24 h-24 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full flex items-center justify-center shadow-xl">
+                                    <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            
+                            <div class="animate-scale-in animation-delay-100">
+                                <h1 class="text-8xl md:text-9xl font-black server-error-gradient mb-4 tracking-tight">5xx</h1>
+                            </div>
+                            
+                            <div class="animate-scale-in animation-delay-200">
+                                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Server Error</h2>
+                            </div>
+                            
+                            <div class="animate-scale-in animation-delay-300">
+                                <p class="text-lg md:text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed">
+                                    We're experiencing some technical difficulties. Our team has been notified and is working to resolve this issue. Please try again in a few minutes.
+                                </p>
+                            </div>
+                        </div>
+                        <!-- Status Information -->
+                        <!-- Status Information -->
+                        <div class="bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-8 mb-12 max-w-4xl mx-auto shadow-xl animate-slide-in-up animation-delay-200">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                                <div class="text-center">
+                                    <div class="w-16 h-16 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                                        <svg class="w-8 h-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-lg font-bold text-gray-900 mb-2">Service Status</h3>
+                                    <p class="text-red-600 font-medium">Temporarily Down</p>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <div class="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                                        <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-lg font-bold text-gray-900 mb-2">Estimated Fix</h3>
+                                    <p class="text-gray-600">Within 30 minutes</p>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <div class="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                                        <svg class="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-lg font-bold text-gray-900 mb-2">Updates</h3>
+                                    <p class="text-gray-600">Auto-refresh page</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Action Buttons -->
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16 animate-slide-in-up animation-delay-300">
+                            <button onclick="location.reload()" class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl btn-smooth shadow-lg shadow-blue-200/50 group">
+                                <svg class="w-5 h-5 mr-3 group-hover:rotate-180 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                                 </svg>
-                            </div>
-                            <div class="text-left">
-                                <div class="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors">Contact Support</div>
-                                <div class="text-gray-600">Get immediate help</div>
-                            </div>
-                        </a>
-                        
-                        <a href="#" class="flex items-center p-6 bg-white border border-gray-200 rounded-xl hover:shadow-lg hover:border-gray-300 transition-all group">
-                            <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
-                                <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+                                Try Again
+                            </button>
+                            <a href="/" class="inline-flex items-center px-8 py-4 bg-white hover:bg-gray-50 border-2 border-gray-300 hover:border-gray-400 text-gray-700 font-semibold rounded-xl btn-smooth shadow-lg group">
+                                <svg class="w-5 h-5 mr-3 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
                                 </svg>
+                                Return Home
+                            </a>
+                        </div>
+                        <!-- Help Section -->
+                        <!-- Help Section -->
+                        <div class="bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-8 max-w-3xl mx-auto shadow-xl animate-slide-in-up animation-delay-300">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-8">Need Immediate Assistance?</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <a href="#" class="flex items-center p-6 bg-white border border-gray-200 rounded-xl hover:shadow-lg hover:border-gray-300 transition-all group">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
+                                        <svg class="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="text-left">
+                                        <div class="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors">Contact Support</div>
+                                        <div class="text-gray-600">Get immediate help</div>
+                                    </div>
+                                </a>
+                                
+                                <a href="#" class="flex items-center p-6 bg-white border border-gray-200 rounded-xl hover:shadow-lg hover:border-gray-300 transition-all group">
+                                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
+                                        <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="text-left">
+                                        <div class="text-lg font-bold text-gray-900 group-hover:text-green-600 transition-colors">System Status</div>
+                                        <div class="text-gray-600">Check service health</div>
+                                    </div>
+                                </a>
                             </div>
-                            <div class="text-left">
-                                <div class="text-lg font-bold text-gray-900 group-hover:text-green-600 transition-colors">System Status</div>
-                                <div class="text-gray-600">Check service health</div>
-                            </div>
-                        </a>
+                        </div>    </div>
+                </main>
+                <!-- Footer -->
+                <footer class="bg-gray-100/80 backdrop-blur-sm border-t border-gray-200/50 py-12">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                        <p class="text-sm text-gray-600">© 2025 xxx Government. All rights reserved.</p>
                     </div>
-                </div>
-            </div>
-        </main>
-
-        <!-- Footer -->
-        <footer class="bg-gray-100/80 backdrop-blur-sm border-t border-gray-200/50 py-12">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <p class="text-sm text-gray-600">© 2025 xxx Government. All rights reserved.</p>
-            </div>
-        </footer>
-    </div>
-
-    <script>
-        // Auto-refresh every 30 seconds
-        setTimeout(function() {
-            location.reload();
-        }, 30000);
-        
-        // Add some interactive feedback
-        document.addEventListener('DOMContentLoaded', function() {
-            const statusCards = document.querySelectorAll('.text-center');
-            statusCards.forEach((card, index) => {
-                setTimeout(() => {
-                    card.style.opacity = '0';
-                    card.style.transform = 'translateY(20px)';
-                    card.style.transition = 'all 0.6s ease';
-                    
-                    setTimeout(() => {
-                        card.style.opacity = '1';
-                        card.style.transform = 'translateY(0)';
-                    }, 100);
-                }, index * 200);
-            });
-        });
-    </script>
+                </footer>        </div>
 </body>
 </html>
-</html>
-    <style>
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-        
-        @keyframes slideInUp {
-            from {
-                opacity: 0;
-                transform: translate3d(0, 30px, 0);
-            }
-            to {
-                opacity: 1;
-                transform: translate3d(0, 0, 0);
-            }
-        }
-        
-        @keyframes scaleIn {
-            from {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-        
-        .float-animation {
-            animation: float 3s ease-in-out infinite;
-        }
-        
-        .pulse-animation {
-            animation: pulse 2s ease-in-out infinite;
-        }
-        
-        .slide-in-up {
-            animation: slideInUp 0.6s ease-out;
-        }
-        
-        .scale-in {
-            animation: scaleIn 0.5s ease-out;
-        }
-        
-        .shake-animation {
-            animation: shake 0.5s ease-in-out;
-        }
-        
-        .stagger-1 { animation-delay: 0.1s; }
-        .stagger-2 { animation-delay: 0.2s; }
-        .stagger-3 { animation-delay: 0.3s; }
-        
-        .btn-smooth {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .btn-smooth:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-        
-        .status-indicator {
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .status-indicator::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
-            transform: rotate(45deg);
-            animation: shine 2s infinite;
-        }
-        
-        @keyframes shine {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            50% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-            100% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-        }
-    </style>
-</head>

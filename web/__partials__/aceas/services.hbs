@@ -1,0 +1,182 @@
+<!-- Service Cards Grid -->
+<div class="grid md:grid-cols-2 gap-8 mb-12">
+  <!-- ACEAS Service Card -->
+  <div
+    class="service-card bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group sky-element glow-effect animate-3d"
+    data-parallax="0.2"
+  >
+    <div class="h-1 bg-gradient-to-r from-orange-500 to-orange-600"></div>
+    <div class="p-6">
+      <div class="service-header flex items-start justify-between mb-4">
+        <div class="flex items-center space-x-3">
+          <div
+            class="service-icon w-12 h-12 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-lg flex items-center justify-center"
+          >
+            <svg
+              class="w-6 h-6 text-orange-600 dark:text-orange-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"
+              />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold text-slate-900 dark:text-white">
+              SAEC
+            </h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400">
+              Agency Corporate E-Authentication Service
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-2">
+          <div class="status-online w-2 h-2 bg-green-400 rounded-full"></div>
+          <span class="text-xs text-slate-500 dark:text-slate-400">Online</span>
+        </div>
+      </div>
+
+      <p
+        class="text-slate-600 dark:text-slate-300 mb-4 text-sm leading-relaxed"
+      >
+        Direct integration with Keycloak identity provider using PKCE
+        authorization code flow. Demonstrates agency-level authentication with
+        MockPass SingPass simulation.
+      </p>
+
+      <div class="feature-list space-y-2 mb-6">
+        <div
+          class="flex items-center text-xs text-slate-500 dark:text-slate-400"
+        >
+          <span class="w-2 h-2 bg-orange-400 rounded-full mr-2"></span>
+          Agency Realm Authentication
+        </div>
+        <div
+          class="flex items-center text-xs text-slate-500 dark:text-slate-400"
+        >
+          <span class="w-2 h-2 bg-orange-400 rounded-full mr-2"></span>
+          Silent Token Renewal
+        </div>
+        <div
+          class="flex items-center text-xs text-slate-500 dark:text-slate-400"
+        >
+          <span class="w-2 h-2 bg-orange-400 rounded-full mr-2"></span>
+          SingPass MockPass Integration
+        </div>
+      </div>
+
+      <!-- hx-get="/aceas/"   -->
+      <!-- hx-target="body" -->
+      <!-- hx-push-url="true" -->
+      <a
+        href="/aceas/"
+        rel="prefetch"
+        class="service-btn orange inline-flex items-center justify-center w-full px-4 py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg btn-smooth text-sm group-hover:bg-orange-700"
+      >
+        Access SAEC Service
+        <svg
+          class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- CPDS Service Card -->
+  <div
+    class="service-card bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group sky-element glow-effect animate-3d"
+    data-parallax="0.3"
+  >
+    <div class="h-1 bg-gradient-to-r from-blue-500 to-blue-600"></div>
+    <div class="p-6">
+      <div class="service-header flex items-start justify-between mb-4">
+        <div class="flex items-center space-x-3">
+          <div
+            class="service-icon w-12 h-12 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg flex items-center justify-center"
+          >
+            <svg
+              class="w-6 h-6 text-blue-600 dark:text-blue-400"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+              />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold text-slate-900 dark:text-white">
+              SDPC
+            </h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400">
+              Central Personnel Data System
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-2">
+          <div class="status-online w-2 h-2 bg-green-400 rounded-full"></div>
+          <span class="text-xs text-slate-500 dark:text-slate-400">Online</span>
+        </div>
+      </div>
+
+      <p
+        class="text-slate-600 dark:text-slate-300 mb-4 text-sm leading-relaxed"
+      >
+        Federated authentication through IDS (Identity Service) provider that
+        brokers tokens with Keycloak backend. Demonstrates token isolation and
+        application-specific authentication.
+      </p>
+
+      <div class="feature-list space-y-2 mb-6">
+        <div
+          class="flex items-center text-xs text-slate-500 dark:text-slate-400"
+        >
+          <span class="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
+          IDS Token Brokering
+        </div>
+        <div
+          class="flex items-center text-xs text-slate-500 dark:text-slate-400"
+        >
+          <span class="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
+          OIDC Authorization Code Flow
+        </div>
+        <div
+          class="flex items-center text-xs text-slate-500 dark:text-slate-400"
+        >
+          <span class="w-2 h-2 bg-blue-400 rounded-full mr-2"></span>
+          Application-Specific Tokens
+        </div>
+      </div>
+
+      <!-- hx-get="/cpds/" 
+                  hx-target="body"
+                  hx-push-url="true" -->
+      <a
+        href="/cpds/"
+        rel="prefetch"
+        class="service-btn inline-flex items-center justify-center w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg btn-smooth text-sm group-hover:bg-blue-700"
+      >
+        Access SDPC Service
+        <svg
+          class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+</div>

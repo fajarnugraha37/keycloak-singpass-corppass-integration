@@ -1,0 +1,115 @@
+<!-- Endpoints Section -->
+<section id="endpoints" class="endpoints">
+    <div class="container">
+        <div class="section-header">
+            <h2>Available Endpoints</h2>
+            <p>Access OIDC configurations and authentication endpoints</p>
+        </div>
+        <div class="endpoints-grid">
+            <div class="endpoint-card primary">
+                <div class="endpoint-header">
+                    <div class="endpoint-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                        </svg>
+                    </div>
+                    <div class="endpoint-info">
+                        <h3>SingPass OIDC</h3>
+                        <span class="endpoint-type">Personal Identity</span>
+                    </div>
+                    <div class="endpoint-status active">Active</div>
+                </div>
+                <p>OpenID Connect configuration for SingPass individual authentication</p>
+                <div class="endpoint-actions">
+                    <a href="/singpass/v2/.well-known/openid-configuration" class="endpoint-link" target="_blank">
+                        <span>View Configuration</span>
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path
+                                d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                            <path
+                                d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                        </svg>
+                    </a>
+                    <button class="copy-btn" data-url="/singpass/v2/.well-known/openid-configuration">
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                            <path
+                                d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="endpoint-card secondary">
+                <div class="endpoint-header">
+                    <div class="endpoint-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A1.5 1.5 0 0 0 18.5 7H17c-.8 0-1.5.7-1.5 1.5v8c0 .83.67 1.5 1.5 1.5H18v4h2z" />
+                        </svg>
+                    </div>
+                    <div class="endpoint-info">
+                        <h3>CorpPass OIDC</h3>
+                        <span class="endpoint-type">Corporate Identity</span>
+                    </div>
+                    <div class="endpoint-status active">Active</div>
+                </div>
+                <p>OpenID Connect configuration for CorpPass corporate authentication</p>
+                <div class="endpoint-actions">
+                    <a href="/corppass/v2/.well-known/openid-configuration" class="endpoint-link" target="_blank">
+                        <span>View Configuration</span>
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path
+                                d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                            <path
+                                d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                        </svg>
+                    </a>
+                    <button class="copy-btn" data-url="/corppass/v2/.well-known/openid-configuration">
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                            <path
+                                d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="endpoint-card tertiary">
+                <div class="endpoint-header">
+                    <div class="endpoint-icon">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M19.07 4.93l-1.41 1.41C19.1 7.79 20 9.79 20 12s-.9 4.21-2.34 5.66l1.41 1.41C20.88 17.26 22 14.76 22 12s-1.12-5.26-2.93-7.07zM15.17 6.17l-1.41 1.41C14.32 8.14 15 9.97 15 12s-.68 3.86-2.24 4.42l1.41 1.41C15.92 16.74 17 14.49 17 12s-1.08-4.74-2.83-5.83zM11 12c0-1.1-.9-2-2-2s-2 .9-2 2 .9 2 2 2 2-.9 2-2zM6.83 6.17C5.08 7.26 4 9.51 4 12s1.08 4.74 2.83 5.83l1.41-1.41C7.68 15.86 7 14.03 7 12s.68-3.86 2.24-4.42L6.83 6.17z" />
+                        </svg>
+                    </div>
+                    <div class="endpoint-info">
+                        <h3>SSO Playground</h3>
+                        <span class="endpoint-type">Testing Environment</span>
+                    </div>
+                    <div class="endpoint-status active">Active</div>
+                </div>
+                <p>Interactive SSO testing playground for development and experimentation</p>
+                <div class="endpoint-actions">
+                    <a href="http://eservice.localhost/" class="endpoint-link" target="_blank">
+                        <span>Access Playground</span>
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path
+                                d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+                            <path
+                                d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+                        </svg>
+                    </a>
+                    <button class="copy-btn" data-url="http://eservice.localhost/">
+                        <svg viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                            <path
+                                d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
