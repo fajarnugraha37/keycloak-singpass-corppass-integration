@@ -325,6 +325,7 @@ body {
     font-size: 0.875rem;
     font-weight: 500;
     margin-bottom: 2rem;
+    margin-top: 2rem;
     animation: slideInUp 0.8s ease-out;
 }
 

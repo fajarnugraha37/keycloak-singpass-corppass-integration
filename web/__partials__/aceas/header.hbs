@@ -1,87 +1,67 @@
-<!-- Government Header -->
-<header class="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
-<!-- Top Bar -->
-<div class="bg-red-600 py-1">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-center text-xs">
-        <span class="font-medium">A Singapore Government Agency Portal</span>
-        <div class="flex items-center space-x-4">
-        <button
-            id="theme-toggle"
-            class="text-white/80 hover:text-white transition-colors"
-        >
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path
-                fill-rule="evenodd"
-                d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0z"
-                clip-rule="evenodd"
-            ></path>
-            </svg>
-        </button>
-        <span class="text-white/60">|</span>
-        <a href="#" class="text-white/80 hover:text-white transition-colors"
-            >Contact</a
-        >
-        <a href="#" class="text-white/80 hover:text-white transition-colors"
-            >Feedback</a
-        >
+<!-- Singapore Government Top Bar -->
+<div class="gov-bar">
+    <div class="container">
+        <div class="gov-bar-content">
+            <span class="gov-text">A Singapore Government Agency Portal</span>
+            <div class="gov-actions">
+                <a href="#" class="gov-link">Contact</a>
+                <span class="gov-divider">|</span>
+                <a href="#" class="gov-link">Feedback</a>
+            </div>
         </div>
-    </div>
     </div>
 </div>
 
-<!-- Main Header -->
-<div class="py-3">
-    <div class="header-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between">
-        <div class="logo-container flex items-center space-x-4">
-        <!-- Singapore Lion Head Logo -->
-        <div
-            class="w-10 h-10 bg-white rounded-full flex items-center justify-center"
-        >
-            <svg
-            class="w-6 h-6 text-red-600"
-            fill="currentColor"
-            viewBox="0 0 24 24"
-            >
-            <path
-                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
-            />
-            </svg>
+<!-- Modern Navigation Header -->
+<header class="aceas-modern-header">
+    <div class="header-background">
+        <div class="header-pattern"></div>
+    </div>
+    <div class="container header-container">
+        <div class="nav-brand-modern">
+            <div class="logo-container-modern">
+                <div class="logo-3d">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
+                        <path d="M10 17l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" fill="white" />
+                    </svg>
+                </div>
+                <div class="brand-text-modern">
+                    <h1 class="brand-title">SAECA</h1>
+                    <span class="brand-subtitle">Corporate Authentication</span>
+                </div>
+            </div>
         </div>
-        <div>
-            <p class="my-1.5 text-md font-semibold text-white">
-            eServices Portal
-            </p>
-            <p class="my-1.5 text-white/90 text-xs">
-            Government Digital Services
-            </p>
-        </div>
-        </div>
-        <nav class="hidden md:flex items-center space-x-6">
-        <a
-            href="#"
-            class="text-white/80 hover:text-white transition-colors text-sm font-medium"
-            >Home</a
-        >
-        <a
-            href="#"
-            class="text-white/80 hover:text-white transition-colors text-sm font-medium"
-            >Services</a
-        >
-        <a
-            href="#"
-            class="text-white/80 hover:text-white transition-colors text-sm font-medium"
-            >Support</a
-        >
-        <a
-            href="https://github.com/fajarnugraha37/app-sso"
-            target="_blank"
-            class="text-white/80 hover:text-white transition-colors text-sm font-medium"
-            >Documentation</a
-        >
+
+        <nav class="nav-menu-modern">
+            <a href="#overview" class="nav-link-modern">Overview</a>
+            <a href="#features" class="nav-link-modern">Features</a>
+            <a href="#console" class="nav-link-modern">Console</a>
+            <div class="nav-actions">
+                <!-- Auth Status Indicator with 3D Effect -->
+                <div id="auth-status-3d" class="status-indicator-3d status-offline">
+                    <div class="status-pulse"></div>
+                    <span class="status-text">Not Authenticated</span>
+                </div>
+
+                <!-- Theme Toggle -->
+                <button id="theme-toggle-3d" class="theme-btn-3d">
+                    <svg class="theme-icon" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                </button>
+
+                <!-- Back to Home -->
+                <a href="/" class="back-btn-3d" title="Back to Home">
+                    <svg fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                            d="M9.707 14.707a1 1 0 01-1.414 0L3.586 10l4.707-4.707a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z"
+                            clip-rule="evenodd"></path>
+                    </svg>
+                </a>
+            </div>
         </nav>
     </div>
-    </div>
-</div>
 </header>
