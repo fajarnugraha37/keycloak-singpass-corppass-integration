@@ -1,11 +1,14 @@
 package com.example.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.JsonWebToken;
 
 import java.util.Map;
 
 public class MapperUtil {
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+    
     private MapperUtil() {
         // Private constructor to prevent instantiation
     }
@@ -16,8 +19,6 @@ public class MapperUtil {
         }
 
         var result = new java.util.HashMap<String, String>();
-
-        // Add safe null checks for each field
         result.put("id_token.category", jsonWebToken.getCategory() != null ? jsonWebToken.getCategory().name() : null);
         result.put("id_token.id", jsonWebToken.getId() != null ? jsonWebToken.getId() : null);
         result.put("id_token.exp", jsonWebToken.getExp() != null ? String.valueOf(jsonWebToken.getExp()) : null);
@@ -31,7 +32,21 @@ public class MapperUtil {
 
         if (jsonWebToken.getOtherClaims() != null) {
             jsonWebToken.getOtherClaims().forEach((key, value) -> {
-                result.put("id_token." + key, value != null ? value.toString() : null);
+                if (value != null) {
+                    if (value instanceof Map) {
+                        flattenMap("id_token." + key, (Map<?, ?>) value, result);
+                    } else if (value instanceof Object[] || value instanceof Iterable<?>) {
+                        try {
+                            result.put("id_token." + key, objectMapper.writeValueAsString(value));
+                        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+                            result.put("id_token." + key, value.toString());
+                        }
+                    } else {
+                        result.put("id_token." + key, value.toString());
+                    }
+                } else {
+                    result.put("id_token." + key, null);
+                }
             });
         }
         return result;
@@ -43,7 +58,6 @@ public class MapperUtil {
         }
 
         var result = new java.util.HashMap<String, String>();
-
         result.put("access_token.token", accessTokenResponse.getToken());
         result.put("access_token.expires_in", String.valueOf(accessTokenResponse.getExpiresIn()));
         result.put("access_token.refresh_expires_in", String.valueOf(accessTokenResponse.getRefreshExpiresIn()));
@@ -59,9 +73,38 @@ public class MapperUtil {
 
         if (accessTokenResponse.getOtherClaims() != null) {
             accessTokenResponse.getOtherClaims().forEach((key, value) -> {
-                result.put("access_token." + key, value != null ? value.toString() : null);
+                if (value != null) {
+                    if (value instanceof Map) {
+                        flattenMap("access_token." + key, (Map<?, ?>) value, result);
+                    } else if (value instanceof Object[] || value instanceof Iterable<?>) {
+                        try {
+                            result.put("access_token." + key, objectMapper.writeValueAsString(value));
+                        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+                            result.put("access_token." + key, value.toString());
+                        }
+                    } else {
+                        result.put("access_token." + key, value.toString());
+                    }
+                } else {
+                    result.put("access_token." + key, null);
+                }
             });
         }
         return result;
+    }
+
+    static void flattenMap(String prefix, Map<?, ?> map, Map<String, String> result) {
+        map.forEach((key, value) -> {
+            String newKey = prefix + "." + key;
+            if (value != null) {
+                if (value instanceof Map) {
+                    flattenMap(newKey, (Map<?, ?>) value, result);
+                } else {
+                    result.put(newKey, value.toString());
+                }
+            } else {
+                result.put(newKey, null);
+            }
+        });
     }
 }

@@ -19,10 +19,12 @@ repositories {
 val kcVersion = "25.0.6"
 val nimbusVersion = "9.40"
 val nimbusOidcVersion = "11.7.1"
-val junitVersion = "5.10.3"
 val httpClientVersion = "5.3.1"
 val jacksonVersion = "2.20.0"
 val jbossVersion = "3.5.1.Final";
+
+val junitVersion = "5.10.3"
+val mockitoVersion = "5.5.0"
 
 dependencies {
     compileOnly("org.keycloak:keycloak-core:$kcVersion")
@@ -41,8 +43,14 @@ dependencies {
     implementation("org.apache.httpcomponents.client5:httpclient5:$httpClientVersion")
     implementation("org.jboss.logging:jboss-logging:$jbossVersion")
 
+    testImplementation("org.keycloak:keycloak-core:${kcVersion}")
     testImplementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     testImplementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    testImplementation("com.nimbusds:oauth2-oidc-sdk:${nimbusOidcVersion}")
+    testImplementation("com.nimbusds:nimbus-jose-jwt:${nimbusVersion}")
+    testImplementation("org.apache.httpcomponents.client5:httpclient5:${httpClientVersion}")
+
+    testImplementation("org.mockito:mockito-core:$mockitoVersion")
     testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
