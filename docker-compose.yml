@@ -46,12 +46,10 @@ services:
       POSTGRES_USER: ${KC_DB_USER:-keycloak}
       POSTGRES_PASSWORD: ${KC_DB_PASSWORD:-keycloak}
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C"
-      PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - "${KC_DB_PORT:-5432}:5432"
     volumes:
-      - ./postgres/data:/var/lib/postgresql/data/pgdata
-      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+      - kc_db_agency_data:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${KC_DB_USER:-keycloak} -d ${KC_DB_NAME:-keycloak}"]
       interval: 10s
