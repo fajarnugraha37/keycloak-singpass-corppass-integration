@@ -79,8 +79,10 @@ services:
     container_name: kc_agency
     restart: unless-stopped
     command:
-      - start-dev
+      - start
       - --import-realm
+      - --optimized
+      - --hostname-strict=false
       - --log=console
       - --log-level=${KC_LOG_LEVEL:-info}
     environment:
@@ -103,7 +105,24 @@ services:
       KC_HOSTNAME_STRICT: "false"
       KC_HOSTNAME_STRICT_HTTPS: "false"
       KC_HTTP_RELATIVE_PATH: /auth
+      KC_PROXY: edge
       
+      # Performance optimizations
+      KC_CACHE: ispn
+      KC_CACHE_STACK: tcp
+      KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
+      
+      # JVM optimization
+      JAVA_OPTS_APPEND: >-
+        -XX:+UseG1GC
+        -XX:+UseStringDeduplication
+        -XX:MaxMetaspaceSize=512m
+        -Xms512m
+        -Xmx1024m
+        -XX:+HeapDumpOnOutOfMemoryError
+        -XX:HeapDumpPath=/tmp/heapdump.hprof
+        
       # Logging
       KC_LOG_CONSOLE_FORMAT: "%d{yyyy-MM-dd HH:mm:ss,SSS} %-5p (%t) [%X{cid}] %X{state} [%c] %s%e%n"
     depends_on:
