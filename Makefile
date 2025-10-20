@@ -200,6 +200,22 @@ restart: ## 🔄 Restart all services
 	@echo "$(BOLD)$(BLUE)Restarting all services...$(RESET)"
 	@$(DOCKER_COMPOSE_CMD) restart
 
+web-deps:
+	@echo "$(BOLD)$(BLUE)Installing web dependencies...$(RESET)"
+	cd web && npm install
+
+web-build:
+	@echo "$(BOLD)$(BLUE)Building web assets...$(RESET)"
+	cd web && npm run build
+
+web-watch:
+	@echo "Watching web assets for changes..."
+	cd web && npm run build:watch
+
+web-dev:
+	@echo "Starting web development server..."
+	cd web && npm run dev
+
 # =============================================================================
 # Build Targets
 # =============================================================================
