@@ -2,6 +2,7 @@ const crypto = require('crypto')
 const fs = require('fs')
 const jose = require('node-jose')
 const path = require('path')
+const { faker } = require('@faker-js/faker');
 
 const readFrom = (p) => fs.readFileSync(path.resolve(__dirname, p), 'utf8')
 
@@ -234,6 +235,8 @@ const oidc = {
             CPNonUEN_RegNo: '',
             CPNonUEN_Name: '',
           },
+          email: faker.internet.email(),
+          email_verified: faker.datatype.boolean(),
         },
       }
     },
