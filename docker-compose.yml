@@ -361,6 +361,7 @@ services:
 networks:
   # Main application network
   app_network:
+    name: kc_app_network
     driver: bridge
     ipam:
       config:
@@ -371,6 +372,7 @@ networks:
   
   # Database network (isolated)
   db_network:
+    name: kc_db_network
     driver: bridge
     internal: true
     ipam:

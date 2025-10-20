@@ -345,16 +345,35 @@ db-reset: ## 💾 Reset database (WARNING: destroys all data)
 # Cleanup Operations
 # =============================================================================
 
-clean: ## 🧹 Clean up containers and images
+cleanup: ## 🧹 Clean up containers and images
 	@echo "$(BOLD)$(YELLOW)Cleaning up containers and images...$(RESET)"
 	-@$(DOCKER_COMPOSE_CMD) down
-	-@docker container rm ids_op cpds_api aceas_api kc_agency kc_db_agency mockpass web 2>/dev/null || true
-	-@docker image rm kc_ids kc_cpds_api kc_aceas_api kc_agency kc_keycloak kc_mockpass 2>/dev/null || true
-
-cleanup: clean ## 🧹 Comprehensive cleanup including volumes
-	@echo "$(BOLD)$(YELLOW)Performing comprehensive cleanup...$(RESET)"
-	-@docker volume rm $(COMPOSE_PROJECT_NAME)_ids_data $(COMPOSE_PROJECT_NAME)_kc_pgdata_agency 2>/dev/null || true
+	-@docker container rm ids_op \
+	 	cpds_api \
+		aceas_api \
+		kc_agency \
+		kc_db_agency \
+		mockpass \
+		web 2>/dev/null || true
+	-@docker image rm kc_ids \
+		kc_cpds_api \
+		kc_aceas_api \
+		kc_agency \
+		kc_keycloak \
+		kc_mockpass 2>/dev/null || true
+	
+	@echo "$(BOLD)$(YELLOW)cleaning up volume...$(RESET)"
+	-@docker volume rm kc_db_agency_data 2>/dev/null || true
+	
+	@echo "$(BOLD)$(YELLOW)Removing custom Docker networks...$(RESET)"
+	-@docker network rm kc_app_network \
+		kc_db_network 2>/dev/null || true
+	
+	@echo "$(BOLD)$(YELLOW)Clearing log files...$(RESET)"
+	-@rm -rf $(LOGS_DIR)/*
+	-@rm -rf ./keycloak-custom/data
 	@echo "$(GREEN)✓ Cleanup complete$(RESET)"
+
 
 prune: ## 🧹 Prune unused Docker resources
 	@echo "$(BOLD)$(YELLOW)Pruning unused Docker resources...$(RESET)"
