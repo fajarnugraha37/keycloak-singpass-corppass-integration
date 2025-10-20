@@ -381,3 +381,7 @@ networks:
     ipam:
       config:
         - subnet: 172.21.0.0/16
+
+volumes:
+  kc_db_agency_data:
+    name: kc_db_agency_data
