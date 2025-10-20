@@ -32,18 +32,6 @@ services:
     ports:
       - "8081:8080"
       - "8787:8787"  # JVM debug port
-
-  # Development overrides for database
-  db:
-    environment:
-      # Enable verbose logging for development
-      POSTGRES_INITDB_ARGS: "--encoding=UTF-8 --lc-collate=C --lc-ctype=C --log-statement=all"
-    command: >
-      postgres
-      -c log_statement=all
-      -c log_destination=stderr
-      -c log_min_messages=info
-      -c log_line_prefix='%t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h '
     
   # Development overrides for APIs
   aceas-api:
