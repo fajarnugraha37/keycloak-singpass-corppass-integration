@@ -6,7 +6,7 @@ COPY package* ./
 
 COPY ./.husky ./.husky
 
-RUN npm ci
+RUN npm install
 
 COPY . ./
 
