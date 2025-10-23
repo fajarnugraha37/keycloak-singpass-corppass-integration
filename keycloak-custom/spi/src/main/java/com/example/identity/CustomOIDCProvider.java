@@ -7,6 +7,7 @@ import java.util.Optional;
 import com.example.utils.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.ws.rs.core.*;
+import liquibase.util.MD5Util;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 import org.keycloak.OAuth2Constants;
@@ -285,7 +286,7 @@ public class CustomOIDCProvider extends CustomDuplicator {
         logger.infof("[extractIdentity] Extracting identity in CustomOIDCProvider");
         var subKeyValue = JwtUtil.subToKeyValue(idToken.getSubject());
         var id = idToken.getSubject();
-        var brokerUserId = getConfig().getAlias() + "." + id;
+        var brokerUserId = getConfig().getAlias() + "." + MD5Util.computeMD5(id);
         var identity = new BrokeredIdentityContext(id, getConfig());
         var name = (String) idToken.getOtherClaims().get(IDToken.NAME);
         var givenName = (String) idToken.getOtherClaims().get(IDToken.GIVEN_NAME);
@@ -416,8 +417,10 @@ public class CustomOIDCProvider extends CustomDuplicator {
             logger.infof("[toIdentityContext] ID Token Claim ---> attribute: %s = %s", key, value);
             identity.setUserAttribute(key, value);
             if ("id_token.entityInfo.CPEntID".equalsIgnoreCase(key)) {
-                subKeyValue.put("uen", value);
-                preferredUsername = JwtUtil.keyValueToSub(subKeyValue);
+                preferredUsername = value;
+                if (subKeyValue.get("s") != null) {
+                    preferredUsername = value + "-" + subKeyValue.get("s");
+                }
                 logger.infof("[toIdentityContext] Setting preferredUsername from CPEntID: %s", preferredUsername);
             }
         }
@@ -428,6 +431,7 @@ public class CustomOIDCProvider extends CustomDuplicator {
             identity.getContextData().put(FEDERATED_ACCESS_TOKEN, accessToken);
             if (tokenResponse != null && tokenResponse.getRefreshToken() != null) {
                 identity.getContextData().put(FEDERATED_REFRESH_TOKEN, tokenResponse.getRefreshToken());
+                identity.getContextData().put(FEDERATED_TOKEN_EXPIRATION, tokenResponse.getExpiresIn());
             }
         }
 

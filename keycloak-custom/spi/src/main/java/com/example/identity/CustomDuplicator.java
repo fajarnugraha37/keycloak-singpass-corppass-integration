@@ -268,8 +268,11 @@ public abstract class CustomDuplicator extends OIDCIdentityProvider {
         context.getContextData().put("EXISTING_USER_FOUND", existingUser.getId());
         context.getContextData().put("EXISTING_USER_USERNAME", existingUser.getUsername());
 
-        logger.infof("[updateContextWithExistingUserInfo] Updated context with existing user info - username: %s, email: %s",
-                     existingUser.getUsername(), existingUser.getEmail());
+        logger.infof("[updateContextWithExistingUserInfo] Updated context with existing user info - username: %s, email: %s, first nam: %s, last name: %s",
+                existingUser.getUsername(),
+                existingUser.getEmail(),
+                existingUser.getFirstName(),
+                existingUser.getLastName());
     }
 
     /**
