@@ -123,17 +123,40 @@ public abstract class CustomDuplicator extends OIDCIdentityProvider {
                                               RealmModel realm,
                                               BrokeredIdentityContext context) {
         // Extract key identifiers from the incoming authentication context
+        var id = context.getId();
         var username = context.getUsername();
         var email = context.getEmail();
+        var realmId = realm.getId();
+        var providerId = getConfig().getProviderId(); // The identity provider's ID (e.g., "singpass-oidc")
         var providerAlias = getConfig().getAlias(); // The identity provider's alias (e.g., "singpass-oidc")
         var currentBrokerUserId = context.getId();  // The new subject/user ID from the external provider
+        var brokerUserId = context.getBrokerUserId();
+        var brokerSessionId = context.getBrokerSessionId();
 
-        logger.infof("[performUpsertBasedOnStableIdentifier] Starting upsert with username: %s, email: %s, currentBrokerUserId: %s",
+        logger.infof("[performUpsertBasedOnStableIdentifier] Starting upsert on %s with provider id %s, id: %s, username: %s, email: %s, current broker id: %s, broker id: %s, broker session id: %s",
+                realmId,
+                providerId,
+                id,
                 username,
                 email,
-                currentBrokerUserId);
+                currentBrokerUserId,
+                brokerUserId,
+                brokerSessionId);
 
-        // Primary lookup: Search by username (most direct and efficient method)
+        // 1st lookup: Check if user already exists by federated identity (old behavior)
+        var existingFederatedIdentityById = session.users()
+                .getUserByFederatedIdentity(realm, new FederatedIdentityModel(
+                        providerAlias,
+                        currentBrokerUserId,
+                        null));
+        if (existingFederatedIdentityById != null) {
+            logger.infof("[performUpsertBasedOnStableIdentifier] User already linked by federated identity with id: %s, username: %s",
+                    existingFederatedIdentityById.getId(),
+                    existingFederatedIdentityById.getUsername());
+            username = existingFederatedIdentityById.getUsername();
+        }
+
+        // 2nd lookup: Search by username (most direct and efficient method)
         UserModel existingUser = null;
         if (username != null && !username.isEmpty()) {
             existingUser = session.users().getUserByUsername(realm, username);
@@ -142,7 +165,7 @@ public abstract class CustomDuplicator extends OIDCIdentityProvider {
                     existingUser != null ? existingUser.getUsername() : "null");
         }
 
-        // Secondary lookup: Search by email if username lookup failed
+        // 3rd lookup: Search by email if username lookup failed
         // Email is often more stable than username in enterprise environments
         if (existingUser == null && email != null && !email.isEmpty()) {
             existingUser = session.users().getUserByEmail(realm, email);
@@ -151,7 +174,7 @@ public abstract class CustomDuplicator extends OIDCIdentityProvider {
                     existingUser != null ? existingUser.getUsername() : "null");
         }
 
-        // Tertiary lookup: Search by custom stable attributes as last resort
+        // 4th lookup: Search by custom stable attributes as last resort
         // This handles cases where both username and email may have changed
         if (existingUser == null) {
             existingUser = findUserByStableAttribute(session, realm, context);
