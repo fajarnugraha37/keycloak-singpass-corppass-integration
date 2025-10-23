@@ -178,4 +178,90 @@ public class JwtUtil {
 
         return accessToken;
     }
+
+    /**
+     * Converts a comma-separated key-value pairs string into a Map.
+     * Format: "key1=value1,key2=value2,key3=value3"
+     * Example: "s=S8979373D,uuid=a9865837-7bd7-46ac-bef4-42a76a946424,u=123456789AS8979373D,c=SG"
+     *
+     * @param keyValueString the string containing comma-separated key-value pairs
+     * @return Map containing the parsed key-value pairs
+     * @throws IllegalArgumentException if the string format is invalid
+     */
+    public static java.util.Map<String, String> subToKeyValue(String keyValueString) {
+        if (keyValueString == null || keyValueString.trim().isEmpty()) {
+            logger.warnf("[parseKeyValueString] Input string is null or empty");
+            return new java.util.HashMap<>();
+        }
+
+        var result = new java.util.HashMap<String, String>();
+
+        try {
+            // Split by comma to get individual key-value pairs
+            var pairs = keyValueString.split(",");
+
+            for (var pair : pairs) {
+                var trimmedPair = pair.trim();
+                if (trimmedPair.isEmpty()) {
+                    continue; // Skip empty pairs
+                }
+
+                // Split by '=' to separate key and value
+                var keyValue = trimmedPair.split("=", 2); // Limit to 2 parts in case value contains '='
+
+                if (keyValue.length != 2) {
+                    logger.warnf("[parseKeyValueString] Invalid key-value pair format: %s", trimmedPair);
+                    continue; // Skip invalid pairs
+                }
+
+                var key = keyValue[0].trim();
+                var value = keyValue[1].trim();
+
+                if (key.isEmpty()) {
+                    logger.warnf("[parseKeyValueString] Empty key found in pair: %s", trimmedPair);
+                    continue; // Skip pairs with empty keys
+                }
+
+                result.put(key, value);
+                logger.infof("[parseKeyValueString] Parsed key-value pair: %s = %s", key, value);
+            }
+
+            logger.infof("[parseKeyValueString] Successfully parsed %d key-value pairs from string: %s",
+                    result.size(), keyValueString);
+
+        } catch (Exception e) {
+            logger.errorf(e, "[parseKeyValueString] Error parsing key-value string: %s", keyValueString);
+            throw new IllegalArgumentException("Failed to parse key-value string: " + keyValueString, e);
+        }
+
+        return result;
+    }
+
+    /**
+     * Converts a Map back to a comma-separated key-value pairs string.
+     * This is the reverse operation of parseKeyValueString.
+     *
+     * @param map the Map to convert
+     * @return comma-separated key-value pairs string
+     */
+    public static String keyValueToSub(java.util.Map<String, String> map) {
+        if (map == null || map.isEmpty()) {
+            return "";
+        }
+
+        var result = new StringBuilder();
+        var first = true;
+
+        for (var entry : map.entrySet()) {
+            if (!first) {
+                result.append(",");
+            }
+            result.append(entry.getKey()).append("=").append(entry.getValue());
+            first = false;
+        }
+
+        var resultString = result.toString();
+        logger.infof("[mapToKeyValueString] Converted map to string: %s", resultString);
+        return resultString;
+    }
 }

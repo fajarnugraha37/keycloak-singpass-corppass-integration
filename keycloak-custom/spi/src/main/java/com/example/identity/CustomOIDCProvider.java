@@ -2,6 +2,7 @@ package com.example.identity;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Optional;
 
 import com.example.utils.*;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -60,7 +61,7 @@ import static org.keycloak.utils.MediaType.APPLICATION_JSON_TYPE;
  *   <li><strong>Flow Control:</strong> Add custom logic at various lifecycle points</li>
  * </ul>
  */
-public class CustomOIDCProvider extends OIDCIdentityProvider {
+public class CustomOIDCProvider extends CustomDuplicator {
     private static final Logger logger = Logger.getLogger(CustomOIDCProvider.class);
 
     public final CustomOIDCIdentityProviderConfig configuration;
@@ -282,13 +283,21 @@ public class CustomOIDCProvider extends OIDCIdentityProvider {
                                                       String accessToken,
                                                       JsonWebToken idToken) throws IOException {
         logger.infof("[extractIdentity] Extracting identity in CustomOIDCProvider");
-        var id = CryptoUtil.toMD5(idToken.getSubject());
+        var subKeyValue = JwtUtil.subToKeyValue(idToken.getSubject());
+        var id = idToken.getSubject();
         var brokerUserId = getConfig().getAlias() + "." + id;
         var identity = new BrokeredIdentityContext(id, getConfig());
         var name = (String) idToken.getOtherClaims().get(IDToken.NAME);
         var givenName = (String) idToken.getOtherClaims().get(IDToken.GIVEN_NAME);
         var familyName = (String) idToken.getOtherClaims().get(IDToken.FAMILY_NAME);
-        var preferredUsername = (String) idToken.getOtherClaims().get(getusernameClaimNameForIdToken());
+        var preferredUsername = "";
+        if (subKeyValue.get("s") != null) {
+            logger.infof("[toIdentityContext] Found 's' in sub claim: %s", subKeyValue.get("s"));
+            preferredUsername = subKeyValue.get("s");
+        } else {
+            logger.infof("[toIdentityContext] 's' not found in sub claim, using subject: %s", idToken.getSubject());
+            preferredUsername = idToken.getSubject();
+        }
         var email = (String) idToken.getOtherClaims().get(IDToken.EMAIL);
         var userInfoUrl = getUserInfoUrl();
         logger.infof("[toIdentityContext] Initial values: id=%s, brokerUserId=%s, name=%s, givenName=%s, familyName=%s, preferredUsername=%s, email=%s, userInfoUrl=%s",
@@ -335,7 +344,6 @@ public class CustomOIDCProvider extends OIDCIdentityProvider {
                 id = getJsonProperty(userInfo, "sub");
                 givenName = getJsonProperty(userInfo, IDToken.GIVEN_NAME);
                 familyName = getJsonProperty(userInfo, IDToken.FAMILY_NAME);
-                preferredUsername = getUsernameFromUserInfo(userInfo);
                 email = getJsonProperty(userInfo, "email");
                 AbstractJsonUserAttributeMapper.storeUserProfileForMapper(identity, userInfo, getConfig().getAlias());
 
@@ -360,6 +368,7 @@ public class CustomOIDCProvider extends OIDCIdentityProvider {
                         }
                         if (key.contains("uinfin") && key.contains("value")) {
                             preferredUsername = value;
+                            logger.infof("[toIdentityContext] Setting preferredUsername from uinfin value: %s", preferredUsername);
                         }
                     }
                 }
@@ -383,31 +392,54 @@ public class CustomOIDCProvider extends OIDCIdentityProvider {
 
         identity.setEmail(email);
         identity.setBrokerUserId(brokerUserId);
-        if (preferredUsername == null) {
-            preferredUsername = email;
-        }
-        if (preferredUsername == null) {
-            preferredUsername = id;
-        }
 
-        identity.setUsername(preferredUsername);
         if (tokenResponse != null && tokenResponse.getSessionState() != null) {
             var brokerSessionId = getConfig().getAlias() + "." + tokenResponse.getSessionState();
             logger.infof("[toIdentityContext] Setting broker session ID: %s", brokerSessionId);
             identity.setBrokerSessionId(brokerSessionId);
         }
         if (tokenResponse != null) {
-            identity.getContextData().put(FEDERATED_ACCESS_TOKEN_RESPONSE, tokenResponse);
             processAccessTokenResponse(identity, tokenResponse);
-            MapperUtil.toMap(tokenResponse).forEach((key, value) -> {
+            var accessTokenKeyValue = MapperUtil.toMap(tokenResponse);
+            for (var entry : accessTokenKeyValue.entrySet()) {
+                var key = entry.getKey();
+                var value = entry.getValue();
                 logger.infof("[toIdentityContext] Access Token Claim ---> attribute: %s = %s", key, value);
                 identity.setUserAttribute(key, value);
-            });
+            }
         }
-        MapperUtil.toMap(idToken).forEach((key, value) -> {
+
+        var idTokenKeyValue = MapperUtil.toMap(idToken);
+        for (var entry : idTokenKeyValue.entrySet()) {
+            var key = entry.getKey();
+            var value = entry.getValue();
             logger.infof("[toIdentityContext] ID Token Claim ---> attribute: %s = %s", key, value);
             identity.setUserAttribute(key, value);
-        });
+            if ("id_token.entityInfo.CPEntID".equalsIgnoreCase(key)) {
+                subKeyValue.put("uen", value);
+                preferredUsername = JwtUtil.keyValueToSub(subKeyValue);
+                logger.infof("[toIdentityContext] Setting preferredUsername from CPEntID: %s", preferredUsername);
+            }
+        }
+
+        if (configuration.isStoreToken()) {
+            identity.getContextData().put(FEDERATED_ACCESS_TOKEN_RESPONSE, tokenResponse);
+            identity.getContextData().put(FEDERATED_ID_TOKEN, idToken);
+            identity.getContextData().put(FEDERATED_ACCESS_TOKEN, accessToken);
+            if (tokenResponse != null && tokenResponse.getRefreshToken() != null) {
+                identity.getContextData().put(FEDERATED_REFRESH_TOKEN, tokenResponse.getRefreshToken());
+            }
+        }
+
+        if (preferredUsername == null) {
+            preferredUsername = email;
+            logger.infof("[toIdentityContext] Setting preferredUsername from email: %s", preferredUsername);
+        }
+        if (preferredUsername == null) {
+            preferredUsername = id;
+            logger.infof("[toIdentityContext] Setting preferredUsername from subject id: %s", preferredUsername);
+        }
+        identity.setUsername(preferredUsername);
 
         logger.infof("[extractIdentity] Initial extracted identity: %s with id: %s", identity.getUsername(), identity.getId());
         for (var entry : identity.getContextData().entrySet()) {
