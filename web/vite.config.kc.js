@@ -81,16 +81,16 @@ export default defineConfig({
         // Rollup options
         rollupOptions: {
             // Multi-page application setup
-            // input: Object.fromEntries([
-            //     ...globSync('./kc/**/*.html'),
-            // ].map(file => {
-            //     const relativePath = relative('', file.slice(0, file.length - extname(file).length));
-            //     const filePath = fileURLToPath(new URL(file, import.meta.url));
+            input: Object.fromEntries([
+                ...globSync('./kc/**/*.html'),
+            ].map(file => {
+                const relativePath = relative('', file.slice(0, file.length - extname(file).length));
+                const filePath = fileURLToPath(new URL(file, import.meta.url));
 
-            //     return [relativePath, filePath];
-            // })),
+                return [relativePath, filePath];
+            })),
             // Input configuration focused on JavaScript entry points
-            input: './kc/index.js',
+            // input: './kc/index.js',
 
             // Output configuration with enhanced cache busting
             output: {
