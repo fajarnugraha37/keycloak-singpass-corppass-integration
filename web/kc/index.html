@@ -1,0 +1,118 @@
+{{#> layout }} 
+  {{#*inline "head"}}
+    <link rel="icon" type="image/svg+xml" href="/__assets__/sso-icon.svg" />
+    <meta
+      name="description"
+      content="Singpass Login - Space Theme | Digital Identity Platform"
+    />
+    <title>Singpass Login - Space Theme</title>
+    <script type="module" src="./index.js"></script>
+  {{/inline}} 
+
+  {{#*inline "body"}}
+        <!-- Canvas for space background -->
+        <canvas id="spaceCanvas"></canvas>
+
+        <!-- Accent Elements -->
+        <div class="accent-orb accent-orb-1"></div>
+        <div class="accent-orb accent-orb-2"></div>
+        <div class="accent-orb accent-dot-1"></div>
+        <div class="accent-orb accent-dot-2"></div>
+
+        <!-- Main Container -->
+        <div class="container">
+            <div class="card-wrapper" id="cardWrapper">
+                <div class="card">
+                    <!-- Header -->
+                    <div class="header">
+                        <h1>Please select the below option to log in to e-Services:</h1>
+                    </div>
+
+                    <!-- Form Section -->
+                    <form class="form-section" id="loginForm">
+                        <!-- Email Input -->
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <div class="input-wrapper">
+                                <input type="email" id="email" placeholder="you@example.com" required>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Password Input -->
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <div class="input-wrapper">
+                                <input type="password" id="password" placeholder="••••••••" required>
+                                <button type="button" class="password-toggle" id="passwordToggle">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </button>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="position: absolute; left: 12px;">
+                                    <path d="M12 1C6.48 1 2 5.48 2 11s4.48 10 10 10 10-4.48 10-10S17.52 1 12 1zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"></path>
+                                    </svg>
+                                </svg>
+                            </div>
+                        </div>
+
+                        <!-- Remember & Forgot -->
+                        <div class="remember-forgot">
+                            <label>
+                                <input type="checkbox">
+                                <span>Remember me</span>
+                            </label>
+                            <a href="#">Forgot password?</a>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="submit-btn" id="submitBtn">Sign In</button>
+                    </form>
+
+                    <!-- Divider -->
+                    <div class="divider">
+                        <div class="divider-line"></div>
+                        <span class="divider-text">or</span>
+                        <div class="divider-line"></div>
+                    </div>
+
+                    <!-- Singpass Section -->
+                    <div class="singpass-section">
+                        <div class="singpass-grid">
+                            <!-- Individual Singpass -->
+                            <div class="singpass-option">
+                                <h3>Individual</h3>
+                                <button type="button" class="singpass-btn" id="individualBtn">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/>
+                                    </svg>
+                                    Log in with Singpass
+                                </button>
+                            </div>
+
+                            <!-- Corporate Singpass -->
+                            <div class="singpass-option">
+                                <h3>Corporate</h3>
+                                <button type="button" class="singpass-btn" id="corporateBtn">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/>
+                                    </svg>
+                                    Log in with Singpass
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <p class="footer">
+                        Don't have an account? <a href="#">Sign up</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+  {{/inline}} 
+{{/layout}}

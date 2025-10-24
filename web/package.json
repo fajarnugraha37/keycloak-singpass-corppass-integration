@@ -9,6 +9,12 @@
     "build": "vite build",
     "build:watch": "vite build --watch",
     "preview": "vite preview --host",
+
+    "dev:kc": "vite --config vite.config.kc.js --host",
+    "build:kc": "vite build --config vite.config.kc.js",
+    "build:kc:watch": "vite build --config vite.config.kc.js --watch",
+    "preview:kc": "vite preview --config vite.config.kc.js --host",
+
     "clean": "rm -rf ../webroot/* || rmdir /s /q ..\\webroot\\* 2>nul",
     "analyze": "vite build --mode analyze",
     "lint": "echo 'ESLint not configured - consider adding for code quality'",

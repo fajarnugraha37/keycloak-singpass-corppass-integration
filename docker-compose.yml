@@ -132,7 +132,6 @@ services:
       - "${KC_PORT:-8081}:8080"
     volumes:
       - ./keycloak-import:/opt/keycloak/data/import:ro
-      - ./keycloak-custom/themes:/opt/keycloak/themes:ro
     healthcheck:
       test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/8080 && exit 0 || exit 1"]
       interval: 30s

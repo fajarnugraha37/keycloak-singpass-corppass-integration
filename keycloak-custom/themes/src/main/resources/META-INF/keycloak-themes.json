@@ -1,0 +1,16 @@
+{
+    "themes": [
+        {
+            "name": "kc",
+            "types": [
+                "login"
+            ]
+        },
+        {
+            "name": "ipsum",
+            "types": [
+                "login"
+            ]
+        }
+    ]
+}

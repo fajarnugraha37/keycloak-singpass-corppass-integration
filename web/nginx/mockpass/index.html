@@ -1,0 +1,40 @@
+
+{{#> layout }} 
+  {{#*inline "head"}}
+    <title>MockPass Identity Provider - Digital Identity Platform</title>
+    <meta
+      name="description"
+      content="MockPass Identity Provider for SingPass and CorpPass authentication testing"
+    />
+
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="../__assets__/favicon-singpass-corppass.svg"
+    />
+    <link rel="stylesheet" href="./index.css" />
+    <script type="module" src="./index.js"></script>
+  {{/inline}} 
+  {{#*inline "body"}}
+    <!-- Navigation Header -->
+    {{> mockpass/header }}
+
+    <!-- Hero Section -->
+    {{> mockpass/hero }}
+
+    <!-- Overview Section -->
+    {{> mockpass/overview }}
+
+    <!-- Endpoints Section -->
+    {{> mockpass/endpoints }}
+
+    <!-- Documentation Section -->
+    {{> mockpass/documentation }}
+
+    <!-- Footer -->
+    {{> mockpass/footer }}
+
+    <!-- Notification Toast -->
+    {{> mockpass/notification }}
+  {{/inline}} 
+{{/layout}}
