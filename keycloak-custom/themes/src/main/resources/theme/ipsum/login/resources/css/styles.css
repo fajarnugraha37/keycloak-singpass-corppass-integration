@@ -1,0 +1,120 @@
+:root {
+  --primaryDarkColor: rgba(2, 69, 127, 0.9);
+  --textColor: #f6f5f7;
+  --errorColor: rgb(177, 0, 0);
+}
+
+/* Patternfly CSS places a "bg-login.jpg" as the background on this ".login-pf" class.
+   This clashes with the "keycloak-bg.png' background defined on the body below.
+   Therefore the Patternfly background must be set to none. */
+.login-pf {
+  background: none;
+}
+
+div.kc-logo-text {
+  background-repeat: no-repeat;
+  margin: 0 auto;
+}
+
+.login-pf body {
+  background: var(--primaryDarkColor);
+  background-size: cover;
+  height: 100%;
+}
+
+#kc-header {
+  color: var(--textColor);
+  margin-top: 7%;
+  overflow: visible;
+  white-space: nowrap;
+}
+
+#kc-header-wrapper {
+  background-image: url(../img/logoipsum.svg);
+  background-repeat: no-repeat;
+  background-position: center;
+  padding: 62px 10px 20px;
+  white-space: normal;
+}
+
+.login-pf-page .login-pf-brand {
+  margin-top: 20px;
+  max-width: 360px;
+  width: 40%;
+}
+
+.login-pf-page.login-pf-page-accounts {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.card-pf {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  margin: auto;
+  max-width: 500px;
+  border-radius: 0.25rem;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+
+.pf-c-button.pf-m-primary {
+  color: var(--primaryDarkColor);
+  font-size: 1rem;
+
+  border: 2px solid;
+  border-radius: 0.6em;
+  border-color: var(--primaryDarkColor);
+  background-color: var(--textColor);
+}
+
+.pf-c-form-control[aria-invalid="true"] {
+  background-repeat: no-repeat;
+}
+
+#kc-login:hover {
+  color: var(--textColor);
+  background-color: var(--primaryDarkColor);
+}
+
+.form-group {
+  position: relative;
+  margin-top: 25px;
+  margin-bottom: 25px;
+  max-width: 500px;
+}
+.form-group label {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  font-size: 16px;
+  color: var(--primaryDarkColor);
+  /*pointer-event: none;*/
+  transition: all 0.5s ease-in-out;
+}
+.form-group input {
+  border: 0;
+  border-bottom: 1px solid var(--primaryDarkColor);
+  background: transparent;
+  width: 100%;
+  padding: 8px 0 5px 0;
+  font-size: 16px;
+  color: var(--primaryDarkColor);
+}
+.form-group input:focus {
+  border: none;
+  outline: none;
+  border-bottom: 1px solid var(--primaryDarkColor);
+}
+
+.form-group input:focus ~ label,
+.form-group input:valid ~ label {
+  top: -12px;
+  font-size: 12px;
+}
+
+#input-error {
+  color: var(--errorColor);
+}

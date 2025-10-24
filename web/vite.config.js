@@ -1,22 +1,27 @@
-import { defineConfig } from 'vite';
 import { relative, extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import path from 'path';
+
+import { defineConfig } from 'vite';
 import { globSync } from 'glob';
 import tailwindcss from '@tailwindcss/vite';
 import handlebarsPlugin from '@yoichiro/vite-plugin-handlebars';
-import path from 'path';
 
-const partial = path.resolve(__dirname, '__partials__');
-console.log('Handlebars partials directory:', partial);
+import { commonConfig } from './vite.config.common';
 
 export default defineConfig({
+    ...commonConfig,
+    // Set the root directory for the project
+    root: path.resolve(__dirname, './nginx'),
+    // Base path for deployment
+    base: '/',
+
     plugins: [
         tailwindcss(),
         handlebarsPlugin({
             templateFileExtension: 'hbs',
             optimizePartialRegistration: true,
-            partialDirectoryPath: path.resolve(__dirname, '__partials__'),
-            partialsDirectoryPath: path.resolve(__dirname, '__partials__'),
+            partialsDirectoryPath: path.resolve(__dirname, 'nginx', '__partials__'),
             compileOptions: {
             },
             transformIndexHtmlOptions: {
@@ -59,35 +64,9 @@ export default defineConfig({
         }),
     ],
 
-    // Development server configuration
-    server: {
-        port: 3000,
-        open: true,
-        cors: true,
-        hmr: {
-            overlay: true
-        },
-        // Disable caching in development
-        headers: {
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-        }
-    },
-
-    // Preview server configuration
-    preview: {
-        port: 3000,
-        open: true,
-        // Cache control for preview
-        headers: {
-            'Cache-Control': 'no-cache, max-age=0'
-        }
-    },
-
     // Build configuration
     build: {
-        outDir: '../webroot',
+        outDir: '../../webroot',
         emptyOutDir: true,
         sourcemap: true,
 
@@ -103,12 +82,7 @@ export default defineConfig({
         rollupOptions: {
             // Multi-page application setup
             input: Object.fromEntries([
-                './index.html',
-                './404.html',
-                './50x.html',
-                ...globSync('mockpass/**/*.html'),
-                ...globSync('cpds/**/*.html'),
-                ...globSync('aceas/**/*.html'),
+                ...globSync('./nginx/**/*.html'),
             ].map(file => {
                 const relativePath = relative('', file.slice(0, file.length - extname(file).length));
                 const filePath = fileURLToPath(new URL(file, import.meta.url));
@@ -124,9 +98,6 @@ export default defineConfig({
                     'vendor-signals': ['@preact/signals'],
                     'vendor-oidc': ['oidc-client-ts', 'keycloak-js'],
                     'vendor-htmx': ['htmx.org'],
-
-                    // Shared application code
-                    'shared': ['./__scripts__/shared/index.js'],
                 },
 
                 // Enhanced asset naming with timestamps for aggressive cache busting
@@ -174,35 +145,4 @@ export default defineConfig({
         ],
         exclude: []
     },
-
-    // ESBuild configuration
-    esbuild: {
-        // Remove console logs and debugger statements in production
-        drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
-
-        // Target modern browsers
-        target: 'esnext',
-
-        // Enable minification
-        minify: true
-    },
-
-    // CSS configuration
-    css: {
-        devSourcemap: true
-    },
-
-    // Base path for deployment
-    base: '/',
-
-    // Asset handling
-    assetsInclude: ['**/*.woff', '**/*.woff2'],
-
-    // Define global constants
-    define: {
-        __APP_VERSION__: JSON.stringify(process.env.npm_package_version || '1.0.0'),
-        __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
-        __BUILD_TIMESTAMP__: JSON.stringify(Date.now()),
-        __DEV__: JSON.stringify(process.env.NODE_ENV === 'development')
-    }
 })

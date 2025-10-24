@@ -20,6 +20,20 @@ COPY spi/src/ /workspace/spi/src/
 # Build with optimizations
 RUN gradle --no-daemon clean build -x test --parallel --build-cache
 
+FROM gradle:8.10.2-jdk17 AS theme-builder
+WORKDIR /workspace
+COPY themes/gradle/ /workspace/themes/gradle/
+COPY themes/gradlew* /workspace/themes/
+COPY themes/settings.gradle.kts /workspace/themes/
+COPY themes/gradle.properties /workspace/themes/
+COPY themes/build.gradle.kts /workspace/themes/
+
+WORKDIR /workspace/themes
+
+COPY themes/src/ /workspace/themes/src/
+
+RUN gradle --no-daemon clean jar -x test --parallel --build-cache
+
 # ---- stage 2: assemble custom keycloak
 # pick an exact 25.x tag you use in prod
 FROM quay.io/keycloak/keycloak:25.0.6
@@ -30,6 +44,7 @@ USER root
 # Copy JARs in a single layer and clean up build artifacts
 COPY --from=builder /workspace/spi/build/libs/jars/*.jar /opt/keycloak/providers/
 COPY --from=builder /workspace/spi/build/libs/*.jar /opt/keycloak/providers/
+COPY --from=theme-builder /workspace/themes/build/libs/*.jar /opt/keycloak/providers/
 
 # Build the Quarkus image with optimizations
 RUN /opt/keycloak/bin/kc.sh build \
