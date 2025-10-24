@@ -18,25 +18,31 @@ The Singapore government-styled eServices portal provides access to both ACEAS a
 ### 🔐 ACEAS Application 
 Direct Keycloak authentication with Authorization Code + PKCE flow, featuring real-time authentication status and token management.
 
-![ACEAS Application](./docs/images/aceas-app.png)
+![ACEAS Application](./docs/images/aceas-app-1.png)
+![ACEAS Application](./docs/images/aceas-app-2.png)
+![ACEAS Application](./docs/images/aceas-app-3.png)
 
 ### 📊 CPDS Application
 Federated authentication through IDS provider that brokers tokens with Keycloak backend, demonstrating token isolation patterns.
 
-![CPDS Application](./docs/images/cpds-app.png)
+![CPDS Application](./docs/images/cpds-app-1.png)
+![CPDS Application](./docs/images/cpds-app-2.png)
+![CPDS Application](./docs/images/cpds-app-3.png)
 
-### 🔑 Keycloak Admin Console
+### 🔑 Keycloak Login Page
 Comprehensive identity management with agency realm configuration, user management, and authentication flow monitoring.
 
-![Keycloak Admin](./docs/images/keycloak-admin.png)
+![Keycloak Login](./docs/images/keycloak-login.png)
+![Keycloak Login](./docs/images/keycloak-admin.png)
 
 ### 🎭 MockPass Authentication
 Singapore SingPass simulation providing realistic government authentication experience for testing and development.
 
-![MockPass Authentication](./docs/images/mockpass-auth.png)
 ![MockPass Landing Page - Hero](./docs/images/mockpass-1.png)
 ![MockPass Landing Page - Overview](./docs/images/mockpass-2.png)
 ![MockPass Landing Page - Resources](./docs/images/mockpass-3.png)
+![MockPass Landing Page - Resources](./docs/images/mockpass-4.png)
+![MockPass Authentication](./docs/images/mockpass-auth.png)
 
 ### 🚨 Error Pages
 Professional error handling with government-styled 404 and 50x pages featuring animations and auto-refresh functionality.
