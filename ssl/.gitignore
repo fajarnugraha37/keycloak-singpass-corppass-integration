@@ -1,0 +1,71 @@
+# SSL Certificates and Private Keys
+*.crt
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Base64 encoded certificates and keys
+*_base64.txt
+*.key
+*.crt
+
+# Encryption keys
+encryption.key
+*.aes
+
+# Backup files
+*.backup.*
+
+# Temporary files
+*.tmp
+*.temp
+
+# Log files
+*.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Certificate signing requests
+*.csr
+
+# Certificate authority files
+*.ca-bundle
+*.ca
+
+# DER format certificates
+*.der
+*.cer
+
+# Java keystores
+*.jks
+*.keystore
+
+# PKCS#12 files
+*.p12
+*.pfx
+
+# Certificate revocation lists
+*.crl
+
+# OpenSSL database files
+index.txt*
+serial*
+crlnumber*
+
+# Certificate configuration backups
+*.conf.bak
+*.cnf.bak
