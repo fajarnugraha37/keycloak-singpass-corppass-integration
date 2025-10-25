@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  ssl-generator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ssl-cert-generator
+    volumes:
+      # Mount current directory to /ssl in container
+      - .:/ssl
+    environment:
+      - VALIDITY_DAYS=${VALIDITY_DAYS:-365}
+    command: ${COMMAND:-all}
+    
+  # Optional: Certificate validation service
+  ssl-validator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ssl-cert-validator
+    volumes:
+      - .:/ssl
+    command: validate
+    depends_on:
+      - ssl-generator
+    profiles:
+      - validate
+
+  # Optional: Web server for testing certificates
+  test-server:
+    image: nginx:1.27-alpine
+    container_name: ssl-test-server
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - ./certs/eservice.crt:/etc/nginx/ssl/server.crt:ro
+      - ./private/eservice.key:/etc/nginx/ssl/server.key:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - ssl-generator
+    profiles:
+      - test
+    restart: unless-stopped
+
+volumes:
+  ssl-data:
+    driver: local
+
+networks:
+  default:
+    name: ssl-network
