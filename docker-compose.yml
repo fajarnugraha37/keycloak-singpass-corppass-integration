@@ -21,7 +21,7 @@ services:
       ENCRYPT_MYINFO: ${ENCRYPT_MYINFO:-true}
       NODE_ENV: ${NODE_ENV:-development}
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=10", "--spider", "http://localhost:3001/singpass/v2/.well-known/openid-configuration"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=10", "--spider", "http://mockpass:3001/singpass/v2/.well-known/openid-configuration"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -38,7 +38,10 @@ services:
       - app_network
   
   mocksaml:
-    image: boxyhq/mock-saml:1.4.1
+    build: 
+      context: ./mocksaml
+      dockerfile: Dockerfile
+    image: kc_mocksaml:${VERSION:-latest}
     container_name: mocksaml
     restart: unless-stopped
     ports:
@@ -49,6 +52,12 @@ services:
       NEXT_PUBLIC_GTM_ID: ${NEXT_PUBLIC_GTM_ID:-}
       PUBLIC_KEY: ${MOCKSAML_PUBLIC_KEY:-}
       PRIVATE_KEY: ${MOCKSAML_PRIVATE_KEY:-}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=10", "--spider", "http://mocksaml:4000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     deploy:
       resources:
         limits:
@@ -209,12 +218,12 @@ services:
         condition: service_healthy
     expose:
       - "7000"
-    # healthcheck:
-    #   test: ["CMD", "wget", "--no-verbose", "--tries=10", "--spider", "http://localhost:7000/health", "||", "exit", "1"]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 3
-    #   start_period: 30s
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=10", "--spider", "http://ids:7000/health", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     deploy:
       resources:
         limits:
@@ -344,6 +353,7 @@ services:
       - "${WEB_HTTPS_PORT:-443}:443"
     volumes:
       # Nginx configuration (read-only)
+      - ./nginx/sites-available:/etc/nginx/sites-available:ro
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./nginx/common.conf:/etc/nginx/common.conf:ro
       - ./nginx/proxy.conf:/etc/nginx/proxy.conf:ro
