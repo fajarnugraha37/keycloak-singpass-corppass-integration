@@ -7,7 +7,6 @@ import com.example.utils.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.ws.rs.core.*;
 import liquibase.util.MD5Util;
-import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.broker.oidc.OIDCIdentityProvider;
@@ -468,7 +467,7 @@ public class CustomOIDCProvider extends CustomDuplicator {
     @Override
     public void importNewUser(KeycloakSession session, RealmModel realm, UserModel user, BrokeredIdentityContext context) {
         logger.infof("[importNewUser] Importing new user in CustomOIDCProvider: %s", user.getUsername());
-        super.importNewUser(session, realm, user, context);
+        MapperUtil.mapAttributeToUser(context, user, true);
     }
 
     @Override
@@ -477,20 +476,7 @@ public class CustomOIDCProvider extends CustomDuplicator {
                                    UserModel user,
                                    BrokeredIdentityContext context) {
         logger.infof("[updateBrokeredUser] Updating brokered user in CustomOIDCProvider: %s", user.getUsername());
-        for (var entry : context.getAttributes().entrySet()) {
-            var attrKey = entry.getKey();
-            var attrValues = entry.getValue();
-            var existingValues = user.getFirstAttribute(attrKey);
-            var isNeedToUpdate = existingValues == null
-                    || existingValues.isEmpty()
-                    || !StringUtils.equalsAny(existingValues, attrValues.toArray(CharSequence[]::new));
-            if (isNeedToUpdate) {
-                logger.infof("[updateBrokeredUser] Updating attribute for user %s: %s = %s", user.getUsername(), attrKey, attrValues);
-                user.setAttribute(attrKey, attrValues);
-            } else {
-                logger.infof("[updateBrokeredUser] No change for attribute %s for user %s", attrKey, user.getUsername());
-            }
-        }
+        MapperUtil.mapAttributeToUser(context, user, false);
     }
 
     @Override

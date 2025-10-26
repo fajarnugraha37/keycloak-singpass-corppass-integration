@@ -2,6 +2,7 @@ package com.example.identity;
 
 import com.example.config.CustomSAMLIdentityProviderConfig;
 import com.example.identity.endpoints.CustomSAMLEndpoint;
+import com.example.utils.MapperUtil;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import org.jboss.logging.Logger;
@@ -101,7 +102,7 @@ public class CustomSAMLProvider extends SAMLIdentityProvider {
                               UserModel user,
                               BrokeredIdentityContext context) {
         logger.infof("[importNewUser] Importing new user: %s", user.getUsername());
-        super.importNewUser(session, realm, user, context);
+        MapperUtil.mapAttributeToUser(context, user, true);
     }
 
     @Override
@@ -110,7 +111,7 @@ public class CustomSAMLProvider extends SAMLIdentityProvider {
                                    UserModel user,
                                    BrokeredIdentityContext context) {
         logger.infof("[updateBrokeredUser] Updating brokered user: %s", user.getUsername());
-        super.updateBrokeredUser(session, realm, user, context);
+        MapperUtil.mapAttributeToUser(context, user, false);
     }
 
     @Override
