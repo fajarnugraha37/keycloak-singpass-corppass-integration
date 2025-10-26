@@ -61,6 +61,7 @@ Professional error handling with government-styled 404 and 50x pages featuring a
 
 - [🏗️ Architecture](#️-architecture)
 - [🚀 Quick Start](#-quick-start)
+- [🧩 Git Submodules](#-git-submodules)
 - [🛠️ Development Commands](#️-development-commands)
 - [📁 Project Structure](#-project-structure)
 - [🔄 Authentication Flow](#-authentication-flow)
@@ -73,30 +74,34 @@ Professional error handling with government-styled 404 and 50x pages featuring a
 - [🔒 Security Features](#-security-features)
 - [🚀 Deployment](#-deployment)
 - [📚 Additional Resources](#-additional-resources)
+- [🤝 Contributing](#-contributing)
+  - [🧠 Working With Git Submodules](#working-with-git-submodules)
+- [📄 License](#-license)
+- [🙏 Acknowledgments](#-acknowledgments)
 
 ## 🏗️ Architecture
 
 The stack consists of containerized services orchestrated with Docker Compose:
 
 ### Core Services
-- **🔐 Keycloak** – Identity provider with custom SPIs and agency realm configuration
-- **🎭 MockPass** – Singapore government authentication simulator (SingPass/CorpPass)
-- **🟣 MockSAML** – Test SAML Identity Provider for SAML authentication flows
-- **🔍 IDS** – Node.js OpenID Connect provider for token brokering
-- **🌐 Nginx** – High-performance reverse proxy with SSL/TLS support
-- **🗃️ PostgreSQL** – Keycloak database with optimized performance settings
+- **🔐 Keycloak** - Identity provider with custom SPIs and agency realm configuration
+- **🎭 MockPass** - Singapore government authentication simulator (SingPass/CorpPass)
+- **🟣 MockSAML** - Test SAML Identity Provider for SAML authentication flows
+- **🔍 IDS** - Node.js OpenID Connect provider for token brokering
+- **🌐 Nginx** - High-performance reverse proxy with SSL/TLS support
+- **🗃️ PostgreSQL** - Keycloak database with optimized performance settings
 
 ### Application Services  
-- **📱 ACEAS API** – Sample microservice with Keycloak integration
-- **📊 CPDS API** – Sample microservice with IDS token validation
-- **🖥️ Web Frontend** – Single-page applications served by Nginx
+- **📱 ACEAS API** - Sample microservice with Keycloak integration
+- **📊 CPDS API** - Sample microservice with IDS token validation
+- **🖥️ Web Frontend** - Single-page applications served by Nginx
 
 ### Infrastructure Features
-- 🔒 **SSL/TLS Support** – Self-signed certificates for development
-- 📊 **Health Checks** – Comprehensive service monitoring
-- 🎯 **Resource Limits** – Memory and CPU constraints for stability
-- 🔄 **Hot Reload** – Development-friendly file watching
-- 📝 **Centralized Logging** – Background log collection and viewing
+- 🔒 **SSL/TLS Support** - Self-signed certificates for development
+- 📊 **Health Checks** - Comprehensive service monitoring
+- 🎯 **Resource Limits** - Memory and CPU constraints for stability
+- 🔄 **Hot Reload** - Development-friendly file watching
+- 📝 **Centralized Logging** - Background log collection and viewing
 
 ## 🚀 Quick Start
 
@@ -104,6 +109,30 @@ The stack consists of containerized services orchestrated with Docker Compose:
 - [Docker](https://docs.docker.com/get-docker/) and Docker Compose V2
 - [Make](https://www.gnu.org/software/make/) (for convenience commands)
 - **Host file configuration** (see setup below)
+
+### 🧩 Git Submodules
+
+This repository vendors its SingPass/CorpPass simulators through Git submodules so the Docker Compose stack can mount their sources locally:
+
+- `mockpass` - SingPass/CorpPass OIDC simulator fork
+- `mocksaml` - SAML identity provider fork
+
+Clone or update the repository with submodules included:
+
+```bash
+git clone --recurse-submodules <repo-url>
+# or, if you already cloned without them:
+git submodule update --init --recursive
+```
+
+When pulling new changes, keep the submodules in sync with:
+
+```bash
+git pull --recurse-submodules
+git submodule update --remote --merge   # follows the branches defined in .gitmodules
+```
+
+Use `git submodule status` to confirm everything is checked out, and run `git submodule sync --recursive` if the `.gitmodules` file changes (for example, when a submodule URL is updated). Missing or stale submodules will cause `make` targets and the Docker services to fail because the `mockpass` and `mocksaml` directories will be empty.
 
 ### Host File Configuration
 
@@ -839,12 +868,58 @@ docker-compose --log-driver=syslog up
 ## 🤝 Contributing
 
 ### Development Workflow
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Follow the existing code style and patterns
-4. Test changes thoroughly: `make rebuild && make health`
-5. Update documentation for new features
-6. Submit a pull request
+1. **Fork GitHub repo** - click “Fork” on [fajarnugraha37/keycloak-singpass-corppass-integration](https://github.com/fajarnugraha37/keycloak-singpass-corppass-integration).
+2. **Clone your fork with submodules**  
+   ```bash
+   git clone --recurse-submodules git@github.com:<you>/keycloak-singpass-corppass-integration.git
+   cd keycloak-singpass-corppass-integration
+   ```
+3. **Track the upstream repo** so you can pull future changes:  
+   `git remote add upstream https://github.com/fajarnugraha37/keycloak-singpass-corppass-integration.git`
+4. **Create a feature branch** from `main`:  
+   `git checkout -b feature/<short-description>`
+5. **Make and stage changes**, following the code style guidelines below. If you touch `mockpass` or `mocksaml`, follow the [Working With Git Submodules](#working-with-git-submodules) steps so the submodule SHAs stay consistent.
+6. **Test and lint** before committing:  
+   `make rebuild && make health`
+7. **Commit with context** (ideally conventional commits) and include docs/tests when relevant.
+8. **Push to your fork**: `git push origin feature/<short-description>`
+9. **Open a pull request** against `fajarnugraha37/keycloak-singpass-corppass-integration:main`, describing the changes, verification steps, and any dependent submodule PRs.
+10. **Keep the PR up to date** by rebasing/merging from upstream `main`:  
+    `git fetch upstream && git rebase upstream/main` (then force-push) or `git merge upstream/main`.
+
+### Working With Git Submodules
+
+Because `mockpass` and `mocksaml` are tracked as Git submodules, contributions that touch them need a few extra steps:
+
+1. **Fork everything you plan to change** - fork this repository, and fork the `mockpass` / `mocksaml` repositories if you need to edit their code.
+2. **Clone recursively** so you have the submodule sources locally:  
+   `git clone --recurse-submodules git@github.com:<you>/keycloak-singpass-corppass-integration.git`
+3. **Keep submodules synced** when you pull new changes:  
+   `git pull --recurse-submodules && git submodule update --init --recursive`
+4. **Point submodules to your forks (optional but recommended)**:  
+   `git -C mockpass remote set-url origin git@github.com:<you>/mockpass.git` (repeat for `mocksaml`). This lets you push changes directly from the submodule directories.
+5. **Edit and commit inside the submodule**:  
+   ```
+   cd mockpass
+   git checkout -b feature/update-login
+   # make your changes
+   git commit -am "feat: improve login UI"
+   git push origin feature/update-login
+   ```
+6. **Update the parent repo to reference the new submodule commit**:  
+   ```
+   cd ..
+   git status --submodule   # shows the new submodule SHA
+   git add mockpass
+   git commit -m "chore: bump mockpass to <short-sha>"
+   ```
+7. **Open pull requests** for both repositories - first for the submodule(s), then for this parent repo referencing the new submodule SHAs. Mention the downstream PR links so reviewers can validate them together.
+
+Handy commands while iterating:
+
+- `git submodule status --recursive` - confirm current SHAs.
+- `git submodule update --remote --merge` - fast-forward to the latest commits on the tracked branches (`keycloak-singpass-corppass-integration` by default).
+- `git diff --submodule=log` - include submodule commit summaries in your diff/PR.
 
 ### Code Style Guidelines
 - **Docker**: Use multi-stage builds, minimize layer count
