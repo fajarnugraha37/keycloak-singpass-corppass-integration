@@ -366,13 +366,15 @@ cleanup: ## 🧹 Clean up containers and images
 		kc_agency \
 		kc_db_agency \
 		mockpass \
+		mcoksaml \
 		web 2>/dev/null || true
 	-@docker image rm kc_ids \
 		kc_cpds_api \
 		kc_aceas_api \
 		kc_agency \
 		kc_keycloak \
-		kc_mockpass 2>/dev/null || true
+		kc_mockpass \
+		kc_moksaml 2>/dev/null || true
 	
 	@echo "$(BOLD)$(YELLOW)cleaning up volume...$(RESET)"
 	-@docker volume rm kc_db_agency_data 2>/dev/null || true

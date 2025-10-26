@@ -1,1 +1,0 @@
-npx commitlint --from origin/main --to HEAD --verbose

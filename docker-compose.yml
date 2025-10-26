@@ -21,7 +21,7 @@ services:
       ENCRYPT_MYINFO: ${ENCRYPT_MYINFO:-true}
       NODE_ENV: ${NODE_ENV:-development}
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=10", "--spider", "http://localhost:3001/singpass/v2/.well-known/openid-configuration"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=10", "--spider", "http://mockpass:3001/singpass/v2/.well-known/openid-configuration"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -33,6 +33,38 @@ services:
           cpus: '0.5'
         reservations:
           memory: 256M
+          cpus: '0.25'
+    networks:
+      - app_network
+  
+  mocksaml:
+    build: 
+      context: ./mocksaml
+      dockerfile: Dockerfile
+    image: kc_mocksaml:${VERSION:-latest}
+    container_name: mocksaml
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    environment:
+      APP_URL: ${MOCKSAML_APP_URL:-http://mocksaml.localhost}
+      ENTITY_ID: ${MOCKSAML_ENTITY_ID:-mock-saml}
+      NEXT_PUBLIC_GTM_ID: ${NEXT_PUBLIC_GTM_ID:-}
+      PUBLIC_KEY: ${MOCKSAML_PUBLIC_KEY:-}
+      PRIVATE_KEY: ${MOCKSAML_PRIVATE_KEY:-}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=10", "--spider", "http://mocksaml:4000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+        reservations:
+          memory: 128M
           cpus: '0.25'
     networks:
       - app_network
@@ -79,10 +111,8 @@ services:
     container_name: kc_agency
     restart: unless-stopped
     command:
-      - start
+      - start-dev
       - --import-realm
-      - --optimized
-      - --hostname-strict=false
       - --log=console
       - --log-level=${KC_LOG_LEVEL:-info}
     environment:
@@ -104,6 +134,7 @@ services:
       KC_HOSTNAME_ADMIN_URL: ${KC_HOSTNAME_ADMIN_URL:-http://eservice.localhost}
       KC_HOSTNAME_STRICT: "false"
       KC_HOSTNAME_STRICT_HTTPS: "false"
+      KC_HTTP_ENABLED: "true"
       KC_HTTP_RELATIVE_PATH: /auth
       KC_PROXY: edge
       
@@ -120,6 +151,8 @@ services:
         -XX:MaxMetaspaceSize=512m
         -Xms512m
         -Xmx1024m
+        -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8787
+        -Djava.awt.headless=true
         -XX:+HeapDumpOnOutOfMemoryError
         -XX:HeapDumpPath=/tmp/heapdump.hprof
         
@@ -130,8 +163,10 @@ services:
         condition: service_healthy
     ports:
       - "${KC_PORT:-8081}:8080"
+      - "8787:8787"  # JVM debug port
     volumes:
       - ./keycloak-import:/opt/keycloak/data/import:ro
+      - ./keycloak-custom/themes/src/main/resources/theme:/opt/keycloak/themes:ro
     healthcheck:
       test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/8080 && exit 0 || exit 1"]
       interval: 30s
@@ -183,12 +218,12 @@ services:
         condition: service_healthy
     expose:
       - "7000"
-    # healthcheck:
-    #   test: ["CMD", "wget", "--no-verbose", "--tries=10", "--spider", "http://localhost:7000/health", "||", "exit", "1"]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 3
-    #   start_period: 30s
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=10", "--spider", "http://ids:7000/health", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     deploy:
       resources:
         limits:
@@ -213,7 +248,8 @@ services:
       # Service configuration
       PORT: ${ACEAS_API_PORT:-3000}
       NODE_ENV: ${NODE_ENV:-development}
-      
+      LOG_LEVEL: ${ACEAS_LOG_LEVEL:-debug}
+
       # OIDC configuration
       ISSUER: ${HOST:-http://eservice.localhost}/auth/realms/agency-realm
       AUDIENCE: ${ACEAS_AUDIENCE:-aceas-api}
@@ -257,6 +293,7 @@ services:
       # Service configuration
       PORT: ${CPDS_API_PORT:-3001}
       NODE_ENV: ${NODE_ENV:-development}
+      LOG_LEVEL: ${CPDS_LOG_LEVEL:-debug}
       
       # OIDC configuration
       ISSUER: ${HOST:-http://eservice.localhost}/ids
@@ -307,6 +344,8 @@ services:
     depends_on:
       mockpass:
         condition: service_healthy
+      # mocksaml:
+      #   condition: service_healthy
       keycloak:
         condition: service_healthy
     ports:
@@ -314,6 +353,7 @@ services:
       - "${WEB_HTTPS_PORT:-443}:443"
     volumes:
       # Nginx configuration (read-only)
+      - ./nginx/sites-available:/etc/nginx/sites-available:ro
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./nginx/common.conf:/etc/nginx/common.conf:ro
       - ./nginx/proxy.conf:/etc/nginx/proxy.conf:ro
@@ -351,6 +391,7 @@ services:
         aliases:
           - eservice.localhost
           - mockpass.localhost
+          - mocksaml.localhost
     security_opt:
       - no-new-privileges:true
     tmpfs:

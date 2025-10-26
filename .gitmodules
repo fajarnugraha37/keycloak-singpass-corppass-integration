@@ -1,3 +1,8 @@
 [submodule "mockpass"]
 	path = mockpass
-	url = https://github.com/opengovsg/mockpass
+	url = https://github.com/fajarnugraha37/mockpass.git
+    branch = keycloak-singpass-corppass-integration
+[submodule "mocksaml"]
+	path = mocksaml
+	url = https://github.com/fajarnugraha37/mocksaml.git
+    branch = keycloak-singpass-corppass-integration
