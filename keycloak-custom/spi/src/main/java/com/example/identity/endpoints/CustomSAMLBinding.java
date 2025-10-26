@@ -2,6 +2,7 @@ package com.example.identity.endpoints;
 
 import com.example.config.CustomSAMLIdentityProviderConfig;
 import com.example.identity.CustomSAMLProvider;
+import com.example.utils.SamlUtil;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.Response;
@@ -275,8 +276,24 @@ public abstract class CustomSAMLBinding extends CustomBinding {
             identity.getContextData().put(SAML_LOGIN_RESPONSE, responseType);
             identity.getContextData().put(SAML_ASSERTION, assertion);
             identity.setAuthenticationSession(authSession);
-
             identity.setUsername(principal);
+
+            // map all saml response document and object
+            {
+                for (var document : SamlUtil.flatten(holder.getSamlDocument()).entrySet()) {
+                    var key = document.getKey();
+                    var value = document.getValue();
+                    logger.infof("SAML Response Document - %s: %s", key, value);
+                    identity.setUserAttribute(key, value);
+                }
+
+                for (var object : SamlUtil.flatten(holder.getSamlObject()).entrySet()) {
+                    var key = object.getKey();
+                    var value = object.getValue();
+                    logger.infof("SAML Response Object - %s: %s", key, value);
+                    identity.setUserAttribute(key, value);
+                }
+            }
 
             //SAML Spec 2.2.2 Format is optional
             if (subjectNameID != null && subjectNameID.getFormat() != null && subjectNameID.getFormat().toString().equals(JBossSAMLURIConstants.NAMEID_FORMAT_EMAIL.get())) {

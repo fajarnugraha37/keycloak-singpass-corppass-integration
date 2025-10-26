@@ -106,6 +106,22 @@ public abstract class CustomBinding {
 
     protected abstract Response handleLogoutResponse(SAMLDocumentHolder holder, StatusResponseType responseType, String relayState);
 
+    public Response execute(String samlRequest, String samlResponse, String relayState, String clientId) {
+        event = new EventBuilder(realm, session, clientConnection);
+        var response = basicChecks(samlRequest, samlResponse);
+        if (response != null) {
+            logger.infof("Basic checks failed for SAML %s binding", getBindingType());
+            return response;
+        }
+        if (samlRequest != null) {
+            logger.infof("Handling SAML %s request", getBindingType());
+            return handleSamlRequest(samlRequest, relayState);
+        }
+
+        logger.infof("Handling SAML %s response", getBindingType());
+        return handleSamlResponse(samlResponse, relayState, clientId);
+    }
+
     protected boolean checkSsl() {
         if (session.getContext().getUri().getBaseUri().getScheme().equals("https")) {
             return true;
@@ -298,14 +314,6 @@ public abstract class CustomBinding {
         }
 
         return true;
-    }
-
-    public Response execute(String samlRequest, String samlResponse, String relayState, String clientId) {
-        event = new EventBuilder(realm, session, clientConnection);
-        var response = basicChecks(samlRequest, samlResponse);
-        if (response != null) return response;
-        if (samlRequest != null) return handleSamlRequest(samlRequest, relayState);
-        else return handleSamlResponse(samlResponse, relayState, clientId);
     }
 
     /**
