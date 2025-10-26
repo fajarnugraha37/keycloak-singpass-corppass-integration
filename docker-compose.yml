@@ -81,6 +81,7 @@ services:
       - "${KC_DB_PORT:-5432}:5432"
     volumes:
       - kc_db_agency_data:/var/lib/postgresql
+      - ./postgres/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${KC_DB_USER:-keycloak} -d ${KC_DB_NAME:-keycloak}"]
       interval: 10s
