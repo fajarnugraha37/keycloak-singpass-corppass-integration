@@ -221,6 +221,8 @@ services:
       - db_network
     security_opt:
       - no-new-privileges:true
+    profiles:
+      - validate
 
   ids:
     build: 
