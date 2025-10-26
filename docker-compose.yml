@@ -79,10 +79,8 @@ services:
     container_name: kc_agency
     restart: unless-stopped
     command:
-      - start
+      - start-dev
       - --import-realm
-      - --optimized
-      - --hostname-strict=false
       - --log=console
       - --log-level=${KC_LOG_LEVEL:-info}
     environment:
@@ -104,6 +102,7 @@ services:
       KC_HOSTNAME_ADMIN_URL: ${KC_HOSTNAME_ADMIN_URL:-http://eservice.localhost}
       KC_HOSTNAME_STRICT: "false"
       KC_HOSTNAME_STRICT_HTTPS: "false"
+      KC_HTTP_ENABLED: "true"
       KC_HTTP_RELATIVE_PATH: /auth
       KC_PROXY: edge
       
@@ -120,6 +119,8 @@ services:
         -XX:MaxMetaspaceSize=512m
         -Xms512m
         -Xmx1024m
+        -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8787
+        -Djava.awt.headless=true
         -XX:+HeapDumpOnOutOfMemoryError
         -XX:HeapDumpPath=/tmp/heapdump.hprof
         
@@ -130,8 +131,10 @@ services:
         condition: service_healthy
     ports:
       - "${KC_PORT:-8081}:8080"
+      - "8787:8787"  # JVM debug port
     volumes:
       - ./keycloak-import:/opt/keycloak/data/import:ro
+      - ./keycloak-custom/themes/src/main/resources/theme:/opt/keycloak/themes:ro
     healthcheck:
       test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/8080 && exit 0 || exit 1"]
       interval: 30s
@@ -213,7 +216,8 @@ services:
       # Service configuration
       PORT: ${ACEAS_API_PORT:-3000}
       NODE_ENV: ${NODE_ENV:-development}
-      
+      LOG_LEVEL: ${ACEAS_LOG_LEVEL:-debug}
+
       # OIDC configuration
       ISSUER: ${HOST:-http://eservice.localhost}/auth/realms/agency-realm
       AUDIENCE: ${ACEAS_AUDIENCE:-aceas-api}
@@ -257,6 +261,7 @@ services:
       # Service configuration
       PORT: ${CPDS_API_PORT:-3001}
       NODE_ENV: ${NODE_ENV:-development}
+      LOG_LEVEL: ${CPDS_LOG_LEVEL:-debug}
       
       # OIDC configuration
       ISSUER: ${HOST:-http://eservice.localhost}/ids
@@ -351,6 +356,7 @@ services:
         aliases:
           - eservice.localhost
           - mockpass.localhost
+          - mocksaml.localhost
     security_opt:
       - no-new-privileges:true
     tmpfs:
