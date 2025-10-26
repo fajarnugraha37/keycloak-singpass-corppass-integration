@@ -1,1 +1,2 @@
 com.example.identity.CustomOIDCProviderFactory
+com.example.identity.CustomSAMLProviderFactory

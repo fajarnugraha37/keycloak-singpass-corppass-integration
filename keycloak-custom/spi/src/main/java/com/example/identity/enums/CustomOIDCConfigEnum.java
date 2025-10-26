@@ -1,4 +1,4 @@
-package com.example.identity;
+package com.example.identity.enums;
 
 import org.keycloak.provider.ProviderConfigProperty;
 

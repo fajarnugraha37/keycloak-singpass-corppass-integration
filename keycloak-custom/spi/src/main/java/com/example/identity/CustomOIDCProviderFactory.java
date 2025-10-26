@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import com.example.identity.enums.CustomOIDCConfigEnum;
 import org.keycloak.broker.oidc.OIDCIdentityProvider;
 import org.keycloak.broker.oidc.OIDCIdentityProviderConfig;
 import org.keycloak.broker.oidc.OIDCIdentityProviderFactory;
@@ -41,45 +42,45 @@ public class CustomOIDCProviderFactory extends OIDCIdentityProviderFactory {
 
     @Override
     public Map<String, String> parseConfig(KeycloakSession session, String configString) {
-        CustomOIDCConfigurationRepresentation rep;
         try {
-            rep = JsonSerialization.readValue(configString, CustomOIDCConfigurationRepresentation.class);
+            var rep = JsonSerialization.readValue(configString, CustomOIDCConfigurationRepresentation.class);
+
+            var config = new CustomOIDCIdentityProviderConfig();
+            config.setIssuer(rep.getIssuer());
+            config.setLogoutUrl(rep.getLogoutEndpoint());
+            config.setAuthorizationUrl(rep.getAuthorizationEndpoint());
+            config.setTokenUrl(rep.getTokenEndpoint());
+            config.setUserInfoUrl(rep.getUserinfoEndpoint());
+            if (rep.getJwksUri() != null) {
+                config.setValidateSignature(true);
+                config.setUseJwksUrl(true);
+                config.setJwksUrl(rep.getJwksUri());
+            }
+
+            // custom config
+            config.setEncryptedIdTokenFlag(rep.isEncryptedIdTokenFlag());
+            config.setSigningKeyId(rep.getSigningKeyId());
+            config.setForwarderUrl(rep.getForwarderUrl());
+            config.setForwarderHeaderName(rep.getForwarderHeaderName());
+            config.setIdpDifferentTimes(rep.getIdpDifferentTimes());
+            config.setValidateNonce(rep.isValidateNonce());
+
+            config.setClaimExtractionTemplate(rep.getClaimExtractionTemplate());
+            config.setHashUsernameFlag(rep.isHashUsernameFlag());
+            config.setSuffixIdpName(rep.getSuffixIdpName());
+            config.setClaimExtractionToAttributeTemplate(rep.getClaimExtractionToAttributeTemplate());
+
+            config.setRedirectClients(rep.getRedirectClients());
+
+            config.setSingpassOIDCFlag(rep.isSingpassOIDCFlag());
+            config.setSaveIdNumberToUserAttributeFlag(rep.isSaveIdNumberToUserAttributeFlag());
+            config.setUserAttributeKeyForIdNumber(rep.getUserAttributeKeyForIdNumber());
+            config.setKeyFromClaimToIdentityNumber(rep.getKeyFromClaimToIdentityNumber());
+
+            return config.getConfig();
         } catch (IOException e) {
             throw new RuntimeException("failed to load openid connect metadata", e);
         }
-        var config = new CustomOIDCIdentityProviderConfig();
-        config.setIssuer(rep.getIssuer());
-        config.setLogoutUrl(rep.getLogoutEndpoint());
-        config.setAuthorizationUrl(rep.getAuthorizationEndpoint());
-        config.setTokenUrl(rep.getTokenEndpoint());
-        config.setUserInfoUrl(rep.getUserinfoEndpoint());
-        if (rep.getJwksUri() != null) {
-            config.setValidateSignature(true);
-            config.setUseJwksUrl(true);
-            config.setJwksUrl(rep.getJwksUri());
-        }
-
-        // custom config
-        config.setEncryptedIdTokenFlag(rep.isEncryptedIdTokenFlag());
-        config.setSigningKeyId(rep.getSigningKeyId());
-        config.setForwarderUrl(rep.getForwarderUrl());
-        config.setForwarderHeaderName(rep.getForwarderHeaderName());
-        config.setIdpDifferentTimes(rep.getIdpDifferentTimes());
-        config.setValidateNonce(rep.isValidateNonce());
-
-        config.setClaimExtractionTemplate(rep.getClaimExtractionTemplate());
-        config.setHashUsernameFlag(rep.isHashUsernameFlag());
-        config.setSuffixIdpName(rep.getSuffixIdpName());
-        config.setClaimExtractionToAttributeTemplate(rep.getClaimExtractionToAttributeTemplate());
-
-        config.setRedirectClients(rep.getRedirectClients());
-
-        config.setSingpassOIDCFlag(rep.isSingpassOIDCFlag());
-        config.setSaveIdNumberToUserAttributeFlag(rep.isSaveIdNumberToUserAttributeFlag());
-        config.setUserAttributeKeyForIdNumber(rep.getUserAttributeKeyForIdNumber());
-        config.setKeyFromClaimToIdentityNumber(rep.getKeyFromClaimToIdentityNumber());
-
-        return config.getConfig();
     }
 
     @Override

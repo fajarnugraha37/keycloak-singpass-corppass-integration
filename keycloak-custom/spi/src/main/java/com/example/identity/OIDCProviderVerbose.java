@@ -72,8 +72,8 @@ import static com.example.utils.JwtUtil.decryptAccessTokenResponse;
  *   <li><strong>Flow Control:</strong> Add custom logic at various lifecycle points</li>
  * </ul>
  */
-public class CustomOIDCProviderVerbose extends OIDCIdentityProvider {
-    private static final Logger logger = Logger.getLogger(CustomOIDCProviderVerbose.class);
+public class OIDCProviderVerbose extends OIDCIdentityProvider {
+    private static final Logger logger = Logger.getLogger(OIDCProviderVerbose.class);
 
     public final CustomOIDCIdentityProviderConfig configuration;
 
@@ -107,7 +107,7 @@ public class CustomOIDCProviderVerbose extends OIDCIdentityProvider {
      * @param session The Keycloak session providing access to realm, users, and other services
      * @param config  Custom configuration containing provider-specific settings
      */
-    public CustomOIDCProviderVerbose(KeycloakSession session, CustomOIDCIdentityProviderConfig config) {
+    public OIDCProviderVerbose(KeycloakSession session, CustomOIDCIdentityProviderConfig config) {
         super(session, config);
         this.configuration = config;
     }

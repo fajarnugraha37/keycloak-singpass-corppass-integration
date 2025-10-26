@@ -1887,10 +1887,10 @@
       }
     },
     {
-      "alias": "saml",
+      "alias": "mock-saml",
       "displayName": "SAML 2.0 (Mock Saml)",
       "internalId": "130b8a42-7da5-4b3e-a55a-16f5c8362d25",
-      "providerId": "saml",
+      "providerId": "custom-saml",
       "enabled": true,
       "updateProfileFirstLoginMode": "on",
       "trustEmail": true,
