@@ -2,12 +2,10 @@ package com.example.identity;
 
 import com.example.config.CustomSAMLConfigurationRepresentation;
 import com.example.config.CustomSAMLIdentityProviderConfig;
-import jakarta.ws.rs.core.Context;
 import org.keycloak.Config;
 import org.keycloak.broker.saml.SAMLIdentityProvider;
 import org.keycloak.broker.saml.SAMLIdentityProviderConfig;
 import org.keycloak.broker.saml.SAMLIdentityProviderFactory;
-import org.keycloak.common.ClientConnection;
 import org.keycloak.models.IdentityProviderModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.saml.validators.DestinationValidator;
@@ -20,8 +18,6 @@ import static com.example.config.CustomSAMLIdentityProviderConfig.*;
 
 public class CustomSAMLProviderFactory extends SAMLIdentityProviderFactory {
     private DestinationValidator destinationValidator;
-    @Context
-    private ClientConnection clientConnection;
 
     @Override
     public String getId() {
@@ -37,7 +33,6 @@ public class CustomSAMLProviderFactory extends SAMLIdentityProviderFactory {
     public SAMLIdentityProvider create(KeycloakSession session, IdentityProviderModel model) {
         return new CustomSAMLProvider(
                 session,
-                clientConnection,
                 new CustomSAMLIdentityProviderConfig(model),
                 destinationValidator);
     }

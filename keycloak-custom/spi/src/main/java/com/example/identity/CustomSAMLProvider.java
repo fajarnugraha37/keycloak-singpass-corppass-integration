@@ -8,7 +8,6 @@ import org.jboss.logging.Logger;
 import org.keycloak.broker.provider.AuthenticationRequest;
 import org.keycloak.broker.provider.BrokeredIdentityContext;
 import org.keycloak.broker.saml.SAMLIdentityProvider;
-import org.keycloak.common.ClientConnection;
 import org.keycloak.events.EventBuilder;
 import org.keycloak.models.*;
 import org.keycloak.saml.SignatureAlgorithm;
@@ -18,18 +17,15 @@ import org.keycloak.sessions.AuthenticationSessionModel;
 public class CustomSAMLProvider extends SAMLIdentityProvider {
     private static final Logger logger = Logger.getLogger(CustomSAMLProvider.class);
 
-    public final KeycloakSession session;
-    public final ClientConnection clientConnection;
-    public final CustomSAMLIdentityProviderConfig config;
-    public final DestinationValidator destinationValidator;
+    private final KeycloakSession session;
+    private final CustomSAMLIdentityProviderConfig config;
+    private final DestinationValidator destinationValidator;
 
     public CustomSAMLProvider(KeycloakSession session,
-                              ClientConnection clientConnection,
                               CustomSAMLIdentityProviderConfig config,
                               DestinationValidator destinationValidator) {
         super(session, config, destinationValidator);
         this.session = session;
-        this.clientConnection = clientConnection;
         this.config = config;
         this.destinationValidator = destinationValidator;
     }
@@ -82,7 +78,7 @@ public class CustomSAMLProvider extends SAMLIdentityProvider {
                            AuthenticationCallback callback,
                            EventBuilder event) {
         logger.infof("CustomSAMLProvider callback invoked for realm: %s", realm.getName());
-        return new CustomSAMLEndpoint(this, callback);
+        return new CustomSAMLEndpoint(session,this, config, destinationValidator, callback);
     }
 
     @Override
