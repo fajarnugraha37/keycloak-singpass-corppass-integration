@@ -9,3 +9,4 @@ mse-test/
 logs/
 .env
 data/
+*.pem

@@ -6,3 +6,7 @@
 	path = mocksaml
 	url = https://github.com/fajarnugraha37/mocksaml.git
     branch = keycloak-singpass-corppass-integration
+[submodule "polis"]
+	path = polis
+	url = git@github.com:fajarnugraha37/polis.git
+    branch = keycloak-singpass-corppass-integration
