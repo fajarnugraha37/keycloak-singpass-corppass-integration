@@ -36,6 +36,29 @@ services:
           cpus: '0.25'
     networks:
       - app_network
+  
+  mocksaml:
+    image: boxyhq/mock-saml:1.4.1
+    container_name: mocksaml
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    environment:
+      APP_URL: ${MOCKSAML_APP_URL:-http://mocksaml.localhost}
+      ENTITY_ID: ${MOCKSAML_ENTITY_ID:-mock-saml}
+      NEXT_PUBLIC_GTM_ID: ${NEXT_PUBLIC_GTM_ID:-}
+      PUBLIC_KEY: ${MOCKSAML_PUBLIC_KEY:-}
+      PRIVATE_KEY: ${MOCKSAML_PRIVATE_KEY:-}
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+        reservations:
+          memory: 128M
+          cpus: '0.25'
+    networks:
+      - app_network
 
   db:
     image: postgres:16-alpine
@@ -312,6 +335,8 @@ services:
     depends_on:
       mockpass:
         condition: service_healthy
+      # mocksaml:
+      #   condition: service_healthy
       keycloak:
         condition: service_healthy
     ports:
