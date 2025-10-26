@@ -1,3 +1,6 @@
 [submodule "mockpass"]
 	path = mockpass
-	url = https://github.com/opengovsg/mockpass
+	url = https://github.com/opengovsg/mockpass.git
+[submodule "mocksaml"]
+	path = mocksaml
+	url = https://github.com/ory/mocksaml.git
