@@ -1,6 +1,6 @@
-# Docker Compose Optimization Summary
+# Docker Compose Summary
 
-## 🚀 **Comprehensive Docker Compose Optimizations Applied**
+## 🚀 **Docker Compose Optimizations Applied**
 
 ### **🏗️ Key Improvements Overview**
 
@@ -135,29 +135,6 @@ volumes:
 
 ---
 
-## 📁 **New Directory Structure**
-```
-app-sso/
-├── data/                    # Persistent data
-│   ├── postgres/           # PostgreSQL data
-│   ├── keycloak/           # Keycloak data
-│   └── ids/                # Identity service data
-├── logs/                    # Application logs
-│   ├── nginx/              # Nginx access/error logs
-│   └── keycloak/           # Keycloak application logs
-├── ssl/                     # SSL certificates
-│   ├── certs/              # Public certificates
-│   └── private/            # Private keys
-├── db/                      # Database initialization
-│   └── init/               # Startup scripts
-├── .env.example            # Environment template
-├── docker-compose.yml      # Main configuration
-├── docker-compose.override.yml  # Development overrides
-└── docker-compose.prod.yml # Production configuration
-```
-
----
-
 ## 🛠️ **Enhanced Makefile Commands**
 
 ### **Environment Management:**
@@ -208,14 +185,14 @@ app-sso/
    make dirs-create
    ```
 
-5. **Start with New Configuration:**
+5. **Start with Configuration:**
    ```bash
    make dev-up  # For development
    # OR
    make prod-up # For production
    ```
 
-### **For New Deployments:**
+### **For Deployments:**
 ```bash
 # Clone repository
 git clone <repository>

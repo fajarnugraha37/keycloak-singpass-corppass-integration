@@ -1,611 +1,250 @@
-# SSO Application Management Documentation
+# SSO Application Makefile Reference
 
 ## Overview
 
-This project provides comprehensive management tools for the SSO application stack with Docker Compose, featuring both an enhanced Makefile for Unix/Linux/macOS and a PowerShell companion script for Windows environments.
+The enhanced `Makefile` in this repository wraps every Docker Compose workflow for the SSO playground: orchestration, database hygiene, Keycloak ops, SSL tooling, and troubleshooting shortcuts. Targets are organized in logical sections, emit color-coded output (where the terminal supports ANSI), and work on macOS/Linux, WSL, or native Windows shells (through the companion `make.ps1` script).
 
-## 🚀 Major Enhancements Made
+- **Project name**: `app-sso` (used for Compose project/volume prefixes)
+- **Default compose file**: `docker-compose.yml` with optional overrides (`docker-compose.override.yml`, `docker-compose.prod.yml`)
+- **Services** (`SERVICES` variable): `mockpass`, `db`, `keycloak`, `ids`, `aceas-api`, `cpds-api`, `web`
+- **Background logs** live in `./logs/compose.<timestamp>.log`
 
-### 🏗️ **Enhanced Makefile (Unix/Linux/macOS)**
-- **80+ professional commands** organized in logical sections
-- **Cross-platform compatibility** with proper shell detection
-- **Colored output** using ANSI escape sequences for better readability
-- **Comprehensive help system** with categorized commands and emojis
-- **Automatic dependency checking** and environment validation
+> 💡 `make` automatically creates the `logs/` directory and timestamped log files on first run.
 
-### � **PowerShell Companion Script (Windows)**
-- **Native Windows PowerShell script** (`make.ps1`) with clean syntax
-- **Native PowerShell colors** using `Write-Host -ForegroundColor`
-- **Simplified command structure** optimized for Windows environments
-- **Error-free execution** with proper PowerShell syntax
+## Prerequisites
 
-## 🛠️ **Core Features**
+| Requirement | Purpose |
+|-------------|---------|
+| Docker & Docker Compose v2 (`docker compose` CLI) | Run the stack |
+| GNU Make | Execute the Makefile targets |
+| Node.js 18+ & npm | Needed for the `web-*` helper targets |
+| Optional CLIs | `hadolint`, `yamllint`, `prettier`, `jq`, `openssl`, `aquasec/trivy` (pulled as a container) |
 
-### **Service Management**
-- **Individual service control** (rebuild, logs, shell access)
-- **Bulk operations** for all services
-- **Health monitoring** with service status checks
-- **Resource monitoring** with Docker stats
-- **Configuration validation**
+> Windows users can either run the Makefile inside WSL or rely on `make.ps1` for the smaller command set described later.
 
-### **Database Management**
-- **Automated backups** with timestamped files
-- **Easy restore** functionality
-- **Safe reset** with confirmation prompts
+## Getting Help Quickly
 
-### **Development Tools**
-- **Security scanning** with Trivy integration
-- **Linting** with hadolint and yamllint
-- **Code formatting** with prettier
-- **Environment validation** and dependency checking
-
-### **Advanced Logging**
-- **Cross-platform logging** (Unix `tee` + Windows `Tee-Object`)
-- **Timestamped log files** automatically saved to `./logs/` directory
-- **Service-specific logs** for targeted debugging
-- **Real-time log following** and tail functionality
-
-## 🚀 **Quick Start**
-
-### **Unix/Linux/macOS (Enhanced Makefile)**
+Run `make help` to see a categorized list of targets:
 
 ```bash
-# Show comprehensive help with all 80+ commands
 make help
-
-# Start all services with advanced logging
-make up
-
-# Check detailed service status and health
-make status
-make health
-
-# View logs with various options
-make logs              # All services
-make log-keycloak      # Specific service
-make logs-tail         # Recent logs only
-
-# Individual service management
-make re-keycloak       # Rebuild specific service
-make shell-keycloak    # Access service container
-
-# Database operations
-make db-backup         # Automated backup
-make db-restore BACKUP_FILE=backup.sql
-
-# Security and quality
-make security-scan     # Container vulnerability scanning
-make lint              # Code quality checks
-
-# Environment management
-make check-deps        # Verify dependencies
-make cleanup           # Comprehensive cleanup
-make prune             # Docker resource cleanup
 ```
 
-### **Windows PowerShell (Companion Script)**
+The help output groups commands under “Main Targets”, “Service Management”, and “Development” using emojis that match the descriptions in this document. Because the help parser is emoji-driven, only targets with `##` annotations appear there—use this markdown file to see every available helper.
+
+## Quick Start (macOS/Linux/WSL)
+
+```bash
+make check-deps          # Confirm Docker + Compose are available
+make env-setup           # Copy .env.example → .env (one-time)
+make up                  # Start the entire stack in detached mode
+make status && make health
+make logs                # Follow all service logs
+make down                # Stop everything when finished
+```
+
+### Windows PowerShell Basics
+
+On native Windows shells run the companion script instead of GNU Make:
 
 ```powershell
-# Show help with available commands
 .\make.ps1 help
-
-# Service management
-.\make.ps1 status      # Clean service status display
-.\make.ps1 up          # Start all services in background
-.\make.ps1 down        # Stop all services
-
-# Logging (simplified for Windows)
-.\make.ps1 logs        # Show all logs
-.\make.ps1 logs -Service keycloak  # Service-specific logs
-
-# Note: Advanced features available via main Makefile if using WSL
+.\make.ps1 up
+.\make.ps1 status
+.\make.ps1 logs -Service keycloak
 ```
 
-## 📋 **Complete Command Reference**
+Advanced targets (e.g., database resets, SSL generation, `re-<service>`) still require GNU Make from WSL or Git Bash.
 
-### **Main Targets (Both Platforms)**
+## Service Matrix & Dynamic Targets
 
-| Command | Makefile | PowerShell | Description |
-|---------|----------|------------|-------------|
-| help | `make help` | `.\make.ps1 help` | Show available commands |
-| status | `make status` | `.\make.ps1 status` | Service status overview |
-| up | `make up` | `.\make.ps1 up` | Start all services |
-| down | `make down` | `.\make.ps1 down` | Stop all services |
-| logs | `make logs` | `.\make.ps1 logs` | Show service logs |
+| Service     | Purpose |
+|-------------|---------|
+| `mockpass`  | SingPass/CorpPass simulator |
+| `db`        | PostgreSQL backing store for Keycloak |
+| `keycloak`  | Identity provider customized for the playground |
+| `ids`       | Token broker / intermediary provider |
+| `aceas-api` | Sample ACEAS microservice |
+| `cpds-api`  | Sample CPDS microservice |
+| `web`       | Portal UI + reverse proxy |
 
-### **Advanced Features (Makefile Only)**
+For every service in the table the Makefile generates the following command families:
 
-#### **Service-Specific Management**
 | Pattern | Example | Description |
 |---------|---------|-------------|
-| `re-<service>` | `make re-keycloak` | Rebuild specific service |
-| `log-<service>` | `make log-keycloak` | Show service logs |
-| `shell-<service>` | `make shell-keycloak` | Access service container |
-
-**Available services:** `mockpass`, `db`, `keycloak`, `ids`, `aceas-api`, `cpds-api`, `web`
-
-#### **Build & Development**
-| Command | Description | Example |
-|---------|-------------|---------|
-| `build` | Build all services | `make build` |
-| `build-no-cache` | Build without cache | `make build-no-cache` |
-| `rebuild` | Full rebuild and restart | `make rebuild` |
-| `dev` | Start in development mode | `make dev` |
-| `prod` | Start in production mode | `make prod` |
-
-#### **Monitoring & Health**
-| Command | Description | Example |
-|---------|-------------|---------|
-| `health` | Check service health status | `make health` |
-| `monitor` | Monitor resource usage | `make monitor` |
-| `logs-tail` | Show recent logs only | `make logs-tail` |
-
-#### **Database Operations**
-| Command | Description | Example |
-|---------|-------------|---------|
-| `db-backup` | Create timestamped backup | `make db-backup` |
-| `db-restore` | Restore from backup file | `make db-restore BACKUP_FILE=backup.sql` |
-| `db-reset` | Reset database (with confirmation) | `make db-reset` |
-
-#### **Security & Quality**
-| Command | Description | Example |
-|---------|-------------|---------|
-| `security-scan` | Run Trivy security scan | `make security-scan` |
-| `lint` | Lint Dockerfiles and configs | `make lint` |
-| `format` | Format configuration files | `make format` |
-
-#### **Environment & Utilities**
-| Command | Description | Example |
-|---------|-------------|---------|
-| `check-deps` | Verify required dependencies | `make check-deps` |
-| `validate` | Validate Docker Compose config | `make validate` |
-| `env` | Show environment variables | `make env` |
-| `config` | Show Docker Compose config | `make config` |
-
-#### **Cleanup Operations**
-| Command | Description | Example |
-|---------|-------------|---------|
-| `clean` | Clean containers and images | `make clean` |
-| `cleanup` | Comprehensive cleanup with volumes | `make cleanup` |
-| `prune` | Prune unused Docker resources | `make prune` |
-
-#### **Package Management**
-| Command | Description | Example |
-|---------|-------------|---------|
-| `install` | Pull latest images | `make install` |
-| `update` | Update and rebuild | `make update` |
-| `upgrade` | Interactive upgrade check | `make upgrade` |
-
-## 🔧 **Platform-Specific Features**
-
-### **Unix/Linux/macOS Makefile**
-- **Full feature set** with 80+ commands
-- **ANSI color support** for terminals that support it
-- **Advanced shell scripting** with error handling
-- **Professional DevOps toolkit** for complete lifecycle management
-
-### **Windows PowerShell Script**
-- **Simplified command set** focused on core operations
-- **Native PowerShell colors** with `Write-Host -ForegroundColor`
-- **Windows-optimized** Docker Compose commands
-- **Clean syntax** without complex string interpolation
-
-## 📊 **Architecture & Configuration**
-
-### **Services Managed**
-- **mockpass**: Authentication simulator (port 3001)
-- **db**: PostgreSQL database (port 5432)
-- **keycloak**: Identity provider (port 8081)
-- **ids**: Identity service (internal)
-- **aceas-api**: ACEAS API service (internal)
-- **cpds-api**: CPDS API service (internal)
-- **web**: Nginx reverse proxy (ports 80, 443)
-
-### **Environment Detection**
-- **Automatic OS detection** in Makefile
-- **Cross-platform logging** strategies
-- **Service dependency management**
-- **Health check integration**
-
-## 🚨 **Troubleshooting**
-
-### **Common Issues**
-
-#### **ANSI Color Codes in PowerShell**
-**Problem:** Seeing `\033[1m\033[0;34m` instead of colors
-**Solution:** Use the PowerShell script instead: `.\make.ps1 help`
-
-#### **Docker Command Not Found**
-**Problem:** `docker: command not found`
-**Solution:** Run `make check-deps` to verify Docker installation
-
-#### **Permission Denied**
-**Problem:** Docker permission errors
-**Solution:** Ensure Docker daemon is running and user has proper permissions
-
-#### **Port Conflicts**
-**Problem:** Services fail to start due to port conflicts
-**Solution:** Check ports 80, 443, 3001, 5432, 8081 are available
+| `re-<service>` | `make re-keycloak` | Rebuild + recreate the container with `--no-deps` |
+| `restart-<service>` | `make restart-web` | Restart without rebuilding |
+| `stop-<service>` | `make stop-ids` | Stop a single container |
+| `start-<service>` | `make start-mockpass` | Start a stopped container |
+| `log-<service>` | `make log-cpds-api` | Follow live logs for that service |
+| `tail-<service>` | `make tail-db` | Show the last 50 log lines |
+| `shell-<service>` | `make shell-aceas-api` | Open `/bin/bash` (or `/bin/sh`) inside the running container |
+
+> Use `SERVICES` to confirm the exact service keys. All pattern targets are case-sensitive.
+
+## Command Catalogue
+
+### Environment & Validation
+
+| Command | Purpose | Notes |
+|---------|---------|-------|
+| `make check-deps` | Confirms `docker` and `docker compose` exist | Fails fast if prerequisites are missing |
+| `make env` | Prints current Makefile configuration (`OS_TYPE`, compose files, services) | Helpful when debugging environment differences |
+| `make env-setup` | Copies `.env.example` to `.env` if missing | Warns before overwriting |
+| `make env-validate` | Ensures `.env` exists and echos the first non-comment entries | Stops with instructions if the file is missing |
+| `make config` | Outputs the rendered Compose configuration | Equivalent to `docker compose config` |
+| `make validate` | Validates the Compose file | Exits with non‑zero status on invalid configurations |
+| `make dirs-create` | Creates data/log/SSL directories (`data/postgres`, `logs/nginx`, `ssl/private`, etc.) | Called automatically by `dev-up`/`prod-up` |
+
+### Lifecycle & Compose Orchestration
+
+| Command | Purpose | Notes |
+|---------|---------|-------|
+| `make up` | Starts all services detached and spawns a background log follower | Background logs stream to `logs/compose.<timestamp>.log` |
+| `make up-fg` | Starts in the foreground while teeing output to the log file | Ideal for CI or first run to watch build output |
+| `make up-logs` | Runs `up -d` then follows logs immediately | Stops when you interrupt the log stream |
+| `make down` | Stops and removes the Compose project | Uses the default compose file |
+| `make start` / `make stop` | Start/stop already-created containers without rebuilding | Leaves containers in place |
+| `make restart` | Restarts the entire stack | |
+| `make dev` | `docker compose up --build` for quick local hacking | Uses the default compose file only |
+| `make prod` | Detached build with the default compose file (without `docker-compose.prod.yml`) | For simple prod-like runs |
+| `make test` | Placeholder target emitting a TODO message | Hook your automated tests here later |
+| `make run` / `make run-recreate` | Legacy aliases for `up` and `rebuild` | Printed in `make help` |
+
+### Overlay Environments (override/prod files)
+
+| Command | Purpose | Notes |
+|---------|---------|-------|
+| `make dev-up` | Uses `docker-compose.yml + docker-compose.override.yml` with health checks and warm-up info | Calls `env-validate`, `dirs-create`, waits until all containers report healthy, then prints friendly URLs |
+| `make dev-down` / `make dev-restart` | Stop or restart the override stack | |
+| `make dev-logs` | Follows logs for the override stack | |
+| `make dev-debug-keycloak` | Starts only Keycloak from the override stack with remote debug port 8787 exposed | Attach your IDE for SPI debugging |
+| `make prod-up` | Uses `docker-compose.yml + docker-compose.prod.yml` detached | Waits on health and prints HTTPS endpoints |
+| `make prod-down`, `make prod-logs`, `make prod-deploy` | Production-oriented stop/log/redeploy helpers | `prod-deploy` = down + up |
+| `make wait-healthy` | Shared helper that waits up to 5 minutes for every container to leave `starting/unhealthy` status | Called automatically by `dev-up`/`prod-up`, but you can run it manually |
+| `make show-dev-info` / `make show-prod-info` | Echoes URLs, credentials, and debug hints for each environment | Runs after the corresponding `*-up` target |
+
+### Build & Image Management
+
+| Command | Purpose | Notes |
+|---------|---------|-------|
+| `make build` | Parallel build of all services | Uses Docker Compose build cache |
+| `make build-no-cache` | Same as `build` but passes `--no-cache` | Useful after base image upgrades |
+| `make rebuild` | Runs `down`, `build`, then `up` | Full recycle |
+| `make install` | `docker compose pull` for every service | Ensures you have the latest remote images |
+| `make update` | Runs `make install` + `docker compose build --pull` | Refreshes base layers before building |
+| `make upgrade` | Iterates through services defined in the compose config and `docker pull`s each tagged image | Great for auditing upstream tags |
+
+### Web Asset Helpers
+
+| Command | Purpose | Notes |
+|---------|---------|-------|
+| `make web-deps` | `npm install` inside `./web` | Run whenever the frontend package.json changes |
+| `make web-build` / `make web-watch` | Build or watch the default frontend bundle | Maps to `npm run build` / `npm run build:watch` |
+| `make web-dev` | `npm run dev` for the frontend | Runs the SPA development server |
+| `make webkc-build`, `make webkc-watch`, `make webkc-dev` | Same as above but for the Keycloak theme bundle | Uses the `build:kc`/`build:kc:watch` scripts |
+
+> These helpers are not tagged with `##` comments, so they do **not** appear under `make help`, but they are available directly.
+
+### Logging & Monitoring
+
+| Command | Purpose | Notes |
+|---------|---------|-------|
+| `make logs` | Follow logs for every service | Uses the default compose file |
+| `make logs-tail` | Show the last 100 lines across all services | Non-interactive |
+| `make logs-file` | `tail -f` the background log file produced by `make up` or `make logs-start` | Encourages running `make up` first |
+| `make logs-start` / `make logs-stop` | Start/stop the detached log follower | Uses `nohup` on Unix and `Start-Process` on Windows |
+| `make monitor` | Live resource usage via `docker stats` scoped to the project containers | |
+| `make analyze-performance` | Prints container CPU/memory summaries, Postgres table activity, and an Nginx access histogram | Requires `logs/nginx/access.log` to exist for the last section |
+
+### Database & Persistence
+
+| Command | Purpose | Notes |
+|---------|---------|-------|
+| `make db-backup` | Dumps the Keycloak database via `kc_db_agency` container into `./backups/keycloak_backup_<timestamp>.sql` | Uses direct `docker exec`; ensure that container name exists |
+| `make db-restore BACKUP_FILE=path.sql` | Restores a dump file by streaming it into the running database container | Requires `BACKUP_FILE` to be set when invoking the target |
+| `make db-reset` | Stops the `db` service, removes the `kc_pgdata_agency` volume, and restarts Postgres | **Destructive**—prompts for confirmation |
+| `make optimize-db` | Runs `VACUUM ANALYZE` and `REINDEX DATABASE keycloak` inside Postgres | Use after heavy load testing |
+
+### Backups & Disaster Recovery
+
+| Command | Purpose | Notes |
+|---------|---------|-------|
+| `make backup-db` | Executes `pg_dump` from the Compose-managed `db` service and writes to `backup/db_<timestamp>.sql` | Uses `docker compose exec -T db` |
+| `make backup-keycloak` | Copies `data/keycloak` into `backup/keycloak_<timestamp>/` | Requires host access to the data directory |
+| `make backup-all` | Runs both `backup-db` and `backup-keycloak` | |
+| `make restore-db` | Lists available `backup/db_*.sql` files and interactively restores one | Prompts for a filename |
 
-### **Debug Commands**
+### Storage & Cleanup
 
-```bash
-# Environment validation
-make check-deps
-make validate
-make env
+| Command | Purpose | Notes |
+|---------|---------|-------|
+| `make cleanup` | Stops the stack, removes known containers/images/networks, clears logs, and deletes `keycloak-custom/data` | Hard reset of the local environment |
+| `make prune` | Runs `docker system/volume/network prune -f` | Removes dangling Docker resources beyond this project |
+| `make dirs-clean` | Deletes the entire `data/` and `logs/` directories after a double-confirm prompt | **Destructive** |
+| `make volumes-clean` | Calls `docker volume prune -f` after a confirmation prompt | Removes **all** unused Docker volumes |
 
-# Service debugging
-make status
-make health
-make log-<service>
-make shell-<service>
+### Logging Shortcuts Per Service
 
-# Clean restart
-make cleanup
-make build-no-cache
-make up
-```
+Use the dynamic patterns described earlier (`log-<service>`, `tail-<service>`, `shell-<service>`, etc.) to drill into a single container when troubleshooting. Combine them with `logs-start` to capture long‑running sessions while freeing the terminal.
 
-## 🔄 **Development Workflows**
+### Nginx Helpers
 
-### **Daily Development**
-```bash
-# Start development environment
-make dev
+| Command | Purpose | Notes |
+|---------|---------|-------|
+| `make nginx-test` | Runs `nginx -t` inside the `web` container | Fails if configuration syntax is invalid |
+| `make nginx-reload` | Signals the running Nginx process to reload configs | Equivalent to `nginx -s reload` |
+| `make nginx-status` | Hits `http://localhost/nginx-status` | Requires the status endpoint to be exposed |
+| `make nginx-logs` | Shows the latest JSON access logs, formatting with `jq` when available | Falls back to plain text if `jq` is missing |
+| `make nginx-errors` | Tails `/var/log/nginx/error.log` from the container | Displays a friendly warning if the file is missing |
+| `make nginx-config` | Dumps the current Nginx configuration (`nginx -T`) | Useful for verifying the final merged config |
 
-# Check service health
-make health
+### Security, Linting & Formatting
 
-# Rebuild after code changes
-make re-keycloak
+| Command | Purpose | Notes |
+|---------|---------|-------|
+| `make security-scan` | Pulls `aquasec/trivy` and scans every built image (`kc_<service>`) | Requires Docker socket access |
+| `make lint` | Runs `hadolint` across all Dockerfiles and `yamllint` on `docker-compose.yml` (if the tools are installed) | Prints installation hints when tools are missing |
+| `make format` | Formats `docker-compose.yml` with Prettier | Installs instructions shown when Prettier is missing |
 
-# View logs for debugging
-make log-keycloak
+### SSL Utilities
 
-# Access container for investigation
-make shell-keycloak
-```
+| Command | Purpose | Notes |
+|---------|---------|-------|
+| `make ssl-generate` | Generates self-signed cert/key pairs for `eservice.localhost` and `mockpass.localhost` using the configs in `ssl/*.conf` | Places files under `ssl/certs` and `ssl/private` |
+| `make ssl-info` | Displays subject, SAN, and validity information for the generated certificates | Reminds you to run `ssl-generate` if the files are missing |
 
-### **Production Deployment**
-```bash
-# Validate configuration
-make validate
+> Combine `logs-tail`, `tail-<service>`, and `analyze-performance` to capture the exact window around an incident.
 
-# Start production environment
-make prod
+### Legacy Compatibility
 
-# Monitor resources
-make monitor
-
-# Create backup
-make db-backup
-
-# Security validation
-make security-scan
-```
-
-### **Maintenance**
-```bash
-# Update dependencies
-make update
-
-# Clean environment
-make cleanup
-
-# Prune unused resources
-make prune
-
-# Check for upgrades
-make upgrade
-```
-
-## 📁 **File Structure**
-
-```
-app-sso/
-├── Makefile                    # Enhanced Unix/Linux/macOS management
-├── make.ps1                    # Windows PowerShell companion
-├── MAKEFILE.md                 # This comprehensive documentation
-├── docker-compose.yml          # Service definitions
-├── logs/                       # Automated log storage
-│   └── compose.TIMESTAMP.log   # Timestamped log files
-└── services/                   # Individual service directories
-    ├── keycloak-custom/
-    ├── mockpass/
-    └── ...
-```
-
-## 🎯 **Legacy Compatibility**
-
-All original Makefile targets are maintained for backward compatibility:
-- `run` → `up`
-- `run-recreate` → `rebuild`
-- `re-kc` → `re-keycloak`
-- `log-kc` → `log-keycloak`
-
-## 🤝 **Contributing**
-
-When adding new features:
-
-1. **Makefile**: Add appropriate `.PHONY` declaration and help comment with emoji
-2. **PowerShell**: Keep syntax simple and Windows-optimized
-3. **Documentation**: Update this file with new commands
-4. **Testing**: Test on both Unix and Windows platforms
-
-## 📝 **Dependencies**
-
-### **Required**
-- Docker 20.10+
-- Docker Compose V2+
-
-### **Optional (Enhanced Features)**
-- **hadolint**: Dockerfile linting (`brew install hadolint`)
-- **yamllint**: YAML validation (`pip install yamllint`)
-- **prettier**: Code formatting (`npm install -g prettier`)
-
-## 🎉 **Summary**
-
-This enhanced management system transforms your basic Docker Compose setup into a **professional-grade DevOps toolkit** with:
-
-- **Complete lifecycle management** for development and production
-- **Cross-platform compatibility** for diverse team environments
-- **Advanced monitoring and debugging** capabilities
-- **Security and quality** integration
-- **Automated operations** for database management and cleanup
-
-Whether you're on Unix/Linux/macOS using the full Makefile or Windows using the PowerShell companion, you have access to powerful tools for managing your SSO application stack efficiently and professionally! 🚀
-
-```powershell
-# Use PowerShell companion script
-.\make.ps1 up
-.\make.ps1 status
-.\make.ps1 logs -Service keycloak -Follow
-```
-
-## Available Targets
-
-### Main Targets
-
-| Command | Description | Example |
-|---------|-------------|---------|
-| `help` | Show help with all available commands | `make help` |
-| `up` | Start all services with logging | `make up` |
-| `down` | Stop all services | `make down` |
-| `start` | Start existing services (no build) | `make start` |
-| `stop` | Stop services (keep containers) | `make stop` |
-| `restart` | Restart all services | `make restart` |
-| `status` | Show service status | `make status` |
-| `health` | Check health status of services | `make health` |
-
-### Build Targets
-
-| Command | Description | Example |
-|---------|-------------|---------|
-| `build` | Build all services | `make build` |
-| `build-no-cache` | Build without cache | `make build-no-cache` |
-| `rebuild` | Full rebuild and restart | `make rebuild` |
-
-### Service-Specific Targets
-
-| Pattern | Description | Example |
-|---------|-------------|---------|
-| `re-<service>` | Rebuild specific service | `make re-keycloak` |
-| `log-<service>` | Show logs for service | `make log-keycloak` |
-| `shell-<service>` | Open shell in service | `make shell-keycloak` |
-
-Available services: `mockpass`, `db`, `keycloak`, `ids`, `aceas-api`, `cpds-api`, `web`
-
-### Development Environment
-
-| Command | Description | Example |
-|---------|-------------|---------|
-| `dev` | Start in development mode | `make dev` |
-| `prod` | Start in production mode | `make prod` |
-| `test` | Run tests (placeholder) | `make test` |
-
-### Logging and Monitoring
-
-| Command | Description | Example |
-|---------|-------------|---------|
-| `logs` | Show logs from all services | `make logs` |
-| `logs-tail` | Show last 100 lines | `make logs-tail` |
-| `monitor` | Monitor resource usage | `make monitor` |
-
-### Database Management
-
-| Command | Description | Example |
-|---------|-------------|---------|
-| `db-backup` | Backup database | `make db-backup` |
-| `db-restore` | Restore database | `make db-restore BACKUP_FILE=backup.sql` |
-| `db-reset` | Reset database (WARNING: destroys data) | `make db-reset` |
-
-### Cleanup Operations
-
-| Command | Description | Example |
-|---------|-------------|---------|
-| `clean` | Clean containers and images | `make clean` |
-| `cleanup` | Comprehensive cleanup with volumes | `make cleanup` |
-| `prune` | Prune unused Docker resources | `make prune` |
-
-### Security and Quality
-
-| Command | Description | Example |
-|---------|-------------|---------|
-| `security-scan` | Run security scan on images | `make security-scan` |
-| `lint` | Lint Dockerfiles and configs | `make lint` |
-| `format` | Format configuration files | `make format` |
-
-### Utility Commands
-
-| Command | Description | Example |
-|---------|-------------|---------|
-| `check-deps` | Check required dependencies | `make check-deps` |
-| `env` | Show environment variables | `make env` |
-| `config` | Show Docker Compose config | `make config` |
-| `validate` | Validate Docker Compose file | `make validate` |
-| `install` | Install/update dependencies | `make install` |
-| `update` | Update and rebuild | `make update` |
-| `upgrade` | Upgrade to latest versions | `make upgrade` |
-
-## Environment Variables
-
-The Makefile automatically detects and configures:
-
-- **OS_TYPE**: Detected operating system (unix/windows)
-- **PROJECT_NAME**: Set to `app-sso`
-- **COMPOSE_PROJECT_NAME**: Docker Compose project name
-- **LOGS_DIR**: Directory for log files (`./logs`)
-- **TS**: Timestamp for log file naming
-
-## Configuration
-
-### Services Configuration
-
-The Makefile defines these services:
-- **SERVICES**: `mockpass db keycloak ids aceas-api cpds-api web`
-- **BUILD_SERVICES**: `mockpass keycloak ids aceas-api cpds-api`
-
-### Logging
-
-- Logs are automatically saved to `./logs/compose.TIMESTAMP.log`
-- Cross-platform logging with `tee` (Unix) or `Tee-Object` (Windows)
-- Timestamps included in log file names
-
-## Dependencies
-
-### Required
-- Docker 20.10+
-- Docker Compose V2+
-
-### Optional (for enhanced features)
-- **hadolint**: Dockerfile linting (`brew install hadolint`)
-- **yamllint**: YAML linting (`pip install yamllint`)
-- **prettier**: Configuration formatting (`npm install -g prettier`)
-- **trivy**: Security scanning (included in security-scan target)
-
-## Examples
-
-### Development Workflow
-
-```bash
-# Initial setup
-make check-deps
-make build
-make up
-
-# Development cycle
-make re-keycloak          # Rebuild Keycloak after changes
-make log-keycloak         # Check logs
-make shell-keycloak       # Debug if needed
-
-# Testing
-make health               # Check service health
-make monitor              # Monitor resources
-```
-
-### Production Deployment
-
-```bash
-# Production startup
-make prod
-
-# Health monitoring
-make status
-make health
-make logs-tail
-
-# Maintenance
-make db-backup
-make security-scan
-```
-
-### Troubleshooting
-
-```bash
-# Check configuration
-make validate
-make config
-
-# Debug services
-make status
-make health
-make log-<service>
-make shell-<service>
-
-# Clean restart
-make cleanup
-make build-no-cache
-make up
-```
-
-## Windows PowerShell Companion
-
-The `make.ps1` script provides Windows-specific functionality:
-
-```powershell
-# Basic usage
-.\make.ps1 up
-.\make.ps1 status
-
-# Advanced logging
-.\make.ps1 logs -Service keycloak -Follow
-.\make.ps1 logs -Tail -Lines 50
-
-# Service management
-.\make.ps1 restart
-```
-
-## Legacy Compatibility
-
-All original Makefile targets are maintained for backward compatibility:
+Older project scripts expect the following legacy targets. They remain wired up, but prefer the modern names above when writing new docs or scripts:
 
 - `run` → `up`
 - `run-recreate` → `rebuild`
-- Legacy service targets (`re-kc`, `log-kc`, etc.) are mapped to new names
+- `re-kc`, `re-ids`, `re-cpds`, `re-aceas`, `re-web`, `re-mockpass`, `re-db` → service-specific rebuilders
+- `log-kc`, `log-ids`, `log-cpds`, `log-aceas`, `log-web`, `log-mockpass`, `log-db` → service log shortcuts
 
-## Troubleshooting
+## Windows PowerShell Companion (`make.ps1`)
 
-### Common Issues
+The root directory contains `make.ps1`, a native PowerShell script mirroring the most common lifecycle actions (`help`, `up`, `down`, `status`, `logs`, `restart`, etc.). Use it when GNU Make is unavailable:
 
-1. **Command not found**: Ensure Docker and Docker Compose are installed
-2. **Permission denied**: Check Docker daemon is running and user has permissions
-3. **Port conflicts**: Check if ports 80, 443, 3001, 5432, 8081 are available
-4. **Build failures**: Try `make build-no-cache` or check Dockerfile syntax with `make lint`
-
-### Debug Commands
-
-```bash
-# Check environment
-make env
-make check-deps
-
-# Validate configuration
-make validate
-make config
-
-# Check service status
-make status
-make health
-
-# View detailed logs
-make logs-tail
-make log-<service>
+```powershell
+.\make.ps1 up            # Start everything detached
+.\make.ps1 logs          # Stream logs (or add -Service <name> / -Tail)
+.\make.ps1 restart       # Equivalent to make restart
 ```
 
-## Contributing
+For advanced scenarios (per-service rebuilds, SSL generation, DB resets) switch to a shell that supports GNU Make (WSL, Git Bash, or MSYS).
 
-When adding new targets:
+## Troubleshooting Tips
 
-1. Add appropriate `.PHONY` declaration
-2. Include help comment with emoji (`## 🚀 Description`)
-3. Use proper color coding for output
-4. Test on both Unix and Windows platforms
-5. Update this documentation
+- **Dependencies**: Run `make check-deps` anytime Docker upgrades or the CLI path changes.
+- **Configuration drift**: Pair `make config` with `make env` to confirm which compose files or environment settings are being picked up.
+- **Health issues**: `make wait-healthy` paired with `make health` pinpoints services stuck in `starting` or `unhealthy` states.
+- **Log noise**: Use `make logs-start` to capture the entire session, then inspect with `make logs-file` while restarting services as needed.
+- **Database recovery**: Prefer the newer `backup-db` / `restore-db` workflow for consistent dump locations; reserve `db-backup` for quick one‑offs when the legacy container names exist.
+- **Stale volumes**: `make db-reset`, `make dirs-clean`, and `make volumes-clean` are destructive—double-check that you have backups before running them.
+- **Security scans**: `make security-scan` depends on `aquasec/trivy`. If the scan fails early, delete stale `trivy` images and rerun the command.
 
-## Security Considerations
-
-- Database backups contain sensitive data - store securely
-- `db-reset` permanently destroys data - use with caution
-- Security scanning helps identify vulnerabilities
-- Always use `make clean` before production deployments
+Use the tables above as your reference when creating onboarding docs, CI jobs, or shell aliases that wrap this Makefile.
