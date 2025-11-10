@@ -28,6 +28,7 @@ val mockitoVersion = "5.5.0"
 
 dependencies {
     compileOnly("org.keycloak:keycloak-core:$kcVersion")
+    compileOnly("org.keycloak:keycloak-saml-core:${kcVersion}")
     compileOnly("org.keycloak:keycloak-server-spi:$kcVersion")
     compileOnly("org.keycloak:keycloak-server-spi-private:$kcVersion")
     compileOnly("org.keycloak:keycloak-services:$kcVersion")

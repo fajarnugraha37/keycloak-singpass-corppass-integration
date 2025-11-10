@@ -1,18 +1,40 @@
 package com.example.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
+import org.jboss.logging.Logger;
+import org.keycloak.broker.provider.BrokeredIdentityContext;
+import org.keycloak.models.UserModel;
 import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.JsonWebToken;
 
 import java.util.Map;
 
 public class MapperUtil {
+    private static final Logger logger = Logger.getLogger(MapperUtil.class);
+
     private static final ObjectMapper objectMapper = new ObjectMapper();
     
     private MapperUtil() {
         // Private constructor to prevent instantiation
     }
 
+    public static void mapAttributeToUser(BrokeredIdentityContext context, UserModel user, boolean forceUpdate) {
+        for (var entry : context.getAttributes().entrySet()) {
+            var attrKey = entry.getKey();
+            var attrValues = entry.getValue();
+            var existingValues = user.getFirstAttribute(attrKey);
+            var isNeedToUpdate = existingValues == null
+                    || existingValues.isEmpty()
+                    || !StringUtils.equalsAny(existingValues, attrValues.toArray(CharSequence[]::new));
+            if (forceUpdate || isNeedToUpdate) {
+                logger.infof("[mapAttributeToUser] Updating attribute for user %s: %s = %s", user.getUsername(), attrKey, attrValues);
+                user.setAttribute(attrKey, attrValues);
+            } else {
+                logger.infof("[mapAttributeToUser] No change for attribute %s for user %s", attrKey, user.getUsername());
+            }
+        }
+    }
     public static Map<String, String> toMap(JsonWebToken jsonWebToken) {
         if (jsonWebToken == null) {
             return new java.util.HashMap<>();
