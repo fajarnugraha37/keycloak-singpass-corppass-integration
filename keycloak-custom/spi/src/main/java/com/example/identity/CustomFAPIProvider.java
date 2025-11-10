@@ -480,7 +480,7 @@ public class CustomFAPIProvider extends CustomOIDCProvider {
                 && accessToken != null) {
             logger.infof("[toIdentityContext] HTTP Request ---> %s", userInfoUrl);
             var userInfoRequest = SimpleHttp.doGet(userInfoUrl, session)
-                    .header("Authorization", "Bearer " + accessToken);
+                    .header("Authorization", "DPoP " + accessToken);
 
             // FAPI 2.0: Add DPoP header for userinfo request if enabled
             if (configuration.isDPoPEnabled()) {
