@@ -144,11 +144,12 @@ public abstract class CustomDuplicator extends OIDCIdentityProvider {
                 brokerSessionId);
 
         // 1st lookup: Check if user already exists by federated identity (old behavior)
+        var federatedIdentityModel = new FederatedIdentityModel(
+                providerAlias,
+                currentBrokerUserId,
+                null);
         var existingFederatedIdentityById = session.users()
-                .getUserByFederatedIdentity(realm, new FederatedIdentityModel(
-                        providerAlias,
-                        currentBrokerUserId,
-                        null));
+                .getUserByFederatedIdentity(realm, federatedIdentityModel);
         if (existingFederatedIdentityById != null) {
             logger.infof("[performUpsertBasedOnStableIdentifier] User already linked by federated identity with id: %s, username: %s",
                     existingFederatedIdentityById.getId(),
@@ -159,7 +160,8 @@ public abstract class CustomDuplicator extends OIDCIdentityProvider {
         // 2nd lookup: Search by username (most direct and efficient method)
         UserModel existingUser = null;
         if (username != null && !username.isEmpty()) {
-            existingUser = session.users().getUserByUsername(realm, username);
+            existingUser = session.users()
+                    .getUserByUsername(realm, username);
             logger.infof("[performUpsertBasedOnStableIdentifier] Looking up user by username: %s, found: %s",
                     username,
                     existingUser != null ? existingUser.getUsername() : "null");
@@ -168,7 +170,9 @@ public abstract class CustomDuplicator extends OIDCIdentityProvider {
         // 3rd lookup: Search by email if username lookup failed
         // Email is often more stable than username in enterprise environments
         if (existingUser == null && email != null && !email.isEmpty()) {
-            existingUser = session.users().getUserByEmail(realm, email);
+            existingUser = session
+                    .users()
+                    .getUserByEmail(realm, email);
             logger.infof("[performUpsertBasedOnStableIdentifier] Looking up user by email: %s, found: %s",
                     email,
                     existingUser != null ? existingUser.getUsername() : "null");
@@ -185,12 +189,14 @@ public abstract class CustomDuplicator extends OIDCIdentityProvider {
                     existingUser.getUsername());
 
             // Check if the found user already has a federated identity link with this provider
-            var existingFederatedIdentity = session.users()
+            var existingFederatedIdentity = session
+                    .users()
                     .getFederatedIdentity(realm, existingUser, providerAlias);
 
             if (existingFederatedIdentity != null) {
                 // User has existing federated identity - check if subject has changed
-                var existingBrokerUserId = existingFederatedIdentity.getUserId();
+                var existingBrokerUserId = existingFederatedIdentity
+                        .getUserId();
 
                 if (!existingBrokerUserId.equals(currentBrokerUserId)) {
                     // Subject has changed - update the federated identity mapping
@@ -199,8 +205,7 @@ public abstract class CustomDuplicator extends OIDCIdentityProvider {
                             currentBrokerUserId);
 
                     // Remove the old federated identity link
-                    session
-                            .users()
+                    session.users()
                             .removeFederatedIdentity(realm, existingUser, providerAlias);
 
                     // Create new federated identity with updated subject but preserve token
@@ -267,7 +272,7 @@ public abstract class CustomDuplicator extends OIDCIdentityProvider {
      * @param context      The brokered identity context to update
      * @param existingUser The existing user whose information should be preserved
      */
-    private void updateContextWithExistingUserInfo(BrokeredIdentityContext context, UserModel existingUser) {
+    void updateContextWithExistingUserInfo(BrokeredIdentityContext context, UserModel existingUser) {
         // Always preserve the existing user's username to maintain identity consistency
         context.setUsername(existingUser.getUsername());
 

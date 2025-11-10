@@ -1,27 +1,43 @@
 package com.example.identity;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import com.example.utils.*;
 import com.fasterxml.jackson.databind.JsonNode;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.*;
 import liquibase.util.MD5Util;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 import org.keycloak.OAuth2Constants;
+import org.keycloak.OAuthErrorException;
 import org.keycloak.broker.oidc.OIDCIdentityProvider;
 import org.keycloak.broker.oidc.mappers.AbstractJsonUserAttributeMapper;
 import org.keycloak.broker.provider.*;
+import org.keycloak.broker.provider.util.IdentityBrokerState;
 import org.keycloak.broker.provider.util.SimpleHttp;
+import org.keycloak.common.util.Base64Url;
+import org.keycloak.common.util.SecretGenerator;
 import org.keycloak.common.util.Time;
+import org.keycloak.events.Errors;
 import org.keycloak.events.EventBuilder;
+import org.keycloak.events.EventType;
 import org.keycloak.jose.jws.JWSBuilder;
 import org.keycloak.jose.jws.JWSInput;
 import org.keycloak.models.*;
+import org.keycloak.protocol.oidc.OIDCLoginProtocol;
+import org.keycloak.protocol.oidc.endpoints.AuthorizationEndpoint;
+import org.keycloak.protocol.oidc.utils.PkceUtils;
 import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.IDToken;
 import org.keycloak.representations.JsonWebToken;
+import org.keycloak.services.ErrorPage;
+import org.keycloak.services.Urls;
+import org.keycloak.services.managers.AuthenticationManager;
+import org.keycloak.services.managers.ClientSessionCode;
+import org.keycloak.services.messages.Messages;
 import org.keycloak.sessions.AuthenticationSessionModel;
 
 import com.example.config.CustomOIDCIdentityProviderConfig;
@@ -143,7 +159,84 @@ public class CustomOIDCProvider extends CustomDuplicator {
     @Override
     protected UriBuilder createAuthorizationUrl(AuthenticationRequest request) {
         logger.infof("[createAuthorizationUrl] Creating authorization URL in CustomOIDCProvider: %s %s %s", request.getRealm().getName(), request.getRedirectUri(), request.getState());
-        return super.createAuthorizationUrl(request);
+//        return super.createAuthorizationUrl(request);
+//        var uriBuilder = AbstractOAuth2IdentityProvider.createAuthorizationUrl(request)
+        var uriBuilder = FuncUtil.invoke(() -> {
+            final var _uriBuilder = UriBuilder.fromUri(getConfig().getAuthorizationUrl())
+                    .queryParam(OAUTH2_PARAMETER_SCOPE, getConfig().getDefaultScope())
+                    .queryParam(OAUTH2_PARAMETER_STATE, request.getState().getEncoded())
+                    .queryParam(OAUTH2_PARAMETER_RESPONSE_TYPE, "code")
+                    .queryParam(OAUTH2_PARAMETER_CLIENT_ID, getConfig().getClientId())
+                    .queryParam(OAUTH2_PARAMETER_REDIRECT_URI, request.getRedirectUri());
+
+            var loginHint = request.getAuthenticationSession()
+                    .getClientNote(OIDCLoginProtocol.LOGIN_HINT_PARAM);
+            if (getConfig().isLoginHint() && loginHint != null) {
+                _uriBuilder.queryParam(OIDCLoginProtocol.LOGIN_HINT_PARAM, loginHint);
+            }
+
+            if (getConfig().isUiLocales()) {
+                var uiLocalesParam = session.getContext()
+                        .resolveLocale(null)
+                        .toLanguageTag();
+                _uriBuilder.queryParam(OIDCLoginProtocol.UI_LOCALES_PARAM, uiLocalesParam);
+            }
+
+            var prompt = getConfig().getPrompt();
+            if (prompt == null || prompt.isEmpty()) {
+                prompt = request.getAuthenticationSession()
+                        .getClientNote(OAuth2Constants.PROMPT);
+            }
+            if (prompt != null) {
+                _uriBuilder.queryParam(OAuth2Constants.PROMPT, prompt);
+            }
+
+            var acr = request.getAuthenticationSession()
+                    .getClientNote(OAuth2Constants.ACR_VALUES);
+            if (acr != null) {
+                _uriBuilder.queryParam(OAuth2Constants.ACR_VALUES, acr);
+            }
+
+            var forwardParameterConfig = getConfig().getForwardParameters() != null
+                    ? getConfig().getForwardParameters()
+                    : "";
+            var forwardParameters = Arrays.asList(forwardParameterConfig.split("\\s*,\\s*"));
+            for(var forwardParameter: forwardParameters) {
+                var name = AuthorizationEndpoint.LOGIN_SESSION_NOTE_ADDITIONAL_REQ_PARAMS_PREFIX + forwardParameter.trim();
+                var parameter = request.getAuthenticationSession()
+                        .getClientNote(name);
+                if(parameter != null && !parameter.isEmpty()) {
+                    _uriBuilder.queryParam(forwardParameter, parameter);
+                }
+            }
+
+            if (getConfig().isPkceEnabled()) {
+                var codeVerifier = PkceUtils.generateCodeVerifier();
+                var codeChallengeMethod = getConfig().getPkceMethod();
+                request.getAuthenticationSession().setClientNote("BROKER_CODE_CHALLENGE", codeVerifier);
+                request.getAuthenticationSession().setClientNote("BROKER_CODE_CHALLENGE_METHOD", codeChallengeMethod);
+
+                var codeChallenge = PkceUtils.encodeCodeChallenge(codeVerifier, codeChallengeMethod);
+                _uriBuilder.queryParam(OAuth2Constants.CODE_CHALLENGE, codeChallenge);
+                _uriBuilder.queryParam(OAuth2Constants.CODE_CHALLENGE_METHOD, codeChallengeMethod);
+            }
+            return _uriBuilder;
+        });
+
+        var authenticationSession = request.getAuthenticationSession();
+        if (!getConfig().isDisableNonce()) {
+            var nonce = Base64Url.encode(SecretGenerator.getInstance().randomBytes(16));
+            authenticationSession.setClientNote("BROKER_NONCE", nonce);
+            uriBuilder.queryParam(OIDCLoginProtocol.NONCE_PARAM, nonce);
+        }
+
+        var maxAge = request.getAuthenticationSession()
+                .getClientNote(OIDCLoginProtocol.MAX_AGE_PARAM);
+        if (getConfig().isPassMaxAge() && maxAge != null) {
+            uriBuilder.queryParam(OIDCLoginProtocol.MAX_AGE_PARAM, maxAge);
+        }
+
+        return uriBuilder;
     }
 
     @Override
@@ -156,10 +249,17 @@ public class CustomOIDCProvider extends CustomDuplicator {
         logger.infof("[authenticateTokenRequest] Authenticating token request in CustomOIDCProvider");
         if (getConfig().isJWTAuthentication()) {
             String jws = null;
-            if (configuration.getSigningKeyId() == null || configuration.getSigningKeyId().isEmpty()) {
-                jws = new JWSBuilder().type(OAuth2Constants.JWT).jsonContent(generateToken()).sign(getSignatureContext());
+            if (configuration.getSigningKeyId() == null
+                    || configuration.getSigningKeyId().isEmpty()) {
+                jws = new JWSBuilder()
+                        .type(OAuth2Constants.JWT)
+                        .jsonContent(generateToken())
+                        .sign(getSignatureContext());
             } else {
-                var keyWrapper = session.keys().getKeysStream(session.getContext().getRealm()).filter(key -> key.getKid().equalsIgnoreCase(this.configuration.getSigningKeyId())).findFirst();
+                var keyWrapper = session.keys()
+                        .getKeysStream(session.getContext().getRealm())
+                        .filter(key -> key.getKid().equalsIgnoreCase(this.configuration.getSigningKeyId()))
+                        .findFirst();
                 if (keyWrapper.isPresent()) {
                     var key = keyWrapper.get();
                     var algorithm = JWSAlgorithm.parse(key.getAlgorithm());
@@ -174,21 +274,28 @@ public class CustomOIDCProvider extends CustomDuplicator {
             logger.infof("[authenticateTokenRequest] Client ID: %s", getConfig().getClientId());
             logger.infof("[authenticateTokenRequest] Client Assertion Type: %s", OAuth2Constants.CLIENT_ASSERTION_TYPE_JWT);
             logger.infof("[authenticateTokenRequest] JWS: %s", jws);
-            return tokenRequest.param(OAUTH2_PARAMETER_CLIENT_ID, getConfig().getClientId()).param(OAuth2Constants.CLIENT_ASSERTION_TYPE, OAuth2Constants.CLIENT_ASSERTION_TYPE_JWT).param(OAuth2Constants.CLIENT_ASSERTION, jws);
+            return tokenRequest.param(OAUTH2_PARAMETER_CLIENT_ID, getConfig().getClientId())
+                    .param(OAuth2Constants.CLIENT_ASSERTION_TYPE, OAuth2Constants.CLIENT_ASSERTION_TYPE_JWT)
+                    .param(OAuth2Constants.CLIENT_ASSERTION, jws);
         }
 
         try (var vaultStringSecret = session.vault().getStringSecret(getConfig().getClientSecret())) {
             if (getConfig().isBasicAuthentication()) {
                 logger.infof("[authenticateTokenRequest] Using basic authentication for client ID: %s", getConfig().getClientId());
                 logger.infof("[authenticateTokenRequest] Client Secret from Vault: %s", vaultStringSecret.get().orElse("Not found in vault"));
-                return tokenRequest.authBasic(getConfig().getClientId(), vaultStringSecret.get().orElse(getConfig().getClientSecret()));
+                var clientSecret = vaultStringSecret.get()
+                        .orElse(getConfig().getClientSecret());
+                return tokenRequest.authBasic(
+                        getConfig().getClientId(),
+                        clientSecret);
             }
 
             logger.infof("[authenticateTokenRequest] Using form authentication for client ID: %s", getConfig().getClientId());
             logger.infof("[authenticateTokenRequest] Client Secret from Vault: %s", vaultStringSecret.get().orElse("Not found in vault"));
-            return tokenRequest.param(OAUTH2_PARAMETER_CLIENT_ID,
-                    getConfig().getClientId()).param(OAUTH2_PARAMETER_CLIENT_SECRET,
-                    vaultStringSecret.get().orElse(getConfig().getClientSecret()));
+            var clientSecret = vaultStringSecret.get()
+                    .orElse(getConfig().getClientSecret());
+            return tokenRequest.param(OAUTH2_PARAMETER_CLIENT_ID, getConfig().getClientId())
+                    .param(OAUTH2_PARAMETER_CLIENT_SECRET, clientSecret);
         }
     }
 
@@ -762,29 +869,176 @@ public class CustomOIDCProvider extends CustomDuplicator {
     }
 
     protected static class CustomOIDCEndpoint extends OIDCEndpoint {
+        private final OIDCIdentityProvider provider;
 
         public CustomOIDCEndpoint(AuthenticationCallback callback,
                                   RealmModel realm,
                                   EventBuilder event,
                                   OIDCIdentityProvider provider) {
             super(callback, realm, event, provider);
+            this.provider = provider;
         }
 
         @Override
         public Response authResponse(String state, String authorizationCode, String error, String errorDescription) {
             logger.infof("[authResponse] Auth response in CustomOIDCEndpoint: %s %s %s %s", state, authorizationCode, error, errorDescription);
-            var response = super.authResponse(state, authorizationCode, error, errorDescription);
-            logger.infof("[authResponse] Auth response generated in CustomOIDCEndpoint: %s %s %s", response.getStatus(), response.getLocation(), response.getEntity());
-            return response;
+            var _authResponse = FuncUtil.invoke(() -> {
+                var providerConfig = provider.getConfig();
+                if (state == null) {
+                    var providerId = providerConfig.getProviderId();
+                    var redirectionUrl = session.getContext().getUri().getRequestUri().toString();
+                    logger.errorf("%s. providerId=%s, redirectionUrl=%s", "Redirection URL does not contain a state parameter", providerId, redirectionUrl);
+
+                    event.event(EventType.IDENTITY_PROVIDER_LOGIN);
+                    event.error(Errors.IDENTITY_PROVIDER_LOGIN_FAILURE);
+                    return ErrorPage.error(session, null, Response.Status.BAD_GATEWAY, Messages.IDENTITY_PROVIDER_MISSING_STATE_ERROR);
+                }
+
+                try {
+                    var authSession = this.callback.getAndVerifyAuthenticationSession(state);
+                    session.getContext().setAuthenticationSession(authSession);
+                    if (error != null) {
+                        var providerId = providerConfig.getProviderId();
+                        var redirectionUrl = session.getContext().getUri().getRequestUri().toString();
+                        logger.errorf("%s. providerId=%s, redirectionUrl=%s", "Redirection URL contains an error", providerId, redirectionUrl);
+
+                        if (error.equals(ACCESS_DENIED)) {
+                            return callback.cancelled(providerConfig);
+                        } else if (error.equals(OAuthErrorException.LOGIN_REQUIRED)
+                                || error.equals(OAuthErrorException.INTERACTION_REQUIRED)) {
+                            return callback.error(error);
+                        } else if (error.equals(OAuthErrorException.TEMPORARILY_UNAVAILABLE)
+                                && Constants.AUTHENTICATION_EXPIRED_MESSAGE.equals(errorDescription)) {
+                            return callback.retryLogin(this.provider, authSession);
+                        } else {
+                            return callback.error(Messages.IDENTITY_PROVIDER_UNEXPECTED_ERROR);
+                        }
+                    }
+
+                    if (authorizationCode == null) {
+                        var providerId = providerConfig.getProviderId();
+                        var redirectionUrl = session.getContext().getUri().getRequestUri().toString();
+                        logger.errorf("%s. providerId=%s, redirectionUrl=%s", "Redirection URL neither contains a code nor error parameter", providerId, redirectionUrl);
+
+                        event.event(EventType.IDENTITY_PROVIDER_LOGIN);
+                        event.error(Errors.IDENTITY_PROVIDER_LOGIN_FAILURE);
+                        return ErrorPage.error(session, null, Response.Status.BAD_GATEWAY, Messages.IDENTITY_PROVIDER_MISSING_CODE_OR_ERROR_ERROR);
+                    }
+
+                    var simpleHttp = generateTokenRequest(authorizationCode);
+                    String response;
+                    try (SimpleHttp.Response simpleResponse = simpleHttp.asResponse()) {
+                        var status = simpleResponse.getStatus();
+                        var success = status >= 200 && status < 400;
+                        response = simpleResponse.asString();
+
+                        if (!success) {
+                            logger.errorf("Unexpected response from token endpoint %s. status=%s, response=%s",
+                                    simpleHttp.getUrl(),
+                                    status, response);
+
+                            event.event(EventType.IDENTITY_PROVIDER_LOGIN);
+                            event.error(Errors.IDENTITY_PROVIDER_LOGIN_FAILURE);
+                            return ErrorPage.error(session, null, Response.Status.BAD_GATEWAY, Messages.IDENTITY_PROVIDER_UNEXPECTED_ERROR);
+                        }
+                    }
+
+                    var federatedIdentity = provider.getFederatedIdentity(response);
+                    if (providerConfig.isStoreToken()) {
+                        // make sure that token wasn't already set by getFederatedIdentity();
+                        // want to be able to allow provider to set the token itself.
+                        if (federatedIdentity.getToken() == null)
+                            federatedIdentity.setToken(response);
+                    }
+                    federatedIdentity.setIdp(provider);
+                    federatedIdentity.setAuthenticationSession(authSession);
+
+                    return callback.authenticated(federatedIdentity);
+                } catch (WebApplicationException e) {
+                    return e.getResponse();
+                } catch (IdentityBrokerException e) {
+                    if (e.getMessageCode() != null) {
+                        event.event(EventType.IDENTITY_PROVIDER_LOGIN);
+                        event.error(Errors.IDENTITY_PROVIDER_LOGIN_FAILURE);
+                        return ErrorPage.error(session, null, Response.Status.BAD_GATEWAY, e.getMessageCode());
+                    }
+
+                    logger.error("Failed to make identity provider oauth callback", e);
+                    event.event(EventType.IDENTITY_PROVIDER_LOGIN);
+                    event.error(Errors.IDENTITY_PROVIDER_LOGIN_FAILURE);
+                    return ErrorPage.error(session, null, Response.Status.BAD_GATEWAY, Messages.IDENTITY_PROVIDER_UNEXPECTED_ERROR);
+                } catch (Exception e) {
+
+                    logger.error("Failed to make identity provider oauth callback", e);
+                    event.event(EventType.IDENTITY_PROVIDER_LOGIN);
+                    event.error(Errors.IDENTITY_PROVIDER_LOGIN_FAILURE);
+                    return ErrorPage.error(session, null, Response.Status.BAD_GATEWAY, Messages.IDENTITY_PROVIDER_UNEXPECTED_ERROR);
+                }
+            });
+            logger.infof("[authResponse] Auth response generated in CustomOIDCEndpoint: %s %s %s",
+                    _authResponse.getStatus(),
+                    _authResponse.getLocation(),
+                    _authResponse.getEntity());
+
+            return _authResponse;
         }
 
         @Override
         public SimpleHttp generateTokenRequest(String authorizationCode) {
             try {
                 logger.infof("[generateTokenRequest] Generating token request in CustomOIDCEndpoint: %s", authorizationCode);
-                var response = super.generateTokenRequest(authorizationCode);
-                logger.infof("[generateTokenRequest] Token request generated in CustomOIDCEndpoint: %s", response.getUrl(), response.asString());
-                return response;
+                var simpleHttp = FuncUtil.invoke(() -> {
+                    var context = session.getContext();
+                    var providerConfig = provider.getConfig();
+                    var redirectUri = Urls.identityProviderAuthnResponse(
+                            context.getUri().getBaseUri(),
+                            providerConfig.getAlias(),
+                            context.getRealm().getName()).toString();
+                    var tokenRequest = SimpleHttp.doPost(providerConfig.getTokenUrl(), session)
+                            .param(OAUTH2_PARAMETER_CODE, authorizationCode)
+                            .param(OAUTH2_PARAMETER_REDIRECT_URI, redirectUri)
+                            .param(OAUTH2_PARAMETER_GRANT_TYPE, OAUTH2_GRANT_TYPE_AUTHORIZATION_CODE);
+
+                    if (providerConfig.isPkceEnabled()) {
+                        // reconstruct the original code verifier that was used to generate the code challenge from the HttpRequest.
+                        var stateParam = session.getContext()
+                                .getUri()
+                                .getQueryParameters()
+                                .getFirst(OAuth2Constants.STATE);
+                        if (stateParam == null) {
+                            logger.warn("Cannot lookup PKCE code_verifier: state param is missing.");
+                            return tokenRequest;
+                        }
+
+                        var realm = context.getRealm();
+                        var idpBrokerState = IdentityBrokerState.encoded(stateParam, realm);
+                        var client = realm.getClientByClientId(idpBrokerState.getClientId());
+                        var authSession = ClientSessionCode.getClientSession(
+                                idpBrokerState.getEncoded(),
+                                idpBrokerState.getTabId(),
+                                session,
+                                realm,
+                                client,
+                                event,
+                                AuthenticationSessionModel.class);
+                        if (authSession == null) {
+                            logger.warnf("Cannot lookup PKCE code_verifier: authSession not found. state=%s", stateParam);
+                            return tokenRequest;
+                        }
+
+                        var brokerCodeChallenge = authSession.getClientNote("BROKER_CODE_CHALLENGE");
+                        if (brokerCodeChallenge == null) {
+                            logger.warnf("Cannot lookup PKCE code_verifier: brokerCodeChallenge not found. state=%s", stateParam);
+                            return tokenRequest;
+                        }
+
+                        tokenRequest.param(OAuth2Constants.CODE_VERIFIER, brokerCodeChallenge);
+                    }
+
+                    return provider.authenticateTokenRequest(tokenRequest);
+                });
+                logger.infof("[generateTokenRequest] Token request generated in CustomOIDCEndpoint: %s", simpleHttp.getUrl(), simpleHttp.asString());
+                return simpleHttp;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -793,9 +1047,42 @@ public class CustomOIDCProvider extends CustomDuplicator {
         @Override
         public Response logoutResponse(String state) {
             logger.infof("[logoutResponse] Logout response in CustomOIDCEndpoint: %s", state);
-            var response = super.logoutResponse(state);
-            logger.infof("[logoutResponse] Logout response generated in CustomOIDCEndpoint: %s %s %s", response.getStatus(), response.getLocation(), response.getEntity());
-            return response;
+            var _logoutResponse = FuncUtil.invoke(() -> {
+                if (state == null){
+                    logger.error("no state parameter returned");
+                    var event = new EventBuilder(realm, session, clientConnection);
+                    event.event(EventType.LOGOUT);
+                    event.error(Errors.USER_SESSION_NOT_FOUND);
+                    return ErrorPage.error(session, null, Response.Status.BAD_REQUEST, Messages.IDENTITY_PROVIDER_UNEXPECTED_ERROR);
+
+                }
+
+                var userSession = session.sessions()
+                        .getUserSession(realm, state);
+                if (userSession == null) {
+                    logger.error("no valid user session");
+                    var event = new EventBuilder(realm, session, clientConnection);
+                    event.event(EventType.LOGOUT);
+                    event.error(Errors.USER_SESSION_NOT_FOUND);
+                    return ErrorPage.error(session, null, Response.Status.BAD_REQUEST, Messages.IDENTITY_PROVIDER_UNEXPECTED_ERROR);
+                }
+
+                if (userSession.getState() != UserSessionModel.State.LOGGING_OUT) {
+                    logger.error("usersession in different state");
+                    var event = new EventBuilder(realm, session, clientConnection);
+                    event.event(EventType.LOGOUT);
+                    event.error(Errors.USER_SESSION_NOT_FOUND);
+                    return ErrorPage.error(session, null, Response.Status.BAD_REQUEST, Messages.SESSION_NOT_ACTIVE);
+                }
+
+                return AuthenticationManager.finishBrowserLogout(session, realm, userSession, session.getContext().getUri(), clientConnection, headers);
+            });
+            logger.infof("[logoutResponse] Logout response generated in CustomOIDCEndpoint: %s %s %s",
+                    _logoutResponse.getStatus(),
+                    _logoutResponse.getLocation(),
+                    _logoutResponse.getEntity());
+
+            return _logoutResponse;
         }
     }
 }
