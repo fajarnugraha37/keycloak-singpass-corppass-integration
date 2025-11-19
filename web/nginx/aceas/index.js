@@ -229,8 +229,77 @@ async function handleUserInfo() {
         enhancedLog("✅ Keycloak userinfo retrieved:", 'success');
         enhancedLog(`📋 User Info:\n${JSON.stringify(info, null, 2)}`, 'info');
 
+        await handleTokenExchange("aceas-oidc-secret", "mockpass-singpass");
+        await handleTokenExchange("aceas-oidc-secret", "mockpass-corppass");
     } catch (error) {
         enhancedLog(`❌ Failed to get user info: ${error.message}`, 'error');
+    }
+}
+
+async function handleTokenExchange(secret, issuer) {
+    try {
+        const u = await oidc.getUser();
+        if (!u) {
+            enhancedLog("❌ Login first", 'error');
+            return;
+        }
+
+        enhancedLog("🔁 Initiating token exchange...", 'info');
+        setLoadingState('Exchanging token...');
+
+        // Derive the token endpoint from OIDC config if available, otherwise fall back
+        const authority = (oidc?.settings?.authority) ? oidc.settings.authority : 'http://eservice.localhost/auth/realms/agency-realm';
+        const tokenEndpoint = `${authority.replace(/\/$/, '')}/protocol/openid-connect/token`;
+
+        const headers = new Headers();
+        headers.append("Content-Type", "application/x-www-form-urlencoded");
+        headers.append("Authorization", `Bearer ${u.access_token}`);
+
+        const urlencoded = new URLSearchParams();
+        urlencoded.append("client_id", "aceas-spa");
+        // urlencoded.append("client_secret", secret);
+        urlencoded.append("grant_type", "urn:ietf:params:oauth:grant-type:token-exchange");
+        urlencoded.append("requested_issuer", issuer);
+        urlencoded.append("subject_token", u.access_token);
+        // urlencoded.append("access_token", u.id_token);
+        urlencoded.append("requested_token_type", "urn:ietf:params:oauth:token-type:access_token");
+
+        const res = await fetch(tokenEndpoint, {
+            method: 'POST',
+            headers: headers,
+            body: urlencoded,
+            redirect: "follow"
+        });
+
+        const json = await (async () => {
+            try { 
+                return await res.json(); 
+            } catch {
+                return null; 
+            }
+        })();
+        enhancedLog("Token exchange response:" + json);
+
+        if (!res.ok) {
+            const errMsg = (json && (json.error_description || json.error)) || res.statusText;
+            enhancedLog(`❌ Token exchange failed [${res.status}]: ${errMsg}`, 'error');
+            if (res.status === 401 || res.status === 400) {
+                enhancedLog('⚠️ Token exchange may require confidential client authentication. Try calling a server-side exchange endpoint.', 'warning');
+            }
+            return;
+        }
+
+        enhancedLog('✅ Token exchange successful', 'success');
+        if (json && json.access_token) {
+            // Mask token when showing to console
+            enhancedLog(`🔐 Exchanged access_token (masked): ${JSON.stringify(json)}`, 'info');
+        } else {
+            enhancedLog('⚠️ Token exchange succeeded but response did not include an access_token', 'warning');
+        }
+    } catch (error) {
+        enhancedLog(`❌ Token exchange error: ${error.message}`, 'error');
+    } finally {
+        hideLoading();
     }
 }
 
@@ -780,6 +849,7 @@ window.aceaAuth = {
     logout: handleLogout,
     userInfo: handleUserInfo,
     callApi: handleCallApi,
+    tokenExchange: handleTokenExchange,
     clearConsole,
     animationController
 };
