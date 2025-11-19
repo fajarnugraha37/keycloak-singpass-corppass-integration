@@ -114,6 +114,7 @@ services:
     command:
       - start-dev
       - --import-realm
+      - --features=preview,docker,token-exchange,admin-fine-grained-authz
       - --log=console
       - --log-level=${KC_LOG_LEVEL:-info}
     environment:
