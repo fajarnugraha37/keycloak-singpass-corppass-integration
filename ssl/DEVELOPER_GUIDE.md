@@ -1,4 +1,4 @@
-# 🚀 Developer Guide - SSL Certificate Management
+# Developer Guide
 
 ## Quick Start Commands
 
@@ -20,7 +20,7 @@
 .\load-environment.ps1 | Invoke-Expression
 ```
 
-### Cross-Platform (Make)
+### Makefile
 ```bash
 # Show all available commands
 make help
@@ -53,7 +53,7 @@ docker-compose --profile validate up ssl-validator
 docker-compose --profile test up test-server
 ```
 
-## 🔧 Integration Examples
+## Examples
 
 ### Node.js / Express
 ```javascript
@@ -145,9 +145,9 @@ server:
     certificate-private-key: ssl/private/eservice.key
 ```
 
-## 🐳 Docker Integration
+## Docker Integration
 
-### Multi-stage Dockerfile
+### Dockerfile
 ```dockerfile
 # Stage 1: Generate certificates
 FROM alpine:latest as cert-generator
@@ -192,23 +192,7 @@ services:
     command: generate
 ```
 
-## 🔐 Security Considerations
-
-### Development vs Production
-
-**Development (Current Setup)**
-- ✅ Self-signed certificates
-- ✅ Local domain names (localhost)
-- ✅ Embedded private keys
-- ✅ Extended validity periods
-
-**Production Requirements**
-- 🚫 Use CA-signed certificates (Let's Encrypt, commercial CA)
-- 🚫 Real domain names
-- 🚫 Secure key management (Key Vault, HSM)
-- 🚫 Short validity periods with auto-renewal
-
-### Key Management Best Practices
+### Key Management
 
 ```bash
 # File permissions (Unix/Linux)
@@ -222,7 +206,7 @@ icacls "ssl\private" /grant:r "$env:USERNAME:(OI)(CI)F"
 icacls "ssl\private" /remove "Users" "Everyone" "Authenticated Users"
 ```
 
-### Environment Variable Security
+### Environment Variable
 
 ```bash
 # Never commit .env files with real keys
@@ -238,7 +222,7 @@ docker secret create jwt_private_key ssl/oidc/private_key.pem
 kubectl create secret tls app-tls --cert=ssl/certs/eservice.crt --key=ssl/private/eservice.key
 ```
 
-## 🧪 Testing and Validation
+## Testing and Validation
 
 ### Manual Testing
 ```bash
@@ -285,7 +269,7 @@ describe('SSL Certificates', () => {
 });
 ```
 
-## 🔄 Certificate Rotation
+## Certificate Rotation
 
 ### Automated Rotation Script
 ```bash
@@ -338,7 +322,7 @@ done
 0 2 * * * /path/to/ssl/cert-rotation.sh >> /var/log/cert-rotation.log 2>&1
 ```
 
-## 🔍 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -389,9 +373,9 @@ const certificateMonitor = (req, res, next) => {
 };
 ```
 
-## 📊 Performance Considerations
+## Considerations
 
-### SSL/TLS Optimization
+### NGINX SSL/TLS 
 ```nginx
 # nginx.conf optimizations
 ssl_session_cache shared:SSL:10m;
@@ -409,7 +393,7 @@ listen 443 ssl http2;
 - **RSA 3072-bit**: Higher security, slower performance (JWT recommended)
 - **ECDSA**: Faster than RSA, same security level with smaller keys
 
-## 📈 Monitoring and Alerting
+## Monitoring and Alerting
 
 ### Certificate Expiry Monitoring
 ```python
