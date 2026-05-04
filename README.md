@@ -67,17 +67,10 @@ Error handling with 404 and 50x pages featuring animations and auto-refresh func
 - [ Authentication Flow](#-authentication-flow)
 - [ Docker Configuration](#-docker-configuration)
 - [ Configuration](#-configuration)
-- [ API Documentation](#-api-documentation)
 - [ Troubleshooting](#-troubleshooting)
-- [ Performance Tuning](#-performance-tuning)
-- [ Maintenance](#-maintenance)
-- [ Security Features](#-security-features)
 - [ Deployment](#-deployment)
 - [ Additional Resources](#-additional-resources)
-- [ Contributing](#-contributing)
-  - [ Working With Git Submodules](#working-with-git-submodules)
 - [ License](#-license)
-- [ Acknowledgments](#-acknowledgments)
 
 ## Architecture
 
