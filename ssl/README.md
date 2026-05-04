@@ -1,8 +1,6 @@
-# 🔐 SSL Certificate Management for SSO Application
+# SSL Certificate
 
-A comprehensive certificate and key management system for Single Sign-On (SSO) applications, supporting SSL/TLS, SAML, and OIDC/JWT authentication protocols.
-
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - **OpenSSL** - Required for certificate generation and validation
@@ -20,7 +18,7 @@ A comprehensive certificate and key management system for Single Sign-On (SSO) a
 .\generate-certificates.ps1 -Force
 ```
 
-### Generate Custom CA (New!)
+### Generate Custom CA
 ```powershell
 # Generate a custom Certificate Authority
 .\generate-ca.ps1 -OrganizationName "My Company"
@@ -41,7 +39,7 @@ A comprehensive certificate and key management system for Single Sign-On (SSO) a
 .\validate-certificates.ps1
 ```
 
-### Cross-Platform (Makefile) - *NEW!*
+### Makefile
 ```bash
 # Show all available commands
 make help
@@ -92,7 +90,7 @@ docker-compose --profile test up test-server
 COMMAND=all docker-compose up ssl-generator
 ```
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 ssl/
@@ -112,7 +110,7 @@ ssl/
 │   ├── public_key.pem     # JWT public key
 │   ├── private_key_base64.txt # Base64 private key
 │   └── public_key_base64.txt  # Base64 public key
-├── � ca/ (NEW!)          # Certificate Authority
+├── 📂 ca/          # Certificate Authority
 │   ├── 📂 certs/
 │   │   ├── ca.crt         # CA certificate (CRT format)
 │   │   ├── ca.pem         # CA certificate (PEM format)
@@ -124,13 +122,13 @@ ssl/
 │   │   └── ca.key         # CA private key
 │   ├── ca.conf            # CA configuration
 │   └── INSTALL_INSTRUCTIONS.md # CA installation guide
-├── �🔧 eservice.conf       # OpenSSL config for eService
+├── 🔧 eservice.conf       # OpenSSL config for eService
 ├── 🔧 mockpass.conf       # OpenSSL config for MockPass
 ├── 🔑 encryption.key      # Application encryption key
 └── 📜 Scripts and docs... # Management scripts
 ```
 
-## 🛠️ Available Scripts
+## Available Scripts
 
 ### Core Management Scripts
 
@@ -164,7 +162,7 @@ ssl/
 .\load-environment.ps1 -Format powershell | Invoke-Expression
 ```
 
-## 🔑 Certificate Types Generated
+## Certificate Types Generated
 
 ### 1. SSL/TLS Certificates
 - **Purpose**: HTTPS endpoints for web applications
@@ -197,7 +195,7 @@ ssl/
 - **Bundle**: Includes 147+ Mozilla trusted root CAs
 - **Formats**: CRT, PEM, and bundle variations
 
-## 🔧 Configuration Files
+## Configuration Files
 
 ### SSL Configuration (`*.conf`)
 Defines certificate parameters including:
@@ -214,7 +212,7 @@ Complete template for application environment variables including:
 - SAML/OIDC configuration
 - Security settings
 
-## � Usage in Applications
+## Usage in Applications
 
 ### Loading Certificates in Node.js
 ```javascript
@@ -255,31 +253,7 @@ const token = jwt.sign(payload,
 );
 ```
 
-## 🛡️ Security Best Practices
-
-### File Permissions
-- Private keys should have restricted permissions (600)
-- Certificate files can be readable (644)
-- **CA private keys** should be heavily protected (600, limited access)
-- Use `.gitignore` to prevent committing sensitive files
-
-### CA Security
-- **Protect CA private key** - This can sign any certificate
-- **Limit CA certificate validity** - Don't make it too long
-- **Regular CA bundle updates** - Keep trusted roots current
-- **Monitor CA usage** - Track what certificates are signed
-
-### Certificate Rotation
-- Monitor certificate expiry dates
-- Set up automated renewal processes
-- Use the validation script to check certificate health
-
-### Environment Variables
-- Use base64 encoded versions for containerized deployments
-- Store sensitive keys in secure key management systems
-- Rotate encryption keys regularly
-
-## 🔍 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -290,7 +264,7 @@ choco install openssl
 # Or download from: https://slproweb.com/products/Win32OpenSSL.html
 ```
 
-**Browser still shows certificate warnings (NEW!)**
+**Browser still shows certificate warnings**
 ```powershell
 # Install your custom CA in the system trust store
 # Windows (Run as Administrator):
@@ -332,41 +306,9 @@ openssl verify -CAfile saml/public.crt certs/eservice.crt
 openssl s_client -connect eservice.localhost:3000 -servername eservice.localhost
 ```
 
-## 📚 References
+## References
 
 - [OpenSSL Documentation](https://www.openssl.org/docs/)
 - [SAML Certificate Requirements](https://docs.oasis-open.org/security/saml/Post2.0/sstc-saml-tech-overview-2.0.html)
 - [JWT Best Practices](https://datatracker.ietf.org/doc/html/rfc8725)
 - [SSL/TLS Configuration Guide](https://mozilla.github.io/server-side-tls/ssl-config-generator/)
-
-## 🤝 Contributing
-
-1. Test changes with the validation script
-2. Update documentation for new features
-3. Follow security best practices
-4. Add appropriate error handling
-
----
-
-## 🎉 **Recent Updates**
-
-### Version 2.0 - Certificate Authority Support
-- ✅ **Custom CA Generation** - Create your own trusted Certificate Authority
-- ✅ **Mozilla CA Bundle** - 147+ trusted root certificates included
-- ✅ **Cross-Platform Makefile** - Linux/macOS/Windows compatibility
-- ✅ **Docker Support** - Containerized certificate generation
-- ✅ **Enhanced Security** - 4096-bit CA keys, comprehensive validation
-- ✅ **Multiple Formats** - PEM, CRT, bundle, and chain variations
-- ✅ **System Integration** - Easy installation in browser/system trust stores
-
-### New Files Added
-- 📜 `generate-ca.ps1` - Custom CA generator
-- 📜 `update-ca-bundle.ps1` - Mozilla CA bundle updater  
-- 📜 `Makefile` - Cross-platform build system
-- 📜 `Dockerfile` & `docker-compose.yml` - Container support
-- 📜 `DEVELOPER_GUIDE.md` - Comprehensive integration guide
-- 📂 `ca/` directory - Complete CA infrastructure
-
----
-
-**⚠️ Security Notice**: This repository contains tools for generating development certificates. The custom CA feature eliminates browser warnings for development. Do not use these certificates in production environments. Always use certificates from trusted Certificate Authorities for production deployments.
