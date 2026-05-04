@@ -1,4 +1,4 @@
-# 📋 CA Certificate Installation Instructions
+# CA Certificate Installation Instructions
 
 ## Windows
 1. Double-click on ca/certs/ca.crt
