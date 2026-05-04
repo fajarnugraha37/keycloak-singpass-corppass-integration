@@ -1,15 +1,10 @@
-# SSO Application Makefile Reference
+# Makefile Reference
 
 ## Overview
 
-The enhanced `Makefile` in this repository wraps every Docker Compose workflow for the SSO playground: orchestration, database hygiene, Keycloak ops, SSL tooling, and troubleshooting shortcuts. Targets are organized in logical sections, emit color-coded output (where the terminal supports ANSI), and work on macOS/Linux, WSL, or native Windows shells (through the companion `make.ps1` script).
+The `Makefile` in this repository wraps every Docker Compose workflow: orchestration, database hygiene, Keycloak ops, SSL tooling, and troubleshooting shortcuts.
 
-- **Project name**: `app-sso` (used for Compose project/volume prefixes)
-- **Default compose file**: `docker-compose.yml` with optional overrides (`docker-compose.override.yml`, `docker-compose.prod.yml`)
-- **Services** (`SERVICES` variable): `mockpass`, `db`, `keycloak`, `ids`, `aceas-api`, `cpds-api`, `web`
-- **Background logs** live in `./logs/compose.<timestamp>.log`
-
-> 💡 `make` automatically creates the `logs/` directory and timestamped log files on first run.
+> `make` automatically creates the `logs/` directory and timestamped log files on first run.
 
 ## Prerequisites
 
