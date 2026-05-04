@@ -9,35 +9,35 @@ A learning playground for single sign-on (SSO) patterns built with Docker, featu
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-blue?logo=postgresql)](https://www.postgresql.org/)
 [![MockSAML](https://img.shields.io/badge/MockSAML-Ready-purple?logo=security)](https://github.com/kristophjunge/test-saml-idp)
 
-## 📸 Screenshots
+## Screenshots
 
-### 🏠 Main Portal Dashboard
-The Singapore government-styled eServices portal provides access to both ACEAS and CPDS applications with professional branding and modern UI.
+### Main Portal Dashboard
+The eServices portal provides access to both App1 and App2 applications with professional branding and modern UI.
 
 ![Main Portal](./docs/images/main-portal.png)
 
-### 🔐 ACEAS Application 
+### App1 Application 
 Direct Keycloak authentication with Authorization Code + PKCE flow, featuring real-time authentication status and token management.
 
-![ACEAS Application](./docs/images/aceas-app-1.png)
-![ACEAS Application](./docs/images/aceas-app-2.png)
-![ACEAS Application](./docs/images/aceas-app-3.png)
+![App1 Application](./docs/images/aceas-app-1.png)
+![App1 Application](./docs/images/aceas-app-2.png)
+![App1 Application](./docs/images/aceas-app-3.png)
 
-### 📊 CPDS Application
+### App2 Application
 Federated authentication through IDS provider that brokers tokens with Keycloak backend, demonstrating token isolation patterns.
 
-![CPDS Application](./docs/images/cpds-app-1.png)
-![CPDS Application](./docs/images/cpds-app-2.png)
-![CPDS Application](./docs/images/cpds-app-3.png)
+![App2 Application](./docs/images/cpds-app-1.png)
+![App2 Application](./docs/images/cpds-app-2.png)
+![App2 Application](./docs/images/cpds-app-3.png)
 
-### 🔑 Keycloak Login Page
+### Keycloak Login Page
 Comprehensive identity management with agency realm configuration, user management, and authentication flow monitoring.
 
 ![Keycloak Login](./docs/images/keycloak-login.png)
 ![Keycloak Login](./docs/images/keycloak-admin.png)
 
-### 🎭 MockPass Authentication
-Singapore SingPass simulation providing realistic government authentication experience for testing and development.
+### MockPass Authentication
+SingPass simulation providing realistic authentication experience for testing and development.
 
 ![MockPass Landing Page - Hero](./docs/images/mockpass-1.png)
 ![MockPass Landing Page - Overview](./docs/images/mockpass-2.png)
@@ -45,72 +45,72 @@ Singapore SingPass simulation providing realistic government authentication expe
 ![MockPass Landing Page - Resources](./docs/images/mockpass-4.png)
 ![MockPass Authentication](./docs/images/mockpass-auth.png)
 
-### 🟣 MockSAML Authentication
+### MockSAML Authentication
 Test SAML Identity Provider for simulating SAML-based authentication flows.
 
 ![MockSAML Login](./docs/images/mocksaml-login.png)
 ![MockSAML](./docs/images/mocksaml.png)
 
-### 🚨 Error Pages
-Professional error handling with government-styled 404 and 50x pages featuring animations and auto-refresh functionality.
+### Error Pages
+Error handling with 404 and 50x pages featuring animations and auto-refresh functionality.
 
 ![Error 404](./docs/images/error-404.png)
 ![Error 5XX](./docs/images/error-50x.png)
 
-## 📖 Table of Contents
+## Table of Contents
 
-- [🏗️ Architecture](#️-architecture)
-- [🚀 Quick Start](#-quick-start)
-- [🧩 Git Submodules](#-git-submodules)
-- [🛠️ Development Commands](#️-development-commands)
-- [📁 Project Structure](#-project-structure)
-- [🔄 Authentication Flow](#-authentication-flow)
-- [🐳 Docker Configuration](#-docker-configuration)
-- [🔧 Configuration](#-configuration)
-- [🔍 API Documentation](#-api-documentation)
-- [🚨 Troubleshooting](#-troubleshooting)
-- [⚡ Performance Tuning](#-performance-tuning)
-- [🧹 Maintenance](#-maintenance)
-- [🔒 Security Features](#-security-features)
-- [🚀 Deployment](#-deployment)
-- [📚 Additional Resources](#-additional-resources)
-- [🤝 Contributing](#-contributing)
-  - [🧠 Working With Git Submodules](#working-with-git-submodules)
-- [📄 License](#-license)
-- [🙏 Acknowledgments](#-acknowledgments)
+- [ Architecture](#️-architecture)
+- [ Quick Start](#-quick-start)
+- [ Git Submodules](#-git-submodules)
+- [ Development Commands](#️-development-commands)
+- [ Project Structure](#-project-structure)
+- [ Authentication Flow](#-authentication-flow)
+- [ Docker Configuration](#-docker-configuration)
+- [ Configuration](#-configuration)
+- [ API Documentation](#-api-documentation)
+- [ Troubleshooting](#-troubleshooting)
+- [ Performance Tuning](#-performance-tuning)
+- [ Maintenance](#-maintenance)
+- [ Security Features](#-security-features)
+- [ Deployment](#-deployment)
+- [ Additional Resources](#-additional-resources)
+- [ Contributing](#-contributing)
+  - [ Working With Git Submodules](#working-with-git-submodules)
+- [ License](#-license)
+- [ Acknowledgments](#-acknowledgments)
 
-## 🏗️ Architecture
+## Architecture
 
 The stack consists of containerized services orchestrated with Docker Compose:
 
 ### Core Services
-- **🔐 Keycloak** - Identity provider with custom SPIs and agency realm configuration
-- **🎭 MockPass** - Singapore government authentication simulator (SingPass/CorpPass)
-- **🟣 MockSAML** - Test SAML Identity Provider for SAML authentication flows
-- **🔍 IDS** - Node.js OpenID Connect provider for token brokering
-- **🌐 Nginx** - High-performance reverse proxy with SSL/TLS support
-- **🗃️ PostgreSQL** - Keycloak database with optimized performance settings
+- ** Keycloak** - Identity provider with custom SPIs and agency realm configuration
+- ** MockPass** - SPCP authentication simulator (SingPass/CorpPass)
+- ** MockSAML** - Test SAML Identity Provider for SAML authentication flows
+- ** IDS** - Node.js OpenID Connect provider for token brokering
+- ** Nginx** - High-performance reverse proxy with SSL/TLS support
+- ** PostgreSQL** - Keycloak database with optimized performance settings
 
 ### Application Services  
-- **📱 ACEAS API** - Sample microservice with Keycloak integration
-- **📊 CPDS API** - Sample microservice with IDS token validation
-- **🖥️ Web Frontend** - Single-page applications served by Nginx
+- **App1 API** - Sample microservice with Keycloak integration
+- **App2 API** - Sample microservice with IDS token validation
+- **Web Frontend** - Single-page applications served by Nginx
 
 ### Infrastructure Features
-- 🔒 **SSL/TLS Support** - Self-signed certificates for development
-- 📊 **Health Checks** - Comprehensive service monitoring
-- 🎯 **Resource Limits** - Memory and CPU constraints for stability
-- 🔄 **Hot Reload** - Development-friendly file watching
-- 📝 **Centralized Logging** - Background log collection and viewing
+- **SSL/TLS Support** - Self-signed certificates for development
+- **Health Checks** - Comprehensive service monitoring
+- **Resource Limits** - Memory and CPU constraints for stability
+- **Hot Reload** - Development-friendly file watching
+- **Centralized Logging** - Background log collection and viewing
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - [Docker](https://docs.docker.com/get-docker/) and Docker Compose V2
 - [Make](https://www.gnu.org/software/make/) (for convenience commands)
 - **Host file configuration** (see setup below)
 
-### 🧩 Git Submodules
+### Git Submodules
 
 This repository vendors its SingPass/CorpPass simulators through Git submodules so the Docker Compose stack can mount their sources locally:
 
@@ -138,7 +138,7 @@ Use `git submodule status` to confirm everything is checked out, and run `git su
 
 For the application to work correctly, you need to add entries to your system's hosts file to point the required domains to localhost.
 
-#### 🪟 Windows
+#### Windows
 1. **Open Command Prompt as Administrator**
    - Press `Win + R`, type `cmd`, then press `Ctrl + Shift + Enter`
 
@@ -156,7 +156,7 @@ For the application to work correctly, you need to add entries to your system's 
 
 4. **Save and close the file**
 
-#### 🍎 macOS
+#### macOS
 1. **Open Terminal**
 
 2. **Edit the hosts file with your preferred editor**
@@ -185,7 +185,7 @@ For the application to work correctly, you need to add entries to your system's 
    sudo killall -HUP mDNSResponder
    ```
 
-#### 🐧 Linux
+#### Linux
 1. **Open Terminal**
 
 2. **Edit the hosts file**
@@ -220,7 +220,7 @@ For the application to work correctly, you need to add entries to your system's 
    sudo systemctl flush-dns
    ```
 
-#### ✅ Verify Configuration
+#### Verify Configuration
 After updating your hosts file, verify the configuration works:
 
 
@@ -264,12 +264,12 @@ Both should resolve to `127.0.0.1` (localhost).
    ```
 
 5. **Access applications**
-   - 🌐 **Main Portal**: http://eservice.localhost
-   - 🔐 **Keycloak Admin**: http://eservice.localhost/auth/admin (admin/admin)  
-   - 🎭 **MockPass**: http://mockpass.localhost
-   - 🟣 **MockSAML**: http://mocksaml.localhost
-   - 📱 **ACEAS App**: http://eservice.localhost/aceas/
-   - 📊 **CPDS App**: http://eservice.localhost/cpds/
+   - **Main Portal**: http://eservice.localhost
+   - **Keycloak Admin**: http://eservice.localhost/auth/admin (admin/admin)  
+   - **MockPass**: http://mockpass.localhost
+   - **MockSAML**: http://mocksaml.localhost
+   - **App1**: http://eservice.localhost/aceas/
+   - **App2**: http://eservice.localhost/cpds/
 
 6. **View logs**
    ```bash
@@ -283,7 +283,7 @@ Both should resolve to `127.0.0.1` (localhost).
    make down
    ```
 
-### 🎯 First-Time Setup Checklist
+### First-Time Setup Checklist
 
 - [ ] Docker and Docker Compose installed
 - [ ] Make command available
@@ -292,7 +292,7 @@ Both should resolve to `127.0.0.1` (localhost).
 - [ ] Port 80, 443, 5432, 8080 available
 - [ ] At least 4GB RAM available for containers
 
-## 🛠️ Development Commands
+## Development Commands
 
 ### Service Management
 ```bash
@@ -357,79 +357,46 @@ make dev-debug-keycloak # Start Keycloak with debug (port 8787)
 make dirs-create        # Create required directories
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 app-sso/
-├── 🔧 docker-compose.yml           # Main service definitions
-├── 🔧 docker-compose.override.yml  # Development overrides
-├── 🔧 Makefile                     # Automation commands
-├── 📋 README.md                    # This file
+├── docker-compose.yml           # Main service definitions
+├── docker-compose.override.yml  # Development overrides
+├── Makefile                     # Automation commands
+├── README.md                    # This file
 │
-├── 🔐 keycloak-custom/              # Custom Keycloak build
-│   ├── 📄 Dockerfile               # Optimized Keycloak image
-│   └── 🔌 spi/                     # Custom SPI extensions
+├── keycloak-custom/              # Custom Keycloak build
+│   ├── Dockerfile               # Optimized Keycloak image
+│   └── spi/                     # Custom SPI extensions
 │
-├── 🔍 keycloak-import/              # Realm configurations
-│   ├── 🌐 realm--agency-realm--export.json
-│   └── 👑 realm--master--export.json
+├── keycloak-import/              # Realm configurations
+│   ├── realm--agency-realm--export.json
+│   └── realm--master--export.json
 │
-├── 🎭 mockpass/                     # Singapore auth simulator
+├── mockpass/                     # spcp auth simulator
 │
-├── 🟣 mocksaml/                     # SAML 2.0 auth simulator
+├── mocksaml/                     # SAML 2.0 auth simulator
 │
-├── 🔍 services/                     # Microservices
-│   ├── 🔗 ids/                     # OIDC provider
-│   ├── 📱 aceas-api/               # ACEAS backend
-│   └── 📊 cpds-api/                # CPDS backend
+├── services/                     # Microservices
+│   └──  ids/                     # OIDC provider
 │
-├── 🌐 nginx/                        # Reverse proxy
-│   ├── 📄 nginx.conf
-│   ├── 🔧 common.conf
-│   └── 📁 conf.d/                  # Virtual hosts
+├── nginx/                        # Reverse proxy
+│   ├── nginx.conf
+│   ├── common.conf
+│   └── conf.d/                  # Virtual hosts
 │
-├── 🖥️ web/ & webroot/               # Frontend applications
-├── 🔒 ssl/                          # SSL certificates
-├── 📝 logs/                         # Application logs
-└── 🗃️ data/                         # Persistent data
+├──  web/ & webroot/               # Frontend applications
+├──  ssl/                          # SSL certificates
+├──  logs/                         # Application logs
+└──  data/                         # Persistent data
 ```
 
-## 🔄 Authentication Flow
-
-### Cross-Application SSO
-```mermaid
-sequenceDiagram
-    participant Browser
-    participant ACEAS as ACEAS SPA
-    participant CPDS as CPDS SPA  
-    participant IDS as IDS Provider
-    participant KC as Keycloak
-    participant MockPass
-    Browser->>ACEAS: 1. Access ACEAS app
-    ACEAS->>KC: 2. Redirect to Keycloak
-    KC->>MockPass: 3. Federated login
-    MockPass->>KC: 4. Authentication response
-    KC->>ACEAS: 5. Auth code + session
-    ACEAS->>Browser: 6. Logged in to ACEAS
-    Browser->>CPDS: 7. Access CPDS app  
-    CPDS->>IDS: 8. Redirect to IDS
-    IDS->>KC: 9. Check existing session
-    KC->>IDS: 10. Reuse session (no login!)
-    IDS->>CPDS: 11. CPDS-specific token
-    CPDS->>Browser: 12. Logged in to CPDS
-```
-
-### Key Benefits
-- 🔄 **Single Sign-On**: Login once, access all applications
-- 🎭 **Singapore Integration**: MockPass for SingPass/CorpPass simulation  
-- 🔒 **Token Isolation**: Application-specific tokens via IDS
-- 🧪 **Learning Environment**: Keycloak with custom SPIs and realm management
-
-## � API Documentation
+## API Documentation
 
 ### Core Endpoints
 
-#### 🔐 Keycloak API
+#### Keycloak API
 ```
 Base URL: http://eservice.localhost/auth
 # Admin API
@@ -439,7 +406,7 @@ POST   /auth/realms/agency-realm/protocol/openid-connect/token
 GET    /auth/realms/agency-realm/.well-known/openid-configuration
 ```
 
-#### 🎭 MockPass API  
+#### MockPass API  
 ```
 Base URL: http://mockpass.localhost
 # SingPass endpoints
@@ -454,7 +421,7 @@ POST   /corppass/v2/token
 GET    /corppass/v2/userinfo
 ```
 
-#### 🔗 IDS Provider API
+#### IDS Provider API
 ```
 Base URL: http://eservice.localhost/ids
 # OIDC endpoints
@@ -466,7 +433,7 @@ GET    /oauth/userinfo
 POST   /oauth/logout
 ```
 
-#### 📱 ACEAS API
+#### App1 API
 ```
 Base URL: http://eservice.localhost/api/aceas
 GET    /health                         # Health check
@@ -474,7 +441,7 @@ GET    /protected                      # Protected endpoint (requires Keycloak t
 GET    /user                          # User info
 ```
 
-#### 📊 CPDS API
+#### App2 API
 ```
 Base URL: http://eservice.localhost/api/cpds
 GET    /health                         # Health check
@@ -482,41 +449,7 @@ GET    /protected                      # Protected endpoint (requires IDS token)
 GET    /user                          # User info
 ```
 
-### Testing APIs
-
-#### Quick Health Check
-```bash
-# Test all health endpoints
-curl http://eservice.localhost/api/aceas/health
-curl http://eservice.localhost/api/cpds/health
-curl http://eservice.localhost/ids/health
-curl http://mockpass.localhost/singpass/v2/.well-known/openid-configuration
-```
-
-#### Authentication Flow Testing
-```bash
-# 1. Get Keycloak configuration
-curl http://eservice.localhost/auth/realms/agency-realm/.well-known/openid-configuration
-
-# 2. Test MockPass configuration  
-curl http://mockpass.localhost/singpass/v2/.well-known/openid-configuration
-
-# 3. Test IDS configuration
-curl http://eservice.localhost/ids/.well-known/openid-configuration
-```
-
-### Service Architecture
-- **Networks**: Isolated networks for security (app_network, db_network)
-- **Health Checks**: TCP-based monitoring for all services
-- **Resource Limits**: Memory and CPU constraints
-- **Volume Management**: Hybrid approach (bind mounts + Docker volumes)
-- **Security**: No-new-privileges, tmpfs mounts, readonly filesystems
-
-### Environment Support
-- **Development**: Hot reload, debug ports, volume mounts
-- **Cross-Platform**: Windows and Unix/Linux support in Makefile
-
-## 🔧 Configuration
+## Configuration
 
 ### Default Credentials
 - **Keycloak Admin**: admin/admin
@@ -535,7 +468,7 @@ Self-signed certificates are generated for:
 - `eservice.localhost` (main application)
 - `mockpass.localhost` (MockPass service)
 
-## 🚨 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 ```bash
@@ -557,7 +490,7 @@ make optimize-db              # Optimize performance
 make db-backup                # Backup before changes
 ```
 
-## ⚡ Performance Tuning
+## Performance Tuning
 
 ### System Requirements
 
@@ -654,22 +587,7 @@ watch -n 5 'make health'
 make logs | grep -E "(ERROR|WARN|Exception)"
 ```
 
-#### Performance Benchmarking
-```bash
-# Simple load testing with curl
-for i in {1..100}; do
-  curl -s http://eservice.localhost/api/aceas/health > /dev/null &
-done
-wait
-
-# Using Apache Bench (if available)
-ab -n 1000 -c 10 http://eservice.localhost/
-
-# Using wrk (if available)  
-wrk -t12 -c400 -d30s http://eservice.localhost/
-```
-
-## 🧹 Maintenance
+## Maintenance
 
 ### Cleanup Commands
 ```bash
@@ -685,16 +603,7 @@ make backup-all               # Backup database + Keycloak config
 make restore-db BACKUP_FILE=backup/db_20231018.sql
 ```
 
-## 🔒 Security Features
-
-- 🛡️ **Hardened Containers**: Security-focused Docker configuration
-- 🔐 **SSL/TLS Ready**: Self-signed certificates for development
-- 🎯 **Resource Limits**: Prevent resource exhaustion
-- 🔍 **Health Monitoring**: Continuous service health checks  
-- 📝 **Audit Logging**: Comprehensive logging for troubleshooting
-- 🚫 **Network Isolation**: Segmented networks for database access
-
-## � Deployment
+## Deployment
 
 ### Development Deployment
 ```bash
@@ -764,43 +673,6 @@ docker push your-registry/sso-mockpass:latest
 docker push your-registry/sso-ids:latest
 ```
 
-### Kubernetes Deployment
-
-#### Basic Kubernetes Manifests
-```yaml
-# Example: keycloak-deployment.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: keycloak
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: keycloak
-  template:
-    metadata:
-      labels:
-        app: keycloak
-    spec:
-      containers:
-      - name: keycloak
-        image: your-registry/sso-keycloak:latest
-        ports:
-        - containerPort: 8080
-        env:
-        - name: KC_DB
-          value: postgres
-        - name: KC_DB_URL
-          value: jdbc:postgresql://postgres:5432/keycloak
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "500m"
-          limits:
-            memory: "2Gi" 
-            cpu: "1000m"
-```
 ### Docker Swarm Deployment
 ```bash
 # Initialize swarm
@@ -813,38 +685,7 @@ docker stack deploy -c docker-compose.yml sso-stack
 docker service ls
 ```
 
-### Health Monitoring
-
-#### Health Check Endpoints
-```bash
-# Automated health monitoring
-#!/bin/bash
-ENDPOINTS=(
-  "http://eservice.localhost/api/aceas/health"
-  "http://eservice.localhost/api/cpds/health" 
-  "http://eservice.localhost/ids/health"
-  "http://mockpass.localhost/singpass/v2/.well-known/openid-configuration"
-)
-
-for endpoint in "${ENDPOINTS[@]}"; do
-  if curl -f -s "$endpoint" > /dev/null; then
-    echo "✅ $endpoint - OK"
-  else
-    echo "❌ $endpoint - FAILED"
-  fi
-done
-```
-
-#### Log Aggregation
-```bash
-# Ship logs to external system
-make logs > /var/log/sso-stack.log
-
-# Or use log drivers
-docker-compose --log-driver=syslog up
-```
-
-## 📚 Additional Resources
+## Additional Resources
 
 ### Documentation Links
 - [Keycloak Documentation](https://www.keycloak.org/documentation)
@@ -865,7 +706,7 @@ docker-compose --log-driver=syslog up
 - [Stack Overflow - Keycloak](https://stackoverflow.com/questions/tagged/keycloak)
 - [GitHub Issues](https://github.com/fajarnugraha37/app-sso/issues)
 
-## 🤝 Contributing
+## Contributing
 
 ### Development Workflow
 1. **Fork GitHub repo** - click “Fork” on [fajarnugraha37/keycloak-singpass-corppass-integration](https://github.com/fajarnugraha37/keycloak-singpass-corppass-integration).
@@ -921,27 +762,6 @@ Handy commands while iterating:
 - `git submodule update --remote --merge` - fast-forward to the latest commits on the tracked branches (`keycloak-singpass-corppass-integration` by default).
 - `git diff --submodule=log` - include submodule commit summaries in your diff/PR.
 
-### Code Style Guidelines
-- **Docker**: Use multi-stage builds, minimize layer count
-- **JavaScript**: Follow ESLint configuration
-- **Shell Scripts**: Use ShellCheck for validation
-- **Documentation**: Use clear, concise language with examples
-
-### Testing Your Changes
-```bash
-# Full rebuild and test
-make clean && make rebuild
-
-# Run health checks
-make health
-
-# Test all endpoints
-make help | grep -E "log-|tail-|re-"
-
-# Performance test
-make analyze-performance
-```
-
 ### Reporting Issues
 When reporting issues, please include:
 - Operating system and version
@@ -950,11 +770,11 @@ When reporting issues, please include:
 - Relevant log output (`make logs`)
 - Service status (`make health`)
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - [Keycloak Team](https://www.keycloak.org/community) for the excellent identity management platform
 - [Open Government Products](https://github.com/opengovsg) for MockPass
@@ -964,13 +784,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-> **📝 Note**: This is a learning and development environment designed for experimentation with SSO patterns. Use the self-signed certificates and default configurations only for local testing and educational purposes.
-> **🔒 Security**: Remember to change default passwords and review security configurations when adapting this setup. This playground environment uses simplified settings for ease of learning.
+> ** Note**: This is a learning and development environment designed for experimentation with SSO patterns. Use the self-signed certificates and default configurations only for local testing and educational purposes.
+> ** Security**: Remember to change default passwords and review security configurations when adapting this setup. This playground environment uses simplified settings for ease of learning.
 ---
 
 <div align="center">
-
-**⭐ If this project helped you, please consider giving it a star! ⭐**
 
 [![GitHub stars](https://img.shields.io/github/stars/fajarnugraha37/app-sso?style=social)](https://github.com/fajarnugraha37/app-sso/stargazers)
 
