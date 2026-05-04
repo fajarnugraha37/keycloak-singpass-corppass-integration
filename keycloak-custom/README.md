@@ -2,7 +2,7 @@
 
 This directory contains a custom Keycloak build with custom SPI (Service Provider Interface) extensions. The build is optimized for production use with multi-stage Docker builds and advanced caching strategies.
 
-## 📁 Directory Structure
+## Directory Structure
 
 ```
 keycloak-custom/
@@ -23,21 +23,18 @@ keycloak-custom/
         └── test/java/     # Test source code
 ```
 
-## 🚀 Features
+## Features
 
 - **Custom SPI Extensions**: Extended Keycloak functionality with custom providers
-- **Optimized Docker Build**: Multi-stage build with layer caching optimization
-- **Production Ready**: Health checks, metrics, and production configurations
-- **Build Caching**: Gradle and Docker build cache for faster builds
-- **Security**: Non-root user execution and minimal attack surface
+- **Docker Build**: Multi-stage build with layer cachin, Health checks, metrics, production configurations, and Non-root user execution and minimal attack surface
 
-## 📋 Prerequisites
+## Prerequisites
 
 - Docker 20.10+ with BuildKit enabled
 - Docker Compose (optional, for local development)
 - PowerShell 5.1+ (Windows) or Bash (Unix/Linux/macOS)
 
-## 🔧 Building the Image
+## Building the Image
 
 ### Using PowerShell (Windows)
 
@@ -90,38 +87,7 @@ DOCKER_BUILDKIT=1 docker build -t custom-keycloak:latest .
 docker build --cache-from custom-keycloak:previous -t custom-keycloak:latest .
 ```
 
-## 🏗️ Build Optimizations
-
-### Layer Caching Strategy
-
-The Dockerfile is optimized for maximum cache efficiency:
-
-1. **Gradle Configuration**: Copied first to cache dependency downloads
-2. **Dependencies**: Downloaded in separate layer, cached until build files change
-3. **Source Code**: Copied last, only invalidates cache when code changes
-4. **Build Artifacts**: Optimized Gradle build with parallel execution and build cache
-
-### Multi-Stage Build Benefits
-
-- **Smaller Final Image**: Only runtime artifacts included
-- **Security**: No build tools in production image
-- **Faster Builds**: Parallel builds and dependency caching
-- **Clean Separation**: Build and runtime environments isolated
-
-## 🐳 Docker Images
-
-### Main Dockerfile
-- **Base**: `gradle:8.10.2-jdk17` (builder) + `quay.io/keycloak/keycloak:25.0.6` (runtime)
-- **Optimizations**: Layer caching, parallel builds, cleanup
-- **Features**: Health/metrics enabled, Kubernetes cache stack
-
-### Alternative Optimized Dockerfile
-- **Stages**: 3-stage build (builder, keycloak-builder, runtime)
-- **Additional Features**: Health checks, production environment variables
-- **Database**: Pre-configured for PostgreSQL
-- **Monitoring**: Built-in health and metrics endpoints
-
-## 🔍 Image Details
+## Image Details
 
 ### Included SPI Extensions
 
@@ -152,40 +118,7 @@ docker run -d \
   custom-keycloak:latest start-dev
 ```
 
-## 🔧 Development
-
-### Local Development Setup
-
-1. **Clone the repository**:
-   ```bash
-   git clone <repository-url>
-   cd app-sso/keycloak-custom
-   ```
-
-2. **Build the SPI locally** (optional):
-   ```bash
-   cd spi
-   ./gradlew clean build
-   ```
-
-3. **Build Docker image**:
-   ```powershell
-   .\build.ps1 -Tag "dev"
-   ```
-
-### Testing Changes
-
-```bash
-# Run tests
-cd spi
-./gradlew test
-
-# Build and test image
-docker build -t keycloak-test .
-docker run --rm -p 8080:8080 keycloak-test start-dev
-```
-
-## 📊 Performance Considerations
+## Considerations
 
 ### Build Time Optimization
 
@@ -194,29 +127,7 @@ docker run --rm -p 8080:8080 keycloak-test start-dev
 - **Parallel Builds**: Enabled for faster compilation
 - **Build Cache**: Gradle build cache for incremental builds
 
-### Runtime Optimization
-
-- **Quarkus Build**: Optimized native compilation
-- **Cache Configuration**: Kubernetes-optimized Infinispan cache
-- **Health Checks**: Built-in readiness and liveness probes
-- **Metrics**: Prometheus-compatible metrics endpoint
-
-## 🔐 Security
-
-### Container Security
-
-- **Non-root User**: Runs as user `1000` (keycloak)
-- **Minimal Base**: Based on official Keycloak image
-- **No Build Tools**: Production image contains no build dependencies
-- **Layer Optimization**: Minimal attack surface
-
-### SPI Security
-
-- **Code Scanning**: Regular dependency vulnerability checks
-- **Secure Defaults**: Production-ready security configurations
-- **Authentication**: Enhanced JWT and key management
-
-## 🚨 Troubleshooting
+## Troubleshooting
 
 ### Common Build Issues
 
@@ -261,26 +172,10 @@ docker run --rm -p 8080:8080 keycloak-test start-dev
    - Check database connection performance
    - Monitor metrics endpoint: `http://localhost:8080/metrics`
 
-## 📚 References
+## References
 
 - [Keycloak Official Documentation](https://www.keycloak.org/documentation)
 - [Keycloak SPI Development](https://www.keycloak.org/docs/latest/server_development/)
 - [Docker Multi-Stage Builds](https://docs.docker.com/develop/dev-best-practices/dockerfile_best-practices/)
 - [Gradle Build Cache](https://docs.gradle.org/current/userguide/build_cache.html)
 
-## 📝 License
-
-This project follows the same license as the main repository.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes in the `spi/` directory
-4. Test your changes locally
-5. Build and test the Docker image
-6. Submit a pull request
-
----
-
-For questions or issues, please refer to the main project documentation or create an issue in the repository.
